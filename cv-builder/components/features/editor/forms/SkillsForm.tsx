@@ -1,6 +1,6 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import { Plus, Trash2, Tag, ChevronDown, ChevronRight, X } from 'lucide-react'
 import { generateId } from '@/lib/utils'
 import { useState } from 'react'

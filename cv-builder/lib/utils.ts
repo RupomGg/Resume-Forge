@@ -4,7 +4,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { v4 as uuidv4 } from 'uuid'
 import { format } from 'date-fns'
-import type { MonthYear, DateFormat, FontDefinition, ColorTheme } from './types'
+import type { MonthYear, DateFormat, FontDefinition, ColorTheme } from '@/models/cv.types'
 import { FONTS, getFont as _getFont } from './fonts'
 import { COLOR_THEMES, getTheme as _getTheme } from './themes'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import { ChangeEvent, useRef } from 'react'
 import { Camera, X, Mail, Phone, MapPin, Globe, User, Link as LinkIcon, GitBranch } from 'lucide-react'
 import { cn } from '@/lib/utils'

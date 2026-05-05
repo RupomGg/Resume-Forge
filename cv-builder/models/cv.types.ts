@@ -1,4 +1,4 @@
-// lib/types.ts — Source of truth for all CV Builder data structures
+// models/cv.types.ts — Source of truth for all CV Builder data structures
 
 export type SkillLevel = 'none' | 'beginner' | 'intermediate' | 'advanced' | 'expert'
 export type LanguageProficiency = 'native' | 'fluent' | 'advanced' | 'intermediate' | 'beginner'
@@ -173,8 +173,6 @@ export interface CVData {
   sectionOrder: CVSection[]
   design: DesignSettings
 }
-
-// ─── Auxiliary types for lib/fonts.ts and lib/themes.ts ───────────────────────
 
 export interface FontDefinition {
   id: string

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import Hero from '@/components/landing/Hero'
-import FeatureList from '@/components/landing/FeatureList'
-import TemplateGallery from '@/components/landing/TemplateGallery'
+import Hero from '@/components/features/landing/Hero'
+import FeatureList from '@/components/features/landing/FeatureList'
+import TemplateGallery from '@/components/features/landing/TemplateGallery'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 

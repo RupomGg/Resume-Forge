@@ -1,6 +1,6 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import { FileText } from 'lucide-react'
 import TemplateRenderer from './TemplateRenderer'
 

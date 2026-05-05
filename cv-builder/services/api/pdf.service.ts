@@ -1,8 +1,16 @@
-import { CVData } from './types'
+// services/api/pdf.service.ts — PDF Generation Service
 
-export async function downloadPdf(cvData: any) {
+import { CVData } from '@/models/cv.types'
+
+/**
+ * Sends CV data to the server to generate and download a PDF.
+ */
+export async function downloadPdf(cvData: CVData) {
   const element = document.getElementById('cv-preview-card')
-  if (!element) return
+  if (!element) {
+    console.error('CV Preview element not found')
+    return
+  }
 
   try {
     // Get all style tags and link tags to preserve custom styles
@@ -77,5 +85,4 @@ export async function downloadPdf(cvData: any) {
     console.error('Download Error:', error)
     alert(`PDF Export failed: ${error.message}\n\nFallback: Try using your browser's Print (Ctrl+P) and select "Save as PDF".`)
   }
-
 }

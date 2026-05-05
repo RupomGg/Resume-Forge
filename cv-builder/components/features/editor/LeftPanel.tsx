@@ -10,7 +10,7 @@ import WorkExperienceForm from './forms/WorkExperienceForm'
 import EducationForm from './forms/EducationForm'
 import SkillsForm from './forms/SkillsForm'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 
 const FORM_MAP: Record<string, React.ComponentType> = {
   personal: PersonalInfoForm,

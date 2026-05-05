@@ -1,6 +1,6 @@
 // lib/themes.ts — 30 color themes for the CV Builder
 
-import type { ColorTheme } from './types'
+import type { ColorTheme } from '@/models/cv.types'
 
 export const COLOR_THEMES: ColorTheme[] = [
   {

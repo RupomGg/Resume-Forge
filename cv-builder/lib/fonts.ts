@@ -1,6 +1,6 @@
 // lib/fonts.ts — Font definitions for the CV Builder
 
-import type { FontDefinition } from './types'
+import type { FontDefinition } from '@/models/cv.types'
 
 export const FONTS: FontDefinition[] = [
   // ── Free fonts (isFree: true) ──────────────────────────────────────────────

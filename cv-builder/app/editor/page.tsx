@@ -2,8 +2,8 @@
 
 import { useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useCVStore } from '@/lib/store'
-import EditorShell from '@/components/editor/EditorShell'
+import { useCVStore } from '@/store/cv-store'
+import EditorShell from '@/components/features/editor/EditorShell'
 
 /** Inner component — must be inside <Suspense> because it uses useSearchParams */
 function EditorInner() {

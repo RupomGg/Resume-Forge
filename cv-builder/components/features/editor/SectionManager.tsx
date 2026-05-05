@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import { 
   X, 
   GripVertical, 

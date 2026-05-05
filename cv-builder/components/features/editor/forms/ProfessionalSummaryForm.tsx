@@ -1,6 +1,6 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import RichTextEditor from '../RichTextEditor'
 
 export default function ProfessionalSummaryForm() {

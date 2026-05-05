@@ -8,8 +8,8 @@ import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
 import DesignPanel from './DesignPanel'
 import SectionManager from './SectionManager'
-import { useCVStore } from '@/lib/store'
-import { downloadPdf } from '@/lib/pdf-utils'
+import { useCVStore } from '@/store/cv-store'
+import { downloadPdf } from '@/services/api/pdf.service'
 
 export default function EditorShell() {
   const store = useCVStore()

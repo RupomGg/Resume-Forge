@@ -1,6 +1,6 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
+import { useCVStore } from '@/store/cv-store'
 import { COLOR_THEMES } from '@/lib/themes'
 import { FONTS } from '@/lib/fonts'
 import { 

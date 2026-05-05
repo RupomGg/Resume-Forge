@@ -1,84 +1,78 @@
 'use client'
 
-import { useCVStore } from '@/lib/store'
-import { Plus, Trash2, GripVertical, Calendar } from 'lucide-react'
+import { useCVStore } from '@/store/cv-store'
+import { Plus, Trash2, Calendar, GraduationCap } from 'lucide-react'
 import RichTextEditor from '../RichTextEditor'
 import { generateId } from '@/lib/utils'
 
-export default function WorkExperienceForm() {
-  const { experience, addExperience, updateExperience, removeExperience } = useCVStore()
+export default function EducationForm() {
+  const { education, addEducation, updateEducation, removeEducation } = useCVStore()
 
   const addNew = () => {
-    addExperience()
+    addEducation()
   }
 
   return (
     <div className="p-4 space-y-6">
-      {experience.map((exp, index) => (
+      {education.map((edu, index) => (
         <div 
-          key={exp.id} 
+          key={edu.id} 
           className="relative p-4 rounded-xl border border-gray-100 bg-gray-50/30 space-y-4 group transition-all hover:border-gray-200 hover:shadow-sm"
         >
-          {/* Header Actions */}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              Experience #{index + 1}
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
+              <GraduationCap className="w-3 h-3" /> Education #{index + 1}
             </span>
             <button
-              onClick={() => removeExperience(exp.id)}
+              onClick={() => removeEducation(edu.id)}
               className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-              title="Delete experience"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Job Title */}
             <div className="col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-gray-600 ml-1">Job Title</label>
+              <label className="text-xs font-semibold text-gray-600 ml-1">Degree / Field of Study</label>
               <input
                 type="text"
-                value={exp.jobTitle}
-                onChange={(e) => updateExperience(exp.id, { jobTitle: e.target.value })}
-                placeholder="e.g. Senior Product Designer"
+                value={edu.degree}
+                onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
+                placeholder="e.g. B.S. in Computer Science"
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
               />
             </div>
 
-            {/* Company */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-600 ml-1">Company</label>
+              <label className="text-xs font-semibold text-gray-600 ml-1">Institution</label>
               <input
                 type="text"
-                value={exp.company}
-                onChange={(e) => updateExperience(exp.id, { company: e.target.value })}
-                placeholder="e.g. Google"
+                value={edu.institution}
+                onChange={(e) => updateEducation(edu.id, { institution: e.target.value })}
+                placeholder="e.g. Stanford University"
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
               />
             </div>
 
-            {/* Location */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-600 ml-1">Location</label>
+              <label className="text-xs font-semibold text-gray-600 ml-1">GPA (Optional)</label>
               <input
                 type="text"
-                value={exp.location}
-                onChange={(e) => updateExperience(exp.id, { location: e.target.value })}
-                placeholder="City, Country"
+                value={edu.gpa}
+                onChange={(e) => updateEducation(edu.id, { gpa: e.target.value })}
+                placeholder="e.g. 3.8 / 4.0"
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
               />
             </div>
 
-            {/* Start Date */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
                 <Calendar className="w-3 h-3" /> Start Date
               </label>
               <div className="flex gap-2">
                 <select
-                  value={exp.startDate.month}
-                  onChange={(e) => updateExperience(exp.id, { startDate: { ...exp.startDate, month: parseInt(e.target.value) } })}
+                  value={edu.startDate.month}
+                  onChange={(e) => updateEducation(edu.id, { startDate: { ...edu.startDate, month: parseInt(e.target.value) } })}
                   className="w-full px-2 py-2 rounded-lg border border-gray-200 bg-white text-sm outline-none"
                 >
                   {Array.from({ length: 12 }, (_, i) => (
@@ -87,34 +81,33 @@ export default function WorkExperienceForm() {
                 </select>
                 <input
                   type="number"
-                  value={exp.startDate.year}
-                  onChange={(e) => updateExperience(exp.id, { startDate: { ...exp.startDate, year: parseInt(e.target.value) } })}
+                  value={edu.startDate.year}
+                  onChange={(e) => updateEducation(edu.id, { startDate: { ...edu.startDate, year: parseInt(e.target.value) } })}
                   className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none text-sm"
                 />
               </div>
             </div>
 
-            {/* End Date / Current */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5 justify-between">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3 h-3" /> End Date
                 </div>
-                <label className="flex items-center gap-1 text-[10px] font-normal cursor-pointer select-none">
+                <label className="flex items-center gap-1 text-[10px] font-normal cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={exp.currentlyWorking}
-                    onChange={(e) => updateExperience(exp.id, { currentlyWorking: e.target.checked })}
+                    checked={edu.current}
+                    onChange={(e) => updateEducation(edu.id, { current: e.target.checked })}
                     className="w-3 h-3 rounded text-blue-600"
                   />
-                  Present
+                  Ongoing
                 </label>
               </label>
-              {!exp.currentlyWorking ? (
+              {!edu.current ? (
                 <div className="flex gap-2">
                   <select
-                    value={exp.endDate?.month || 1}
-                    onChange={(e) => updateExperience(exp.id, { endDate: { month: parseInt(e.target.value), year: exp.endDate?.year || 2024 } })}
+                    value={edu.endDate?.month || 1}
+                    onChange={(e) => updateEducation(edu.id, { endDate: { month: parseInt(e.target.value), year: edu.endDate?.year || 2024 } })}
                     className="w-full px-2 py-2 rounded-lg border border-gray-200 bg-white text-sm outline-none"
                   >
                     {Array.from({ length: 12 }, (_, i) => (
@@ -123,26 +116,25 @@ export default function WorkExperienceForm() {
                   </select>
                   <input
                     type="number"
-                    value={exp.endDate?.year || 2024}
-                    onChange={(e) => updateExperience(exp.id, { endDate: { month: exp.endDate?.month || 1, year: parseInt(e.target.value) } })}
+                    value={edu.endDate?.year || 2024}
+                    onChange={(e) => updateEducation(edu.id, { endDate: { month: edu.endDate?.month || 1, year: parseInt(e.target.value) } })}
                     className="w-full px-3 py-2 rounded-lg border border-gray-200 outline-none text-sm"
                   />
                 </div>
               ) : (
                 <div className="w-full h-[38px] flex items-center px-3 bg-gray-100/50 rounded-lg text-xs text-gray-400 italic">
-                  Currently working here
+                  Currently studying
                 </div>
               )}
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-1.5 pt-2">
-            <label className="text-xs font-semibold text-gray-600 ml-1">Key Responsibilities</label>
+            <label className="text-xs font-semibold text-gray-600 ml-1">Relevant Coursework / Activities</label>
             <RichTextEditor
-              content={exp.description}
-              onChange={(html) => updateExperience(exp.id, { description: html })}
-              placeholder="e.g. Led a team of 4 designers to launch the new mobile app..."
+              content={edu.description}
+              onChange={(html) => updateEducation(edu.id, { description: html })}
+              placeholder="e.g. Dean's List, Lead Developer for University Coding Club..."
             />
           </div>
         </div>
@@ -153,7 +145,7 @@ export default function WorkExperienceForm() {
         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-gray-200 text-sm font-medium text-gray-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
       >
         <Plus className="w-4 h-4" />
-        Add Work Experience
+        Add Education
       </button>
     </div>
   )
