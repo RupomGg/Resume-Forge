@@ -1,0 +1,7 @@
+node_modules/
+.next/
+cv-builder/node_modules/
+cv-builder/.next/
+*.pdf
+scratch/
+.env

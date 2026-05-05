@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   CV Builder — Design Tokens (Tailwind v4)
+───────────────────────────────────────────── */
+
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cv-accent: var(--cv-accent, #2563eb);
+  --color-cv-header: var(--cv-header, #1e293b);
+
+  /* Fonts */
+  --font-display: var(--font-display), sans-serif;
+  --font-body: var(--font-body), sans-serif;
+  --font-sans: var(--font-display), sans-serif;
+
+  /* Spacing — A4 / Letter page sizes */
+  --spacing-A4: 297mm;
+  --spacing-letter: 279.4mm;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* CV-specific design variables (overridden by themes at runtime) */
+  --cv-accent: #2563eb;
+  --cv-header: #1e293b;
+  --cv-header-bg: #1e293b;
+  --cv-header-text: #ffffff;
+  --cv-section-title: #1e293b;
+  --cv-body-text: #374151;
+  --cv-divider: #e5e7eb;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Rich text (TipTap) rendered output styles */
+.cv-rich-text ul {
+  list-style-type: disc;
+  padding-left: 1.25em;
+  margin: 0.25em 0;
+}
+.cv-rich-text ol {
+  list-style-type: decimal;
+  padding-left: 1.25em;
+  margin: 0.25em 0;
+}
+.cv-rich-text li {
+  margin: 0.1em 0;
+}
+.cv-rich-text strong {
+  font-weight: 700;
+}
+.cv-rich-text em {
+  font-style: italic;
+}
