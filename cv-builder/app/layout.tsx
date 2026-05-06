@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Serif_Display } from "next/font/google";
+import { Manrope, Work_Sans } from "next/font/google";
 import "./globals.css";
 
-const dmSerif = DM_Serif_Display({
-  variable: "--font-display",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-body",
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "ResumeForge — Free CV Builder",
+  title: "ResumeForge — Build a resume that gets you hired",
   description:
-    "Build a professional resume in minutes. Free forever, no account needed. Choose from 5 beautiful templates and export to PDF.",
+    "Create professional, ATS-friendly resumes in minutes. Our AI-driven templates ensure your skills stand out, helping you land your dream job faster.",
 };
 
 export default function RootLayout({
@@ -28,8 +28,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerif.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${manrope.variable} ${workSans.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

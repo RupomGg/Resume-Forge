@@ -7,40 +7,51 @@
 @theme inline {
   /* Surface & Background */
   --color-surface: #FCF9F2;
+  --color-surface-bright: #FCF9F2;
+  --color-surface-dim: #DCDAD3;
+  --color-surface-container-lowest: #FFFFFF;
   --color-surface-container-low: #F6F3EC;
   --color-surface-container: #F1EEE7;
   --color-surface-container-high: #EBE8E1;
   --color-surface-container-highest: #E5E2DB;
-  --color-surface-container-lowest: #FFFFFF;
   --color-surface-variant: #E5E2DB;
+  --color-background: #FCF9F2;
 
   /* Primary (Forest Green) */
   --color-primary: #154212;
+  --color-on-primary: #FFFFFF;
   --color-primary-container: #2D5A27;
   --color-on-primary-container: #9DD090;
   --color-inverse-primary: #A1D494;
+  --color-primary-fixed: #BCF0AE;
   --color-primary-fixed-dim: #A1D494;
 
   /* Secondary (Soft Sage) */
   --color-secondary: #4D644B;
+  --color-on-secondary: #FFFFFF;
   --color-secondary-container: #CFEACA;
   --color-on-secondary-container: #536A51;
+  --color-secondary-fixed: #CFEACA;
   --color-secondary-fixed-dim: #B4CEAF;
 
   /* Tertiary (Warm Stone) */
   --color-tertiary: #3B3930;
+  --color-on-tertiary: #FFFFFF;
   --color-tertiary-container: #535046;
   --color-on-tertiary-container: #C7C2B6;
 
-  /* Text */
+  /* Text & Outline */
   --color-on-surface: #1C1C18;
   --color-on-surface-variant: #42493E;
+  --color-on-background: #1C1C18;
   --color-outline: #72796E;
   --color-outline-variant: #C2C9BB;
+  --color-inverse-surface: #31312C;
   --color-inverse-on-surface: #F3F0E9;
 
   /* Semantic */
   --color-error: #BA1A1A;
+  --color-on-error: #FFFFFF;
   --color-error-container: #FFDAD6;
   --color-on-error-container: #93000A;
 
@@ -52,10 +63,66 @@
   --radius-rounded-xl: 24px;
 
   /* Fonts */
-  --font-manrope: "Manrope", sans-serif;
-  --font-work-sans: "Work Sans", sans-serif;
-  --font-sans: "Work Sans", sans-serif;
-  --font-display: "Manrope", sans-serif;
+  --font-manrope: var(--font-manrope), system-ui, sans-serif;
+  --font-work-sans: var(--font-work-sans), system-ui, sans-serif;
+  --font-sans: var(--font-work-sans), system-ui, sans-serif;
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+
+  /* Specific naming from user request */
+  --font-h1: var(--font-manrope), system-ui, sans-serif;
+  --font-h2: var(--font-manrope), system-ui, sans-serif;
+  --font-h3: var(--font-manrope), system-ui, sans-serif;
+  --font-body-md: var(--font-work-sans), system-ui, sans-serif;
+  --font-body-lg: var(--font-work-sans), system-ui, sans-serif;
+  --font-caption: var(--font-manrope), system-ui, sans-serif;
+  --font-label-sm: var(--font-manrope), system-ui, sans-serif;
+  --font-label-caps: var(--font-work-sans), system-ui, sans-serif;
+  --font-headline-md: var(--font-manrope), system-ui, sans-serif;
+  --font-headline-lg: var(--font-manrope), system-ui, sans-serif;
+  --font-headline-xl: var(--font-manrope), system-ui, sans-serif;
+
+  /* Font Sizes */
+  --text-h1: 48px;
+  --text-h1--line-height: 1.2;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 700;
+
+  --text-h2: 36px;
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 24px;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--font-weight: 400;
+
+  --text-label-sm: 14px;
+  --text-label-sm--line-height: 1.4;
+  --text-label-sm--letter-spacing: 0.01em;
+  --text-label-sm--font-weight: 500;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+  --text-caption--font-weight: 400;
+
+  /* Spacing (Optional, but good to have based on provided HTML) */
+  --spacing-lg: 48px;
+  --spacing-md: 24px;
+  --spacing-xs: 4px;
+  --spacing-sm: 12px;
+  --spacing-xl: 80px;
 }
 
 :root {
@@ -88,6 +155,16 @@ body {
 }
 #left-panel-scroll ::-webkit-scrollbar-thumb:hover {
   background: #72796E; /* outline */
+}
+
+/* ─────────────────────────────────────────────
+   Glass Panel Utility
+───────────────────────────────────────────── */
+.glass-panel {
+  background: rgba(27, 33, 30, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* ─────────────────────────────────────────────
