@@ -32,7 +32,7 @@ export default function LeftPanel({ onManageClick }: LeftPanelProps) {
         
         {activeTab === 'customize' && (
           <div className="flex-1 overflow-y-auto">
-            <CustomizePanel onManageClick={onManageClick} />
+            <CustomizePanel />
           </div>
         )}
         

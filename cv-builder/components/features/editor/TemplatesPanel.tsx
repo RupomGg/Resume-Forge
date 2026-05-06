@@ -83,7 +83,7 @@ export default function TemplatesPanel() {
   const handleSelectTemplate = (template: typeof TEMPLATES[0]) => {
     updateDesign({
       templateId: template.id,
-      ...template.preset
+      ...template.preset as any
     })
   }
 

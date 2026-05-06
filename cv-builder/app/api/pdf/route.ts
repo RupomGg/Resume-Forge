@@ -2,14 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
 
 // Increase body limit for large HTML/Style payloads
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-}
-
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // 60 seconds
 
@@ -65,7 +57,7 @@ export async function POST(req: NextRequest) {
     await browser.close()
     console.log('PDF API: Generation successful, PDF size:', pdf.length)
 
-    return new Response(pdf, {
+    return new Response(pdf as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="resume.pdf"`,
