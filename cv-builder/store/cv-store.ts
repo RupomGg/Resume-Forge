@@ -18,16 +18,29 @@ import type {
   Certification,
   Award,
   Volunteer,
+  Research,
+  Training,
+  Reference,
+  InterestItem,
+  ProfessionalSummary,
   CustomSection,
   CustomSectionItem,
   DesignSettings,
   SectionId,
+  TextAlignment,
 } from '@/models/cv.types'
 
 interface CVStore extends CVData {
   // Personal & Summary
   updatePersonal: (partial: Partial<PersonalInfo>) => void
-  updateSummary: (text: string) => void
+  addPersonalSummary: () => void
+  updatePersonalSummary: (id: string, partial: Partial<ProfessionalSummary>) => void
+  removePersonalSummary: (id: string) => void
+
+  // Professional Summaries (Multi-instance)
+  addProfessionalSummary: () => void
+  updateProfessionalSummary: (id: string, partial: Partial<ProfessionalSummary>) => void
+  removeProfessionalSummary: (id: string) => void
 
   // Experience
   addExperience: () => void
@@ -40,6 +53,18 @@ interface CVStore extends CVData {
   updateEducation: (id: string, partial: Partial<Education>) => void
   removeEducation: (id: string) => void
   reorderEducation: (from: number, to: number) => void
+
+  // Research
+  addResearch: () => void
+  updateResearch: (id: string, partial: Partial<Research>) => void
+  removeResearch: (id: string) => void
+  reorderResearch: (from: number, to: number) => void
+
+  // Training
+  addTraining: () => void
+  updateTraining: (id: string, partial: Partial<Training>) => void
+  removeTraining: (id: string) => void
+  reorderTraining: (from: number, to: number) => void
 
   // Skills
   updateSkillsDisplay: (style: SkillDisplayStyle) => void
@@ -82,9 +107,16 @@ interface CVStore extends CVData {
   reorderVolunteers: (from: number, to: number) => void
 
   // Interests
-  addInterest: (label: string) => void
+  addInterest: () => void
+  updateInterest: (id: string, partial: Partial<InterestItem>) => void
   removeInterest: (id: string) => void
   reorderInterests: (from: number, to: number) => void
+
+  // References
+  addReference: () => void
+  updateReference: (id: string, partial: Partial<Reference>) => void
+  removeReference: (id: string) => void
+  reorderReferences: (from: number, to: number) => void
 
   // Custom Sections
   addCustomSection: () => void
@@ -97,7 +129,16 @@ interface CVStore extends CVData {
   // Section Management
   toggleSection: (id: SectionId) => void
   reorderSections: (from: number, to: number) => void
+  removeSection: (id: string) => void
   updateSectionLabel: (id: SectionId, label: string) => void
+  updateSectionStyle: (id: SectionId, style: { alignment?: TextAlignment; underline?: boolean }) => void
+  toggleEntryVisibility: (sectionId: SectionId, entryId: string) => void
+
+  // Focus Mode
+  activeSectionId: string | null
+  activeEntryId: string | null
+  setActiveSectionId: (id: string | null) => void
+  setActiveEntryId: (id: string | null) => void
 
   // Design
   updateDesign: (partial: Partial<DesignSettings>) => void
@@ -109,13 +150,88 @@ interface CVStore extends CVData {
 export const useCVStore = create<CVStore>()(
   immer((set) => ({
     ...DEFAULT_DATA,
+    activeSectionId: null,
+    activeEntryId: null,
+
+    setActiveSectionId: (id) =>
+      set((state) => {
+        state.activeSectionId = id
+        state.activeEntryId = null // Reset entry when switching sections
+      }),
+
+    setActiveEntryId: (id) =>
+      set((state) => {
+        state.activeEntryId = id
+      }),
 
     // ── Personal & Summary ────────────────────────────────────────────────────
     updatePersonal: (partial) =>
       set((state) => { Object.assign(state.personal, partial) }),
 
-    updateSummary: (text) =>
-      set((state) => { state.summary = text }),
+    addPersonalSummary: () =>
+      set((state) => {
+        const id = `pers-summary-${generateId()}`
+        state.personalSummaries.push({
+          id,
+          title: 'Personal Summary',
+          content: '',
+          visible: true,
+        })
+        state.sectionOrder.push({
+          id,
+          visible: true,
+          label: 'Personal Summary',
+        })
+      }),
+
+    updatePersonalSummary: (id, partial) =>
+      set((state) => {
+        const item = state.personalSummaries.find((s) => s.id === id)
+        if (item) Object.assign(item, partial)
+        if (partial.title) {
+          const section = state.sectionOrder.find(s => s.id === id)
+          if (section) section.label = partial.title
+        }
+      }),
+
+    removePersonalSummary: (id) =>
+      set((state) => {
+        state.personalSummaries = state.personalSummaries.filter((s) => s.id !== id)
+        state.sectionOrder = state.sectionOrder.filter((s) => s.id !== id)
+      }),
+
+    addProfessionalSummary: () =>
+      set((state) => {
+        const id = `prof-summary-${generateId()}`
+        state.professionalSummaries.push({
+          id,
+          title: 'Professional Summary',
+          content: '',
+          visible: true,
+        })
+        state.sectionOrder.push({
+          id,
+          visible: true,
+          label: 'Professional Summary',
+        })
+      }),
+
+    updateProfessionalSummary: (id, partial) =>
+      set((state) => {
+        const item = state.professionalSummaries.find((s) => s.id === id)
+        if (item) Object.assign(item, partial)
+        // Also sync label in sectionOrder if title changed
+        if (partial.title) {
+          const section = state.sectionOrder.find(s => s.id === id)
+          if (section) section.label = partial.title
+        }
+      }),
+
+    removeProfessionalSummary: (id) =>
+      set((state) => {
+        state.professionalSummaries = state.professionalSummaries.filter((s) => s.id !== id)
+        state.sectionOrder = state.sectionOrder.filter((s) => s.id !== id)
+      }),
 
     // ── Experience ────────────────────────────────────────────────────────────
     addExperience: () =>
@@ -129,6 +245,7 @@ export const useCVStore = create<CVStore>()(
           endDate: null,
           currentlyWorking: false,
           description: '',
+          visible: true,
         })
       }),
 
@@ -159,6 +276,7 @@ export const useCVStore = create<CVStore>()(
           current: false,
           gpa: '',
           description: '',
+          visible: true,
         })
       }),
 
@@ -176,6 +294,93 @@ export const useCVStore = create<CVStore>()(
     reorderEducation: (from, to) =>
       set((state) => { moveItemInArray(state.education, from, to) }),
 
+    // ── Research ──────────────────────────────────────────────────────────────
+    addResearch: () =>
+      set((state) => {
+        state.research.unshift({
+          id: generateId(),
+          title: '',
+          institution: '',
+          location: '',
+          startDate: { month: 0, year: new Date().getFullYear() },
+          endDate: null,
+          current: false,
+          description: '',
+          visible: true,
+        })
+      }),
+
+    updateResearch: (id, partial) =>
+      set((state) => {
+        const item = state.research.find((r) => r.id === id)
+        if (item) Object.assign(item, partial)
+      }),
+
+    removeResearch: (id) =>
+      set((state) => {
+        state.research = state.research.filter((r) => r.id !== id)
+      }),
+
+    reorderResearch: (from, to) =>
+      set((state) => { moveItemInArray(state.research, from, to) }),
+
+    // ── Training ──────────────────────────────────────────────────────────────
+    addTraining: () =>
+      set((state) => {
+        state.training.unshift({
+          id: generateId(),
+          name: '',
+          provider: '',
+          startDate: { month: 0, year: new Date().getFullYear() },
+          endDate: null,
+          current: false,
+          description: '',
+          visible: true,
+        })
+      }),
+
+    updateTraining: (id, partial) =>
+      set((state) => {
+        const item = state.training.find((t) => t.id === id)
+        if (item) Object.assign(item, partial)
+      }),
+
+    removeTraining: (id) =>
+      set((state) => {
+        state.training = state.training.filter((t) => t.id !== id)
+      }),
+
+    reorderTraining: (from, to) =>
+      set((state) => { moveItemInArray(state.training, from, to) }),
+
+    // ── References ────────────────────────────────────────────────────────────
+    addReference: () =>
+      set((state) => {
+        state.references.push({
+          id: generateId(),
+          name: '',
+          position: '',
+          address: '',
+          email: '',
+          phone: '',
+          visible: true,
+        })
+      }),
+
+    updateReference: (id, partial) =>
+      set((state) => {
+        const item = state.references.find((r) => r.id === id)
+        if (item) Object.assign(item, partial)
+      }),
+
+    removeReference: (id) =>
+      set((state) => {
+        state.references = state.references.filter((r) => r.id !== id)
+      }),
+
+    reorderReferences: (from, to) =>
+      set((state) => { moveItemInArray(state.references, from, to) }),
+
     // ── Skills ────────────────────────────────────────────────────────────────
     updateSkillsDisplay: (style) =>
       set((state) => { state.skills.displayStyle = style }),
@@ -185,7 +390,10 @@ export const useCVStore = create<CVStore>()(
         state.skills.categories.push({
           id: generateId(),
           categoryName: 'New Category',
+          description: '',
+          level: 'none',
           items: [],
+          visible: true,
         })
       }),
 
@@ -207,7 +415,7 @@ export const useCVStore = create<CVStore>()(
       set((state) => {
         const cat = state.skills.categories.find((c) => c.id === categoryId)
         if (cat) {
-          cat.items.push({ id: generateId(), skill: '', level: 'none' })
+          cat.items.push({ id: generateId(), skill: '', level: 'none', visible: true })
         }
       }),
 
@@ -231,7 +439,7 @@ export const useCVStore = create<CVStore>()(
     // ── Languages ─────────────────────────────────────────────────────────────
     addLanguage: () =>
       set((state) => {
-        state.languages.push({ id: generateId(), language: '', proficiency: 'intermediate' })
+        state.languages.push({ id: generateId(), name: '', description: '', visible: true })
       }),
 
     updateLanguage: (id, partial) =>
@@ -254,11 +462,13 @@ export const useCVStore = create<CVStore>()(
         state.projects.unshift({
           id: generateId(),
           name: '',
+          subtitle: '',
           description: '',
           technologies: [],
           url: '',
           startDate: null,
           endDate: null,
+          visible: true,
         })
       }),
 
@@ -282,11 +492,11 @@ export const useCVStore = create<CVStore>()(
         state.certifications.unshift({
           id: generateId(),
           name: '',
-          issuingOrganization: '',
-          issueDate: null,
-          expiryDate: null,
-          credentialId: '',
-          url: '',
+          provider: '',
+          startDate: null,
+          endDate: null,
+          description: '',
+          visible: true,
         })
       }),
 
@@ -313,6 +523,7 @@ export const useCVStore = create<CVStore>()(
           issuer: '',
           date: null,
           description: '',
+          visible: true,
         })
       }),
 
@@ -342,6 +553,7 @@ export const useCVStore = create<CVStore>()(
           endDate: null,
           current: false,
           description: '',
+          visible: true,
         })
       }),
 
@@ -360,9 +572,15 @@ export const useCVStore = create<CVStore>()(
       set((state) => { moveItemInArray(state.volunteer, from, to) }),
 
     // ── Interests ─────────────────────────────────────────────────────────────
-    addInterest: (label) =>
+    addInterest: () =>
       set((state) => {
-        state.interests.push({ id: generateId(), label })
+        state.interests.push({ id: generateId(), name: '', description: '', visible: true })
+      }),
+
+    updateInterest: (id, partial) =>
+      set((state) => {
+        const item = state.interests.find((i) => i.id === id)
+        if (item) Object.assign(item, partial)
       }),
 
     removeInterest: (id) =>
@@ -411,6 +629,7 @@ export const useCVStore = create<CVStore>()(
             subtitle: '',
             date: '',
             description: '',
+            visible: true,
           })
         }
       }),
@@ -435,6 +654,9 @@ export const useCVStore = create<CVStore>()(
     // ── Section Management ────────────────────────────────────────────────────
     toggleSection: (id) =>
       set((state) => {
+        // Cannot hide 'personal' (Personal Details)
+        if (id === 'personal') return
+
         const section = state.sectionOrder.find((s) => s.id === id)
         if (section) section.visible = !section.visible
       }),
@@ -442,10 +664,49 @@ export const useCVStore = create<CVStore>()(
     reorderSections: (from, to) =>
       set((state) => { moveItemInArray(state.sectionOrder, from, to) }),
 
+    removeSection: (id) =>
+      set((state) => {
+        // Prevent removing 'personal' (Personal Details)
+        if (id === 'personal') return
+
+        state.sectionOrder = state.sectionOrder.filter((s) => s.id !== id)
+        // Also remove from customSections or summaries if it's one of those
+        state.customSections = state.customSections.filter((s) => s.id !== id)
+        state.professionalSummaries = state.professionalSummaries.filter((s) => s.id !== id)
+        state.personalSummaries = state.personalSummaries.filter((s) => s.id !== id)
+      }),
+
     updateSectionLabel: (id, label) =>
       set((state) => {
+        // Cannot rename 'personal' (Personal Details)
+        if (id === 'personal') return
         const section = state.sectionOrder.find((s) => s.id === id)
-        if (section) section.label = label
+        if (section) {
+          section.label = label
+          // Sync internal titles
+          const profSum = state.professionalSummaries.find(ps => ps.id === id)
+          if (profSum) profSum.title = label
+          const persSum = state.personalSummaries.find(ps => ps.id === id)
+          if (persSum) persSum.title = label
+        }
+      }),
+
+    updateSectionStyle: (id, style) =>
+      set((state) => {
+        const section = state.sectionOrder.find((s) => s.id === id)
+        if (section) {
+          if (style.alignment !== undefined) section.alignment = style.alignment
+          if (style.underline !== undefined) section.underline = style.underline
+        }
+      }),
+    
+    toggleEntryVisibility: (sectionId, entryId) =>
+      set((state) => {
+        const list = state[sectionId as keyof CVData]
+        if (Array.isArray(list)) {
+          const entry = (list as any[]).find((e) => e.id === entryId)
+          if (entry) entry.visible = !entry.visible
+        }
       }),
 
     // ── Design ────────────────────────────────────────────────────────────────

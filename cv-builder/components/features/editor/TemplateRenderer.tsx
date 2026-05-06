@@ -14,6 +14,8 @@ import {
   GitBranch 
 } from 'lucide-react'
 
+import { useShallow } from 'zustand/react/shallow'
+
 // ─── Helper: Font Loader ──────────────────────────────────────────────────────
 
 function FontLoader({ fontId }: { fontId: string }) {
@@ -35,7 +37,10 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { childre
   if (templateId === 'bold') {
     return (
       <div className="mb-5 flex items-center gap-4">
-        <h2 className="text-sm font-black uppercase tracking-[0.3em] whitespace-nowrap" style={{ color: theme.accentColor }}>
+        <h2 
+          className="text-sm font-black uppercase tracking-[0.3em] whitespace-nowrap"
+          style={{ color: theme.accentColor }}
+        >
           {children}
         </h2>
         <div className="flex-1 h-[4px]" style={{ backgroundColor: `${theme.accentColor}20` }} />
@@ -89,15 +94,95 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { childre
 // ─── Main Renderer ────────────────────────────────────────────────────────────
 
 export default function TemplateRenderer() {
-  const personal = useCVStore((s) => s.personal)
-  const summary = useCVStore((s) => s.summary)
-  const experience = useCVStore((s) => s.experience)
-  const education = useCVStore((s) => s.education)
-  const skills = useCVStore((s) => s.skills)
-  const design = useCVStore((s) => s.design)
-  const sectionOrder = useCVStore((s) => s.sectionOrder)
+  const {
+    personal,
+    personalSummaries,
+    professionalSummaries,
+    experience,
+    education,
+    research,
+    training,
+    references,
+    languages,
+    interests,
+    projects,
+    certifications,
+    awards,
+    volunteer,
+    skills,
+    design,
+    sectionOrder
+  } = useCVStore(useShallow((s) => ({
+    personal: s.personal,
+    personalSummaries: s.personalSummaries,
+    professionalSummaries: s.professionalSummaries,
+    experience: s.experience,
+    education: s.education,
+    research: s.research,
+    training: s.training,
+    references: s.references,
+    languages: s.languages,
+    interests: s.interests,
+    projects: s.projects,
+    certifications: s.certifications,
+    awards: s.awards,
+    volunteer: s.volunteer,
+    skills: s.skills,
+    design: s.design,
+    sectionOrder: s.sectionOrder,
+  })))
 
   const theme = getTheme(design.colorThemeId)
+
+  // ─── Visibility Logic ───────────────────────────────────────────────────────
+  
+  const isEmptyHTML = (html: string) => {
+    if (!html) return true
+    const stripped = html.replace(/<[^>]*>/g, '').trim()
+    return stripped.length === 0
+  }
+
+  const hasSectionContent = (id: string): boolean => {
+    // Helper to check if any object in array has at least one non-empty value
+    const hasData = (arr: any[]) => arr.some(item => 
+      Object.entries(item).some(([key, val]) => {
+        if (key === 'id' || key === 'visible') return false
+        if (typeof val === 'string') return val.trim().length > 0
+        if (typeof val === 'object' && val !== null) {
+          if ('month' in val || 'year' in val) return (val as any).year > 0
+          return Object.values(val).some(v => typeof v === 'string' && v.trim().length > 0)
+        }
+        return false
+      })
+    )
+
+    if (id.startsWith('prof-summary-')) {
+      const s = professionalSummaries.find(ps => ps.id === id)
+      return !!s && !isEmptyHTML(s.content)
+    }
+    if (id.startsWith('pers-summary-') || id === 'personal-summary') {
+      const s = personalSummaries.find(ps => ps.id === id)
+      return !!s && !isEmptyHTML(s.content)
+    }
+
+    switch (id) {
+      case 'personal': return true // Always show header
+      case 'experience': return hasData(experience)
+      case 'education': return hasData(education)
+      case 'research': return hasData(research)
+      case 'training': return hasData(training)
+      case 'projects': return hasData(projects)
+      case 'certifications': return hasData(certifications)
+      case 'awards': return hasData(awards)
+      case 'volunteer': return hasData(volunteer)
+      case 'references': return hasData(references)
+      case 'languages': return hasData(languages)
+      case 'interests': return hasData(interests)
+      case 'skills': 
+        return skills.categories.some(c => c.categoryName.trim().length > 0 || !isEmptyHTML(c.description))
+      default: return false
+    }
+  }
   
   const containerStyle: React.CSSProperties = {
     paddingTop: `${design.marginTop}mm`,
@@ -108,8 +193,11 @@ export default function TemplateRenderer() {
     lineHeight: design.lineHeight || 1.4,
     color: theme.bodyTextColor || '#000000',
     minHeight: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff', // CV must always be pure white regardless of website theme
   }
+
+  const formatMonthYear = (date: { month: number, year: number }) => 
+    `${new Date(0, date.month - 1).toLocaleString('en', { month: 'short' })} ${date.year}`
 
   // ── Render Helpers ──────────────────────────────────────────────────────────
 
@@ -186,22 +274,44 @@ export default function TemplateRenderer() {
     )
   }
 
-  const renderSummary = () => (
-    <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
-        Professional Summary
-      </SectionTitle>
-      <div 
-        className="prose prose-sm max-w-none text-inherit leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: summary }} 
-      />
-    </div>
-  )
+  const renderPersonalSummary = (id: string, label: string) => {
+    const summary = personalSummaries.find(ps => ps.id === id)
+    if (!summary || !summary.visible) return null
 
-  const renderExperience = () => (
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div 
+          className="prose prose-sm max-w-none text-inherit leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: summary.content }} 
+        />
+      </div>
+    )
+  }
+
+  const renderProfessionalSummary = (id: string, label: string) => {
+    const summary = professionalSummaries.find(ps => ps.id === id)
+    if (!summary || !summary.visible) return null
+    
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div 
+          className="prose prose-sm max-w-none text-inherit leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: summary.content }} 
+        />
+      </div>
+    )
+  }
+
+  const renderExperience = (label: string) => (
     <div className="mb-6">
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
-        Work Experience
+        {label}
       </SectionTitle>
       <div className="space-y-6">
         {experience.map((exp) => (
@@ -209,7 +319,7 @@ export default function TemplateRenderer() {
             <div className="flex justify-between items-baseline mb-1">
               <h3 className="font-bold text-[11pt] text-gray-900">{exp.jobTitle}</h3>
               <span className="text-[9pt] font-semibold text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
-                {new Date(0, exp.startDate.month - 1).toLocaleString('en', { month: 'short' })} {exp.startDate.year} — {exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? `${new Date(0, (exp.endDate?.month || 1) - 1).toLocaleString('en', { month: 'short' })} ${exp.endDate?.year}` : 'Present')}
+                {formatMonthYear(exp.startDate)} — {exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}
               </span>
             </div>
             <div className="flex justify-between items-baseline mb-2">
@@ -226,10 +336,10 @@ export default function TemplateRenderer() {
     </div>
   )
 
-  const renderEducation = () => (
+  const renderEducation = (label: string) => (
     <div className="mb-6">
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
-        Education
+        {label}
       </SectionTitle>
       <div className="space-y-4">
         {education.map((edu) => (
@@ -237,35 +347,234 @@ export default function TemplateRenderer() {
             <div className="flex justify-between items-baseline mb-1">
               <h3 className="font-bold text-[11pt] text-gray-900">{edu.degree}</h3>
               <span className="text-[9pt] text-gray-500">
-                {new Date(0, edu.startDate.month - 1).toLocaleString('en', { month: 'short' })} {edu.startDate.year} — {edu.current ? 'Ongoing' : (edu.endDate?.year ? `${new Date(0, (edu.endDate?.month || 1) - 1).toLocaleString('en', { month: 'short' })} ${edu.endDate?.year}` : 'Ongoing')}
+                {formatMonthYear(edu.startDate)} — {edu.current ? 'Ongoing' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Ongoing')}
               </span>
             </div>
             <div className="flex justify-between items-baseline">
               <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{edu.institution}</span>
               {edu.gpa && <span className="text-[9pt] font-bold text-gray-700">GPA: {edu.gpa}</span>}
             </div>
+            {edu.description && (
+              <div 
+                className="prose prose-sm max-w-none text-inherit mt-2"
+                dangerouslySetInnerHTML={{ __html: edu.description }} 
+              />
+            )}
           </div>
         ))}
       </div>
     </div>
   )
 
-  const renderSkills = () => (
+  const renderSkills = (label: string) => (
     <div className="mb-6">
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
-        Skills
+        {label}
       </SectionTitle>
-      <div className="grid grid-cols-1 gap-3">
-        {skills.categories.map((cat) => (
-          <div key={cat.id} className="flex gap-4">
-            <span className="font-bold text-[9pt] w-[140px] flex-shrink-0 uppercase tracking-wider text-gray-500">{cat.categoryName}</span>
-            <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-              {cat.items.map((item) => (
-                <span key={item.id} className="text-[9pt] font-medium bg-gray-50 px-2.5 py-0.5 rounded border border-gray-100 inline-block mr-2 mb-1.5">
-                  {item.skill}
+      <div className="grid grid-cols-1 gap-4">
+        {skills.categories.filter(c => c.visible).map((cat) => (
+          <div key={cat.id} className="flex flex-col gap-1">
+            <div className="flex justify-between items-baseline">
+              <span className="font-bold text-[10pt] uppercase tracking-wider" style={{ color: theme.accentColor }}>
+                {cat.categoryName}
+              </span>
+              {cat.level && cat.level !== 'none' && (
+                <span className="text-[8pt] font-semibold text-gray-400 italic capitalize">
+                  {cat.level}
                 </span>
-              ))}
+              )}
             </div>
+            <div 
+              className="prose prose-sm max-w-none text-[9pt] text-inherit leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: cat.description }} 
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderResearch = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-6">
+        {research.map((res) => (
+          <div key={res.id} className="relative">
+            <div className="flex justify-between items-baseline mb-1">
+              <h3 className="font-bold text-[11pt] text-gray-900">{res.title}</h3>
+              <span className="text-[9pt] font-semibold text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
+                {formatMonthYear(res.startDate)} — {res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}
+              </span>
+            </div>
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-[10pt] font-bold" style={{ color: theme.accentColor }}>{res.institution}</span>
+              <span className="text-[9pt] text-gray-500 italic">{res.location}</span>
+            </div>
+            <div 
+              className="prose prose-sm max-w-none text-inherit"
+              dangerouslySetInnerHTML={{ __html: res.description }} 
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderTraining = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-4">
+        {training.filter(t => t.visible).map((trn) => (
+          <div key={trn.id}>
+            <div className="flex justify-between items-baseline mb-1">
+              <h3 className="font-bold text-[11pt] text-gray-900">{trn.name}</h3>
+              <span className="text-[9pt] font-semibold text-gray-500">
+                {formatMonthYear(trn.startDate)} — {trn.current ? 'Present' : (trn.endDate?.year ? formatMonthYear(trn.endDate) : 'Present')}
+              </span>
+            </div>
+            <div className="mb-2">
+              <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{trn.provider}</span>
+            </div>
+            {trn.description && (
+              <div 
+                className="prose prose-sm max-w-none text-inherit leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: trn.description }} 
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderCertifications = (label: string) => {
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div className="space-y-4">
+          {certifications.filter(c => c.visible).map((cert) => (
+            <div key={cert.id}>
+              <div className="flex justify-between items-baseline mb-1">
+                <h3 className="font-bold text-[11pt] text-gray-900">{cert.name}</h3>
+                {cert.startDate && (
+                  <span className="text-[9pt] font-semibold text-gray-500">
+                    {formatMonthYear(cert.startDate)} {cert.endDate && `— ${formatMonthYear(cert.endDate)}`}
+                  </span>
+                )}
+              </div>
+              <div className="mb-2">
+                <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{cert.provider}</span>
+              </div>
+              {cert.description && (
+                <div 
+                  className="prose prose-sm max-w-none text-inherit leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: cert.description }} 
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const renderReferences = (label: string) => {
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div className="grid grid-cols-2 gap-6">
+          {references.filter(r => r.visible).map((ref) => (
+            <div key={ref.id}>
+              <h3 className="font-bold text-[11pt] text-gray-900 mb-1">{ref.name}</h3>
+              <p className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{ref.position}</p>
+              <div className="text-[9pt] text-gray-600 mt-1 space-y-0.5">
+                {ref.address && <p>{ref.address}</p>}
+                {ref.email && <p>{ref.email}</p>}
+                {ref.phone && <p>{ref.phone}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const renderLanguages = (label: string) => {
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+          {languages.filter(l => l.visible).map((lang) => (
+            <div key={lang.id} className="flex justify-between items-baseline border-b border-gray-100 pb-1">
+              <span className="font-bold text-[10pt] text-gray-800">{lang.name}</span>
+              <span className="text-[9pt] text-gray-500 italic">{lang.description}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const renderInterests = (label: string) => {
+    return (
+      <div className="mb-6">
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+          {label}
+        </SectionTitle>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
+          {interests.filter(i => i.visible).map((int) => (
+            <div key={int.id} className="flex flex-col">
+              <span className="font-bold text-[10pt] text-gray-800">{int.name}</span>
+              {int.description && <span className="text-[8pt] text-gray-500">{int.description}</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const renderProjects = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-6">
+        {projects.filter(p => p.visible).map((project) => (
+          <div key={project.id} className="relative">
+            <div className="flex justify-between items-baseline mb-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-[11pt] text-gray-900">{project.name}</h3>
+                {project.url && (
+                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-[8pt] text-primary hover:underline">
+                    (Link)
+                  </a>
+                )}
+              </div>
+              {project.startDate && (
+                <span className="text-[9pt] font-semibold text-gray-500">
+                  {formatMonthYear(project.startDate)} — {project.endDate ? formatMonthYear(project.endDate) : 'Present'}
+                </span>
+              )}
+            </div>
+            {project.subtitle && (
+              <div className="text-[10pt] font-semibold mb-2" style={{ color: theme.accentColor }}>
+                {project.subtitle}
+              </div>
+            )}
+            <div 
+              className="prose prose-sm max-w-none text-inherit leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: project.description }} 
+            />
           </div>
         ))}
       </div>
@@ -274,13 +583,23 @@ export default function TemplateRenderer() {
 
   // ── Template Dispatcher ──────────────────────────────────────────────────────
 
-  const renderSection = (id: string) => {
+  const renderSection = (id: string, label: string) => {
+    if (id.startsWith('prof-summary-')) return renderProfessionalSummary(id, label)
+    if (id.startsWith('pers-summary-')) return renderPersonalSummary(id, label)
+
     switch (id) {
       case 'personal': return renderPersonal()
-      case 'summary': return renderSummary()
-      case 'experience': return renderExperience()
-      case 'education': return renderEducation()
-      case 'skills': return renderSkills()
+      case 'personal-summary': return renderPersonalSummary(id, label)
+      case 'experience': return renderExperience(label)
+      case 'education': return renderEducation(label)
+      case 'research': return renderResearch(label)
+      case 'training': return renderTraining(label)
+      case 'projects': return renderProjects(label)
+      case 'skills': return renderSkills(label)
+      case 'certifications': return renderCertifications(label)
+      case 'references': return renderReferences(label)
+      case 'languages': return renderLanguages(label)
+      case 'interests': return renderInterests(label)
       default: return null
     }
   }
@@ -290,7 +609,7 @@ export default function TemplateRenderer() {
   const renderWithLayout = () => {
     const isSidebarLayout = design.layout === 'sidebar-left' || design.layout === 'sidebar-right'
     const isLeft = design.layout === 'sidebar-left'
-    const visibleSections = sectionOrder.filter(s => s.visible)
+    const visibleSections = sectionOrder.filter(s => s.visible && hasSectionContent(s.id))
 
     if (isSidebarLayout) {
       // Logic for split layout: Personal info always top, rest split
@@ -303,10 +622,10 @@ export default function TemplateRenderer() {
           {renderPersonal()}
           <div className={cn("flex flex-1 gap-12", isLeft ? "flex-row" : "flex-row-reverse")}>
             <div className="flex-1 space-y-6">
-              {mainSections.map(s => <div key={s.id}>{renderSection(s.id)}</div>)}
+              {mainSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
             </div>
             <div className="w-[30%] space-y-6">
-              {sidebarSections.map(s => <div key={s.id}>{renderSection(s.id)}</div>)}
+              {sidebarSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
             </div>
           </div>
         </div>
@@ -315,7 +634,7 @@ export default function TemplateRenderer() {
 
     return (
       <div className="space-y-6">
-        {visibleSections.map(s => <div key={s.id}>{renderSection(s.id)}</div>)}
+        {visibleSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
       </div>
     )
   }

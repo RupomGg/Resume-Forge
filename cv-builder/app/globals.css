@@ -1,47 +1,98 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────
-   CV Builder — Design Tokens (Tailwind v4)
+   Forest & Stone Design System — Tokens
 ───────────────────────────────────────────── */
 
 @theme inline {
-  /* Colors */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-cv-accent: var(--cv-accent, #2563eb);
-  --color-cv-header: var(--cv-header, #1e293b);
+  /* Surface & Background */
+  --color-surface: #FCF9F2;
+  --color-surface-container-low: #F6F3EC;
+  --color-surface-container: #F1EEE7;
+  --color-surface-container-high: #EBE8E1;
+  --color-surface-container-highest: #E5E2DB;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-variant: #E5E2DB;
+
+  /* Primary (Forest Green) */
+  --color-primary: #154212;
+  --color-primary-container: #2D5A27;
+  --color-on-primary-container: #9DD090;
+  --color-inverse-primary: #A1D494;
+  --color-primary-fixed-dim: #A1D494;
+
+  /* Secondary (Soft Sage) */
+  --color-secondary: #4D644B;
+  --color-secondary-container: #CFEACA;
+  --color-on-secondary-container: #536A51;
+  --color-secondary-fixed-dim: #B4CEAF;
+
+  /* Tertiary (Warm Stone) */
+  --color-tertiary: #3B3930;
+  --color-tertiary-container: #535046;
+  --color-on-tertiary-container: #C7C2B6;
+
+  /* Text */
+  --color-on-surface: #1C1C18;
+  --color-on-surface-variant: #42493E;
+  --color-outline: #72796E;
+  --color-outline-variant: #C2C9BB;
+  --color-inverse-on-surface: #F3F0E9;
+
+  /* Semantic */
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
+  --color-on-error-container: #93000A;
+
+  /* Border Radius */
+  --radius-rounded-sm: 4px;
+  --radius-rounded: 8px;
+  --radius-rounded-md: 12px;
+  --radius-rounded-lg: 16px;
+  --radius-rounded-xl: 24px;
 
   /* Fonts */
-  --font-display: var(--font-display), sans-serif;
-  --font-body: var(--font-body), sans-serif;
-  --font-sans: var(--font-display), sans-serif;
-
-  /* Spacing — A4 / Letter page sizes */
-  --spacing-A4: 297mm;
-  --spacing-letter: 279.4mm;
+  --font-manrope: "Manrope", sans-serif;
+  --font-work-sans: "Work Sans", sans-serif;
+  --font-sans: "Work Sans", sans-serif;
+  --font-display: "Manrope", sans-serif;
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-
+  --background: #FCF9F2;
+  --foreground: #1C1C18;
+  
   /* CV-specific design variables (overridden by themes at runtime) */
-  --cv-accent: #2563eb;
-  --cv-header: #1e293b;
-  --cv-header-bg: #1e293b;
-  --cv-header-text: #ffffff;
-  --cv-section-title: #1e293b;
-  --cv-body-text: #374151;
-  --cv-divider: #e5e7eb;
+  --cv-accent: #154212;
+  --cv-header: #1C1C18;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Work Sans", sans-serif;
 }
 
-/* Rich text (TipTap) rendered output styles */
+/* ─────────────────────────────────────────────
+   Custom Scrollbar
+───────────────────────────────────────────── */
+#left-panel-scroll ::-webkit-scrollbar {
+  width: 4px;
+}
+#left-panel-scroll ::-webkit-scrollbar-track {
+  background: transparent;
+}
+#left-panel-scroll ::-webkit-scrollbar-thumb {
+  background: #C2C9BB; /* outline-variant */
+  border-radius: 9999px;
+}
+#left-panel-scroll ::-webkit-scrollbar-thumb:hover {
+  background: #72796E; /* outline */
+}
+
+/* ─────────────────────────────────────────────
+   Rich text (TipTap) rendered output styles
+───────────────────────────────────────────── */
 .cv-rich-text ul {
   list-style-type: disc;
   padding-left: 1.25em;

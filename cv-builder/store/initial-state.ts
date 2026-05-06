@@ -16,8 +16,15 @@ export const DEFAULT_DATA: CVData = {
     photoUrl: null,
     showPhoto: false,
   },
-  summary:
-    '<p>Passionate software engineer with 5+ years of experience building scalable web applications. Proven track record of delivering high-quality products in fast-paced environments.</p>',
+  personalSummaries: [
+    {
+      id: 'personal-summary',
+      title: 'Personal Summary',
+      content: '<p>Passionate software engineer with 5+ years of experience building scalable web applications. Proven track record of delivering high-quality products in fast-paced environments.</p>',
+      visible: true
+    }
+  ],
+  professionalSummaries: [],
   experience: [
     {
       id: generateId(),
@@ -29,6 +36,7 @@ export const DEFAULT_DATA: CVData = {
       currentlyWorking: true,
       description:
         '<ul><li>Led development of core platform features used by 500k+ users</li><li>Reduced API response time by 40% through caching and query optimization</li><li>Mentored 3 junior engineers and conducted code reviews</li></ul>',
+      visible: true,
     },
     {
       id: generateId(),
@@ -40,6 +48,7 @@ export const DEFAULT_DATA: CVData = {
       currentlyWorking: false,
       description:
         '<ul><li>Built and maintained React/Node.js full-stack applications</li><li>Collaborated with design team to implement responsive UIs</li></ul>',
+      visible: true,
     },
   ],
   education: [
@@ -53,57 +62,63 @@ export const DEFAULT_DATA: CVData = {
       current: false,
       gpa: '3.8',
       description: '',
+      visible: true,
     },
   ],
+  research: [],
+  training: [],
+  references: [],
   skills: {
     displayStyle: 'tags',
     categories: [
       {
         id: generateId(),
         categoryName: 'Programming Languages',
+        description: '',
+        level: 'none',
+        visible: true,
         items: [
-          { id: generateId(), skill: 'TypeScript', level: 'expert' },
-          { id: generateId(), skill: 'Python', level: 'advanced' },
-          { id: generateId(), skill: 'Go', level: 'intermediate' },
+          { id: generateId(), skill: 'TypeScript', level: 'expert', visible: true },
+          { id: generateId(), skill: 'Python', level: 'advanced', visible: true },
+          { id: generateId(), skill: 'Go', level: 'intermediate', visible: true },
         ],
       },
       {
         id: generateId(),
         categoryName: 'Frameworks & Tools',
+        description: '',
+        level: 'none',
+        visible: true,
         items: [
-          { id: generateId(), skill: 'React', level: 'expert' },
-          { id: generateId(), skill: 'Next.js', level: 'advanced' },
-          { id: generateId(), skill: 'Node.js', level: 'advanced' },
+          { id: generateId(), skill: 'React', level: 'expert', visible: true },
+          { id: generateId(), skill: 'Next.js', level: 'advanced', visible: true },
+          { id: generateId(), skill: 'Node.js', level: 'advanced', visible: true },
         ],
       },
     ],
   },
   languages: [
-    { id: generateId(), language: 'English', proficiency: 'native' },
+    { id: generateId(), name: 'English', description: 'Native', visible: true },
+    { id: generateId(), name: 'Spanish', description: 'Intermediate', visible: true },
   ],
   projects: [],
   certifications: [],
   awards: [],
   volunteer: [],
-  interests: [
-    { id: generateId(), label: 'Open Source Contribution' },
-    { id: generateId(), label: 'Hiking' },
-    { id: generateId(), label: 'Photography' },
-  ],
+  interests: [],
   customSections: [],
   sectionOrder: [
-    { id: 'personal', visible: true, label: 'Personal Info' },
-    { id: 'summary', visible: true, label: 'Professional Summary' },
+    { id: 'personal', visible: true, label: 'Personal Details' },
+    { id: 'personal-summary', visible: true, label: 'Professional Summary' },
     { id: 'experience', visible: true, label: 'Work Experience' },
     { id: 'education', visible: true, label: 'Education' },
     { id: 'skills', visible: true, label: 'Skills' },
     { id: 'languages', visible: true, label: 'Languages' },
-    { id: 'projects', visible: true, label: 'Projects' },
-    { id: 'certifications', visible: true, label: 'Certifications' },
-    { id: 'awards', visible: true, label: 'Awards' },
-    { id: 'volunteer', visible: true, label: 'Volunteer' },
     { id: 'interests', visible: true, label: 'Interests' },
-    { id: 'custom', visible: false, label: 'Custom Section' },
+    { id: 'research', visible: true, label: 'Research' },
+    { id: 'training', visible: true, label: 'Training' },
+    { id: 'certifications', visible: true, label: 'Certification' },
+    { id: 'references', visible: true, label: 'References' },
   ],
   design: {
     templateId: 'classic',

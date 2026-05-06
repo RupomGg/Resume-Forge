@@ -17,29 +17,34 @@ export default function RightPanel() {
   return (
     <div
       id="right-panel"
-      className="flex-1 flex flex-col items-center overflow-y-auto py-8 px-6 gap-4 relative bg-[#c8cdd4]"
+      className="flex-1 flex flex-col items-center overflow-y-auto py-10 px-8 gap-6 relative bg-[#E9EDF0]"
     >
       {/* Page size label */}
-      <div className="flex items-center gap-1.5 text-xs text-gray-600 bg-white/90 px-3 py-1.5 rounded-full shadow flex-shrink-0">
-        <FileText className="w-3.5 h-3.5 text-gray-400" />
-        {meta.label}
+      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] flex-shrink-0 animate-in fade-in zoom-in duration-500">
+        <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+          <FileText className="w-3.5 h-3.5 text-primary" />
+        </div>
+        <span className="text-[11px] font-bold text-on-surface uppercase tracking-wider">{meta.label}</span>
       </div>
 
       {/* CV Preview Card */}
       <div
         id="cv-preview-container"
-        className="w-full flex-shrink-0 relative bg-white"
+        className="w-full flex-shrink-0 relative bg-white group transition-all duration-500 ease-out"
         style={{
-          maxWidth: '800px',
+          maxWidth: '840px',
           aspectRatio: `1 / ${meta.ratio || 1.4142}`,
-          boxShadow: '0 10px 50px rgba(0,0,0,0.2)',
-          border: '1px solid rgba(0,0,0,0.05)',
+          boxShadow: '0 20px 80px rgba(0,0,0,0.12), 0 5px 20px rgba(0,0,0,0.05)',
+          border: '1px solid rgba(0,0,0,0.03)',
         }}
       >
+        {/* Subtle shadow overlay for depth */}
+        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.01)]" />
+        
         <TemplateRenderer />
       </div>
 
-      <div className="h-8 flex-shrink-0" />
+      <div className="h-12 flex-shrink-0" />
     </div>
   )
 }

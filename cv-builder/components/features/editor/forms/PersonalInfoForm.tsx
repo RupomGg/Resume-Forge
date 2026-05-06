@@ -2,8 +2,22 @@
 
 import { useCVStore } from '@/store/cv-store'
 import { ChangeEvent, useRef } from 'react'
-import { Camera, X, Mail, Phone, MapPin, Globe, User, Link as LinkIcon, GitBranch } from 'lucide-react'
+import { Camera, X, Mail, Phone, MapPin, Globe, User, Link, GitBranch } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const Label = ({ children, icon: Icon }: { children: React.ReactNode; icon?: any }) => (
+  <label className="font-work-sans text-[12px] font-semibold text-on-surface-variant uppercase tracking-[0.05em] mb-[7px] flex items-center gap-1.5">
+    {Icon && <Icon className="w-3.5 h-3.5" />}
+    {children}
+  </label>
+)
+
+const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+  <input
+    {...props}
+    className="w-full px-[13px] py-[10px] rounded-md border-[1.5px] border-secondary-fixed-dim bg-surface-container-lowest font-work-sans text-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-[3px] focus:ring-primary/10 outline-none transition-all duration-200"
+  />
+)
 
 export default function PersonalInfoForm() {
   const { personal, updatePersonal } = useCVStore()
@@ -26,12 +40,12 @@ export default function PersonalInfoForm() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="flex flex-col gap-6 p-1">
       {/* ── Avatar Upload ─────────────────────────────────────────── */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-5">
         <div className="relative group">
           <div 
-            className="w-20 h-20 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-colors group-hover:border-blue-300"
+            className="w-20 h-20 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center overflow-hidden transition-all group-hover:border-primary-container group-hover:shadow-level-2"
           >
             {personal.photoUrl ? (
               <img 
@@ -40,22 +54,22 @@ export default function PersonalInfoForm() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <User className="w-8 h-8 text-gray-300" />
+              <User className="w-8 h-8 text-outline-variant" />
             )}
+            {/* Camera Overlay */}
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute inset-0 bg-primary-container/0 group-hover:bg-primary-container/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+            >
+              <Camera className="w-6 h-6 text-white" />
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors border-2 border-white"
-            title="Upload photo"
-          >
-            <Camera className="w-4 h-4" />
-          </button>
+          
           {personal.photoUrl && (
             <button
               type="button"
               onClick={() => updatePersonal({ photoUrl: null })}
-              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow hover:bg-red-600 transition-colors border-2 border-white"
+              className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-error text-white flex items-center justify-center shadow-level-1 hover:bg-error/90 transition-colors border-2 border-surface"
               title="Remove photo"
             >
               <X className="w-3 h-3" />
@@ -69,133 +83,113 @@ export default function PersonalInfoForm() {
             className="hidden"
           />
         </div>
-        <div>
-          <h4 className="text-sm font-semibold text-gray-800">Profile Photo</h4>
-          <p className="text-xs text-gray-500 mt-0.5">JPG, PNG or WebP. Max 2MB.</p>
+        <div className="flex flex-col gap-1">
+          <h4 className="font-manrope text-sm font-semibold text-on-surface">Profile Photo</h4>
+          <p className="font-work-sans text-xs text-on-surface-variant">JPG, PNG or WebP. Max 2MB.</p>
         </div>
       </div>
 
       {/* ── Main Fields ────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-5">
         {/* Name */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1">Full Name</label>
-          <input
+        <div>
+          <Label>Full Name</Label>
+          <Input
             type="text"
             name="fullName"
             value={personal.fullName}
             onChange={handleInputChange}
             placeholder="e.g. John Doe"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
 
         {/* Job Title */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1">Job Title</label>
-          <input
+        <div>
+          <Label>Professional Title</Label>
+          <Input
             type="text"
             name="jobTitle"
             value={personal.jobTitle}
             onChange={handleInputChange}
-            placeholder="e.g. Senior Software Engineer"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
+            placeholder="Target position or current role"
           />
         </div>
       </div>
 
       {/* ── Contact Grid ──────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
         {/* Email */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <Mail className="w-3 h-3" /> Email
-          </label>
-          <input
+        <div>
+          <Label icon={Mail}>Email</Label>
+          <Input
             type="email"
             name="email"
             value={personal.email}
             onChange={handleInputChange}
             placeholder="john@example.com"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
 
         {/* Phone */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <Phone className="w-3 h-3" /> Phone
-          </label>
-          <input
+        <div>
+          <Label icon={Phone}>Phone</Label>
+          <Input
             type="tel"
             name="phone"
             value={personal.phone}
             onChange={handleInputChange}
             placeholder="+1 234 567 890"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
 
         {/* Location */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <MapPin className="w-3 h-3" /> Location
-          </label>
-          <input
+        <div>
+          <Label icon={MapPin}>Location</Label>
+          <Input
             type="text"
             name="location"
             value={personal.location}
             onChange={handleInputChange}
             placeholder="City, Country"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
 
         {/* Website */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <Globe className="w-3 h-3" /> Website
-          </label>
-          <input
+        <div>
+          <Label icon={Globe}>Website</Label>
+          <Input
             type="text"
             name="website"
             value={personal.website}
             onChange={handleInputChange}
             placeholder="portfolio.com"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
       </div>
 
       {/* Socials Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
         {/* LinkedIn */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <LinkIcon className="w-3 h-3" /> LinkedIn
-          </label>
-          <input
+        <div>
+          <Label icon={Link}>LinkedIn</Label>
+          <Input
             type="text"
             name="linkedin"
             value={personal.linkedin}
             onChange={handleInputChange}
             placeholder="linkedin.com/in/username"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
 
         {/* GitHub */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-gray-600 ml-1 flex items-center gap-1.5">
-            <GitBranch className="w-3 h-3" /> GitHub
-          </label>
-          <input
+        <div>
+          <Label icon={GitBranch}>GitHub</Label>
+          <Input
             type="text"
             name="github"
             value={personal.github}
             onChange={handleInputChange}
             placeholder="github.com/username"
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
           />
         </div>
       </div>

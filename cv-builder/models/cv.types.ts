@@ -9,6 +9,7 @@ export type LayoutType = 'one-column' | 'sidebar-left' | 'sidebar-right'
 export type DividerStyle = 'none' | 'thin' | 'thick' | 'colored'
 export type SectionId =
   | 'personal' | 'summary' | 'experience' | 'education'
+  | 'research' | 'training' | 'references'
   | 'skills' | 'languages' | 'projects' | 'certifications'
   | 'awards' | 'volunteer' | 'interests' | string // string = custom section
 
@@ -39,6 +40,7 @@ export interface WorkExperience {
   endDate: MonthYear | null
   currentlyWorking: boolean
   description: string   // HTML string from TipTap
+  visible: boolean
 }
 
 export interface Education {
@@ -51,18 +53,23 @@ export interface Education {
   current: boolean
   gpa: string
   description: string
+  visible: boolean
 }
 
 export interface SkillItem {
   id: string
   skill: string
   level: SkillLevel
+  visible: boolean
 }
 
 export interface SkillCategory {
   id: string
   categoryName: string
-  items: SkillItem[]
+  description: string
+  level: SkillLevel
+  items: SkillItem[] // Keep for backward compatibility for now
+  visible: boolean
 }
 
 export interface Skills {
@@ -72,28 +79,31 @@ export interface Skills {
 
 export interface LanguageItem {
   id: string
-  language: string
-  proficiency: LanguageProficiency
+  name: string
+  description: string
+  visible: boolean
 }
 
 export interface Project {
   id: string
   name: string
+  subtitle: string
   description: string
   technologies: string[]
   url: string
   startDate: MonthYear | null
   endDate: MonthYear | null
+  visible: boolean
 }
 
 export interface Certification {
   id: string
   name: string
-  issuingOrganization: string
-  issueDate: MonthYear | null
-  expiryDate: MonthYear | null
-  credentialId: string
-  url: string
+  provider: string
+  startDate: MonthYear | null
+  endDate: MonthYear | null
+  description: string
+  visible: boolean
 }
 
 export interface Award {
@@ -102,6 +112,7 @@ export interface Award {
   issuer: string
   date: MonthYear | null
   description: string
+  visible: boolean
 }
 
 export interface Volunteer {
@@ -113,11 +124,47 @@ export interface Volunteer {
   endDate: MonthYear | null
   current: boolean
   description: string
+  visible: boolean
+}
+
+export interface Research {
+  id: string
+  title: string
+  institution: string
+  location: string
+  startDate: MonthYear
+  endDate: MonthYear | null
+  current: boolean
+  description: string
+  visible: boolean
+}
+
+export interface Training {
+  id: string
+  name: string
+  provider: string
+  startDate: MonthYear
+  endDate: MonthYear | null
+  current: boolean
+  description: string
+  visible: boolean
+}
+
+export interface Reference {
+  id: string
+  name: string
+  position: string
+  address: string
+  email: string
+  phone: string
+  visible: boolean
 }
 
 export interface InterestItem {
   id: string
-  label: string
+  name: string
+  description: string
+  visible: boolean
 }
 
 export interface CustomSectionItem {
@@ -126,6 +173,7 @@ export interface CustomSectionItem {
   subtitle: string
   date: string
   description: string
+  visible: boolean
 }
 
 export interface CustomSection {
@@ -134,10 +182,14 @@ export interface CustomSection {
   items: CustomSectionItem[]
 }
 
+export type TextAlignment = 'left' | 'center' | 'right' | 'justify'
+
 export interface CVSection {
   id: SectionId
   visible: boolean
   label: string       // user-editable display name
+  alignment?: TextAlignment
+  underline?: boolean
 }
 
 export interface DesignSettings {
@@ -157,11 +209,22 @@ export interface DesignSettings {
   sectionSpacing: number  // px
 }
 
+export interface ProfessionalSummary {
+  id: string
+  title: string
+  content: string
+  visible: boolean
+}
+
 export interface CVData {
   personal: PersonalInfo
-  summary: string
+  personalSummaries: ProfessionalSummary[] // Multiple allowed
+  professionalSummaries: ProfessionalSummary[] // Multiple allowed
   experience: WorkExperience[]
   education: Education[]
+  research: Research[]
+  training: Training[]
+  references: Reference[]
   skills: Skills
   languages: LanguageItem[]
   projects: Project[]
