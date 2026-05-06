@@ -6,14 +6,12 @@ import { Sparkles, Download, Wand2, Check, FileText, PenLine, PanelLeftClose, Pa
 import { cn } from '@/lib/utils'
 import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
-import DesignPanel from './DesignPanel'
 import SectionManager from './SectionManager'
 import { useCVStore } from '@/store/cv-store'
 import { downloadPdf } from '@/services/api/pdf.service'
 
 export default function EditorShell() {
   const store = useCVStore()
-  const [isDesignOpen, setIsDesignOpen] = useState(false)
   const [isManagerOpen, setIsManagerOpen] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -82,20 +80,6 @@ export default function EditorShell() {
 
           <div className="h-8 w-px bg-outline-variant/40 mx-2 hidden md:block" />
 
-          {/* Design toggle */}
-          <button
-            id="design-panel-toggle"
-            onClick={() => setIsDesignOpen((v) => !v)}
-            className={cn(
-              'hidden md:inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold font-work-sans transition-all duration-300 border shadow-sm active:scale-95',
-              isDesignOpen
-                ? 'bg-primary text-surface border-primary shadow-lg shadow-primary/25'
-                : 'bg-surface border-outline-variant/60 text-on-surface-variant hover:border-primary/50 hover:text-primary hover:bg-surface-container-low'
-            )}
-          >
-            <Wand2 className="w-4 h-4" />
-            Appearance
-          </button>
 
           <button
             id="download-pdf-btn"
@@ -190,7 +174,6 @@ export default function EditorShell() {
       </div>
 
       {/* ── Bottom Drawers ─────────────────────────── */}
-      <DesignPanel isOpen={isDesignOpen} />
       <SectionManager 
         isOpen={isManagerOpen} 
         onClose={() => setIsManagerOpen(false)} 

@@ -7,11 +7,27 @@ export type DateFormat = 'full' | 'short' | 'numeric' | 'year'
 export type PageSize = 'a4' | 'letter'
 export type LayoutType = 'one-column' | 'sidebar-left' | 'sidebar-right'
 export type DividerStyle = 'none' | 'thin' | 'thick' | 'colored'
+export type FontCategory = 'serif' | 'sans-serif' | 'monospace'
+export type ColorMode = 'basic' | 'advanced' | 'border'
+export type ColorType = 'accent' | 'multi' | 'image'
+
+export interface AccentColorApplication {
+  name: boolean
+  jobTitle: boolean
+  headings: boolean
+  headerIcons: boolean
+  dotsBarsBubbles: boolean
+  dates: boolean
+  entrySubtitle: boolean
+  linkIcons: boolean
+}
 export type SectionId =
   | 'personal' | 'summary' | 'experience' | 'education'
   | 'research' | 'training' | 'references'
   | 'skills' | 'languages' | 'projects' | 'certifications'
   | 'awards' | 'volunteer' | 'interests' | string // string = custom section
+
+export type EditorTab = 'content' | 'customize' | 'templates'
 
 export interface MonthYear {
   month: number   // 1–12, 0 = not set
@@ -207,6 +223,12 @@ export interface DesignSettings {
   marginLeft: number      // mm
   marginRight: number     // mm
   sectionSpacing: number  // px
+  language: string
+  dateFormat: DateFormat
+  fontCategory: FontCategory
+  colorMode: ColorMode
+  colorType: ColorType
+  applyAccentTo: AccentColorApplication
 }
 
 export interface ProfessionalSummary {
@@ -241,7 +263,7 @@ export interface FontDefinition {
   id: string
   name: string
   googleFamily: string
-  category: 'sans-serif' | 'serif'
+  category: FontCategory
   isFree: boolean
 }
 

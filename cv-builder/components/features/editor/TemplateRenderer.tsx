@@ -31,15 +31,22 @@ function FontLoader({ fontId }: { fontId: string }) {
 
 // ─── Shared Components ────────────────────────────────────────────────────────
 
-const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { children: React.ReactNode, themeId: string, dividerStyle: string, templateId: string }) => {
+const SectionTitle = ({ children, themeId, dividerStyle, templateId, applyAccentTo }: { 
+  children: React.ReactNode, 
+  themeId: string, 
+  dividerStyle: string, 
+  templateId: string,
+  applyAccentTo: any 
+}) => {
   const theme = getTheme(themeId)
+  const headingColor = applyAccentTo?.headings ? theme.accentColor : theme.sectionTitleColor
   
   if (templateId === 'bold') {
     return (
       <div className="mb-5 flex items-center gap-4">
         <h2 
           className="text-sm font-black uppercase tracking-[0.3em] whitespace-nowrap"
-          style={{ color: theme.accentColor }}
+          style={{ color: headingColor }}
         >
           {children}
         </h2>
@@ -53,7 +60,7 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { childre
       <div className="mb-4">
         <h2 
           className="text-sm font-bold uppercase tracking-[0.2em] mb-2 px-3 py-1 inline-block rounded"
-          style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}
+          style={{ backgroundColor: `${theme.accentColor}15`, color: headingColor }}
         >
           {children}
         </h2>
@@ -65,7 +72,7 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { childre
   if (templateId === 'minimal') {
     return (
       <div className="mb-4 border-l-4 pl-4" style={{ borderColor: theme.accentColor }}>
-        <h2 className="text-sm font-bold uppercase tracking-widest text-gray-900">
+        <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: headingColor }}>
           {children}
         </h2>
       </div>
@@ -76,7 +83,7 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId }: { childre
     <div className="mb-3">
       <h2 
         className="text-sm font-bold uppercase tracking-wider mb-1"
-        style={{ color: theme.sectionTitleColor }}
+        style={{ color: headingColor }}
       >
         {children}
       </h2>
@@ -143,7 +150,6 @@ export default function TemplateRenderer() {
   }
 
   const hasSectionContent = (id: string): boolean => {
-    // Helper to check if any object in array has at least one non-empty value
     const hasData = (arr: any[]) => arr.some(item => 
       Object.entries(item).some(([key, val]) => {
         if (key === 'id' || key === 'visible') return false
@@ -166,7 +172,7 @@ export default function TemplateRenderer() {
     }
 
     switch (id) {
-      case 'personal': return true // Always show header
+      case 'personal': return true
       case 'experience': return hasData(experience)
       case 'education': return hasData(education)
       case 'research': return hasData(research)
@@ -193,7 +199,7 @@ export default function TemplateRenderer() {
     lineHeight: design.lineHeight || 1.4,
     color: theme.bodyTextColor || '#000000',
     minHeight: '100%',
-    backgroundColor: '#ffffff', // CV must always be pure white regardless of website theme
+    backgroundColor: '#ffffff',
   }
 
   const formatMonthYear = (date: { month: number, year: number }) => 
@@ -202,6 +208,10 @@ export default function TemplateRenderer() {
   // ── Render Helpers ──────────────────────────────────────────────────────────
 
   const renderPersonal = () => {
+    const nameColor = design.applyAccentTo.name ? theme.accentColor : '#000000'
+    const jobTitleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#4b5563'
+    const iconColor = design.applyAccentTo.headerIcons ? theme.accentColor : '#9ca3af'
+
     if (design.templateId === 'bold') {
       return (
         <header className="mb-10 flex gap-8 items-center">
@@ -211,13 +221,13 @@ export default function TemplateRenderer() {
             </div>
           )}
           <div className="flex-1">
-            <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-2" style={{ color: theme.accentColor }}>
+            <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-2" style={{ color: nameColor }}>
               {personal.fullName}
             </h1>
-            <p className="text-xl font-bold text-gray-800 uppercase tracking-widest">{personal.jobTitle}</p>
+            <p className="text-xl font-bold uppercase tracking-widest" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
             <div className="mt-4 flex flex-wrap gap-4 text-[9pt] font-bold text-gray-500">
-              {personal.email && <span className="flex items-center gap-1"><Mail width={14} height={14} className="w-3.5 h-3.5" /> {personal.email}</span>}
-              {personal.location && <span className="flex items-center gap-1"><MapPin width={14} height={14} className="w-3.5 h-3.5" /> {personal.location}</span>}
+              {personal.email && <span className="flex items-center gap-1"><Mail width={14} height={14} className="w-3.5 h-3.5" style={{ color: iconColor }} /> {personal.email}</span>}
+              {personal.location && <span className="flex items-center gap-1"><MapPin width={14} height={14} className="w-3.5 h-3.5" style={{ color: iconColor }} /> {personal.location}</span>}
             </div>
           </div>
         </header>
@@ -228,10 +238,10 @@ export default function TemplateRenderer() {
       return (
         <header className="mb-8 flex justify-between items-end border-b-2 pb-6" style={{ borderColor: theme.accentColor }}>
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-1" style={{ color: theme.accentColor }}>
+            <h1 className="text-4xl font-extrabold tracking-tight mb-1" style={{ color: nameColor }}>
               {personal.fullName}
             </h1>
-            <p className="text-lg font-medium text-gray-500 uppercase tracking-widest">{personal.jobTitle}</p>
+            <p className="text-lg font-medium uppercase tracking-widest" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
           </div>
           <div className="text-right text-[9pt] space-y-1 text-gray-600 font-medium">
             {personal.email && <p>{personal.email}</p>}
@@ -245,9 +255,10 @@ export default function TemplateRenderer() {
     if (design.templateId === 'minimal') {
       return (
         <header className="mb-10">
-          <h1 className="text-3xl font-light tracking-[0.15em] uppercase mb-4" style={{ color: '#000' }}>
+          <h1 className="text-3xl font-light tracking-[0.15em] uppercase mb-1" style={{ color: nameColor }}>
             {personal.fullName}
           </h1>
+          <p className="text-sm font-medium tracking-[0.2em] uppercase mb-4" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[9pt] text-gray-500 border-t border-b py-3 font-medium">
             {personal.email && <span className="uppercase tracking-widest">{personal.email}</span>}
             {personal.phone && <span className="uppercase tracking-widest">{personal.phone}</span>}
@@ -260,15 +271,15 @@ export default function TemplateRenderer() {
 
     return (
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: theme.accentColor }}>
+        <h1 className="text-3xl font-bold mb-1" style={{ color: nameColor }}>
           {personal.fullName}
         </h1>
-        <p className="text-sm font-medium text-gray-500 mb-3">{personal.jobTitle}</p>
+        <p className="text-sm font-medium mb-3" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[9pt] text-gray-600 font-medium">
-          {personal.email && <span className="flex items-center gap-1"><Mail width={12} height={12} className="w-3 h-3" /> {personal.email}</span>}
-          {personal.phone && <span className="flex items-center gap-1"><Phone width={12} height={12} className="w-3 h-3" /> {personal.phone}</span>}
-          {personal.location && <span className="flex items-center gap-1"><MapPin width={12} height={12} className="w-3 h-3" /> {personal.location}</span>}
-          {personal.website && <span className="flex items-center gap-1"><Globe width={12} height={12} className="w-3 h-3" /> {personal.website}</span>}
+          {personal.email && <span className="flex items-center gap-1"><Mail width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.email}</span>}
+          {personal.phone && <span className="flex items-center gap-1"><Phone width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.phone}</span>}
+          {personal.location && <span className="flex items-center gap-1"><MapPin width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.location}</span>}
+          {personal.website && <span className="flex items-center gap-1"><Globe width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.website}</span>}
         </div>
       </header>
     )
@@ -280,7 +291,7 @@ export default function TemplateRenderer() {
 
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div 
@@ -297,7 +308,7 @@ export default function TemplateRenderer() {
     
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div 
@@ -310,20 +321,23 @@ export default function TemplateRenderer() {
 
   const renderExperience = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="space-y-6">
         {experience.map((exp) => (
           <div key={exp.id} className="relative">
             <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt] text-gray-900">{exp.jobTitle}</h3>
-              <span className="text-[9pt] font-semibold text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{exp.jobTitle}</h3>
+              <span 
+                className="text-[9pt] font-semibold px-2 py-0.5 rounded"
+                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280', backgroundColor: design.applyAccentTo.dates ? `${theme.accentColor}10` : '#f9fafb' }}
+              >
                 {formatMonthYear(exp.startDate)} — {exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}
               </span>
             </div>
             <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[10pt] font-bold" style={{ color: theme.accentColor }}>{exp.company}</span>
+              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{exp.company}</span>
               <span className="text-[9pt] text-gray-500 italic">{exp.location}</span>
             </div>
             <div 
@@ -338,20 +352,20 @@ export default function TemplateRenderer() {
 
   const renderEducation = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="space-y-4">
         {education.map((edu) => (
           <div key={edu.id}>
             <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt] text-gray-900">{edu.degree}</h3>
-              <span className="text-[9pt] text-gray-500">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{edu.degree}</h3>
+              <span className="text-[9pt]" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
                 {formatMonthYear(edu.startDate)} — {edu.current ? 'Ongoing' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Ongoing')}
               </span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{edu.institution}</span>
+              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{edu.institution}</span>
               {edu.gpa && <span className="text-[9pt] font-bold text-gray-700">GPA: {edu.gpa}</span>}
             </div>
             {edu.description && (
@@ -368,14 +382,14 @@ export default function TemplateRenderer() {
 
   const renderSkills = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="grid grid-cols-1 gap-4">
         {skills.categories.filter(c => c.visible).map((cat) => (
           <div key={cat.id} className="flex flex-col gap-1">
             <div className="flex justify-between items-baseline">
-              <span className="font-bold text-[10pt] uppercase tracking-wider" style={{ color: theme.accentColor }}>
+              <span className="font-bold text-[10pt] uppercase tracking-wider" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
                 {cat.categoryName}
               </span>
               {cat.level && cat.level !== 'none' && (
@@ -396,20 +410,23 @@ export default function TemplateRenderer() {
 
   const renderResearch = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="space-y-6">
         {research.map((res) => (
           <div key={res.id} className="relative">
             <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt] text-gray-900">{res.title}</h3>
-              <span className="text-[9pt] font-semibold text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{res.title}</h3>
+              <span 
+                className="text-[9pt] font-semibold px-2 py-0.5 rounded"
+                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280', backgroundColor: design.applyAccentTo.dates ? `${theme.accentColor}10` : '#f9fafb' }}
+              >
                 {formatMonthYear(res.startDate)} — {res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}
               </span>
             </div>
             <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[10pt] font-bold" style={{ color: theme.accentColor }}>{res.institution}</span>
+              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{res.institution}</span>
               <span className="text-[9pt] text-gray-500 italic">{res.location}</span>
             </div>
             <div 
@@ -424,20 +441,23 @@ export default function TemplateRenderer() {
 
   const renderTraining = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="space-y-4">
         {training.filter(t => t.visible).map((trn) => (
           <div key={trn.id}>
             <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt] text-gray-900">{trn.name}</h3>
-              <span className="text-[9pt] font-semibold text-gray-500">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{trn.name}</h3>
+              <span 
+                className="text-[9pt] font-semibold"
+                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}
+              >
                 {formatMonthYear(trn.startDate)} — {trn.current ? 'Present' : (trn.endDate?.year ? formatMonthYear(trn.endDate) : 'Present')}
               </span>
             </div>
             <div className="mb-2">
-              <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{trn.provider}</span>
+              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{trn.provider}</span>
             </div>
             {trn.description && (
               <div 
@@ -454,22 +474,22 @@ export default function TemplateRenderer() {
   const renderCertifications = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div className="space-y-4">
           {certifications.filter(c => c.visible).map((cert) => (
             <div key={cert.id}>
               <div className="flex justify-between items-baseline mb-1">
-                <h3 className="font-bold text-[11pt] text-gray-900">{cert.name}</h3>
+                <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{cert.name}</h3>
                 {cert.startDate && (
-                  <span className="text-[9pt] font-semibold text-gray-500">
+                  <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
                     {formatMonthYear(cert.startDate)} {cert.endDate && `— ${formatMonthYear(cert.endDate)}`}
                   </span>
                 )}
               </div>
               <div className="mb-2">
-                <span className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{cert.provider}</span>
+                <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{cert.provider}</span>
               </div>
               {cert.description && (
                 <div 
@@ -487,14 +507,14 @@ export default function TemplateRenderer() {
   const renderReferences = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div className="grid grid-cols-2 gap-6">
           {references.filter(r => r.visible).map((ref) => (
             <div key={ref.id}>
-              <h3 className="font-bold text-[11pt] text-gray-900 mb-1">{ref.name}</h3>
-              <p className="text-[10pt] font-semibold" style={{ color: theme.accentColor }}>{ref.position}</p>
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{ref.name}</h3>
+              <p className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{ref.position}</p>
               <div className="text-[9pt] text-gray-600 mt-1 space-y-0.5">
                 {ref.address && <p>{ref.address}</p>}
                 {ref.email && <p>{ref.email}</p>}
@@ -510,7 +530,7 @@ export default function TemplateRenderer() {
   const renderLanguages = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div className="grid grid-cols-2 gap-y-2 gap-x-4">
@@ -528,7 +548,7 @@ export default function TemplateRenderer() {
   const renderInterests = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
           {label}
         </SectionTitle>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -545,7 +565,7 @@ export default function TemplateRenderer() {
 
   const renderProjects = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId}>
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
       <div className="space-y-6">
@@ -553,21 +573,25 @@ export default function TemplateRenderer() {
           <div key={project.id} className="relative">
             <div className="flex justify-between items-baseline mb-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[11pt] text-gray-900">{project.name}</h3>
+                <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{project.name}</h3>
                 {project.url && (
-                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-[8pt] text-primary hover:underline">
-                    (Link)
+                  <a 
+                    href={project.url} target="_blank" rel="noopener noreferrer" 
+                    className="text-[8pt] hover:underline flex items-center gap-1"
+                    style={{ color: design.applyAccentTo.linkIcons ? theme.accentColor : theme.bodyTextColor }}
+                  >
+                    <LinkIcon width={10} height={10} /> {project.name.toLowerCase()}
                   </a>
                 )}
               </div>
               {project.startDate && (
-                <span className="text-[9pt] font-semibold text-gray-500">
+                <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
                   {formatMonthYear(project.startDate)} — {project.endDate ? formatMonthYear(project.endDate) : 'Present'}
                 </span>
               )}
             </div>
             {project.subtitle && (
-              <div className="text-[10pt] font-semibold mb-2" style={{ color: theme.accentColor }}>
+              <div className="text-[10pt] font-semibold mb-2" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>
                 {project.subtitle}
               </div>
             )}
@@ -575,6 +599,67 @@ export default function TemplateRenderer() {
               className="prose prose-sm max-w-none text-inherit leading-relaxed"
               dangerouslySetInnerHTML={{ __html: project.description }} 
             />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderAwards = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-4">
+        {awards.filter(a => a.visible).map((award) => (
+          <div key={award.id}>
+            <div className="flex justify-between items-baseline mb-1">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{award.title}</h3>
+              {award.date && (
+                <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
+                  {formatMonthYear(award.date)}
+                </span>
+              )}
+            </div>
+            <div className="mb-2">
+              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{award.issuer}</span>
+            </div>
+            {award.description && (
+              <div 
+                className="prose prose-sm max-w-none text-inherit leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: award.description }} 
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderVolunteer = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-6">
+        {volunteer.filter(v => v.visible).map((vol) => (
+          <div key={vol.id}>
+            <div className="flex justify-between items-baseline mb-1">
+              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{vol.role}</h3>
+              <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
+                {formatMonthYear(vol.startDate)} — {vol.current ? 'Present' : (vol.endDate?.year ? formatMonthYear(vol.endDate) : 'Present')}
+              </span>
+            </div>
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{vol.organization}</span>
+              <span className="text-[9pt] text-gray-500 italic">{vol.location}</span>
+            </div>
+            {vol.description && (
+              <div 
+                className="prose prose-sm max-w-none text-inherit leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: vol.description }} 
+              />
+            )}
           </div>
         ))}
       </div>
@@ -597,6 +682,8 @@ export default function TemplateRenderer() {
       case 'projects': return renderProjects(label)
       case 'skills': return renderSkills(label)
       case 'certifications': return renderCertifications(label)
+      case 'awards': return renderAwards(label)
+      case 'volunteer': return renderVolunteer(label)
       case 'references': return renderReferences(label)
       case 'languages': return renderLanguages(label)
       case 'interests': return renderInterests(label)
@@ -612,8 +699,7 @@ export default function TemplateRenderer() {
     const visibleSections = sectionOrder.filter(s => s.visible && hasSectionContent(s.id))
 
     if (isSidebarLayout) {
-      // Logic for split layout: Personal info always top, rest split
-      const sidebarSectionIds = ['skills', 'education'] // Custom logic could be more flexible
+      const sidebarSectionIds = ['skills', 'education']
       const mainSections = visibleSections.filter(s => !sidebarSectionIds.includes(s.id) && s.id !== 'personal')
       const sidebarSections = visibleSections.filter(s => sidebarSectionIds.includes(s.id))
 

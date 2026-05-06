@@ -28,6 +28,7 @@ import type {
   DesignSettings,
   SectionId,
   TextAlignment,
+  EditorTab,
 } from '@/models/cv.types'
 
 interface CVStore extends CVData {
@@ -143,6 +144,10 @@ interface CVStore extends CVData {
   // Design
   updateDesign: (partial: Partial<DesignSettings>) => void
 
+  // Tab Management
+  activeTab: EditorTab
+  setActiveTab: (tab: EditorTab) => void
+
   // Reset
   resetToDefaults: () => void
 }
@@ -152,6 +157,12 @@ export const useCVStore = create<CVStore>()(
     ...DEFAULT_DATA,
     activeSectionId: null,
     activeEntryId: null,
+    activeTab: 'content',
+
+    setActiveTab: (tab) =>
+      set((state) => {
+        state.activeTab = tab
+      }),
 
     setActiveSectionId: (id) =>
       set((state) => {
@@ -662,7 +673,11 @@ export const useCVStore = create<CVStore>()(
       }),
 
     reorderSections: (from, to) =>
-      set((state) => { moveItemInArray(state.sectionOrder, from, to) }),
+      set((state) => {
+        // Personal Details (index 0) is fixed and cannot be reordered
+        if (from === 0 || to === 0) return
+        moveItemInArray(state.sectionOrder, from, to)
+      }),
 
     removeSection: (id) =>
       set((state) => {
