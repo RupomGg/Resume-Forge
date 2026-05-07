@@ -4,7 +4,7 @@
    Forest & Stone Design System — Tokens
 ───────────────────────────────────────────── */
 
-@theme inline {
+@theme {
   /* Surface & Background */
   --color-surface: #FCF9F2;
   --color-surface-bright: #FCF9F2;

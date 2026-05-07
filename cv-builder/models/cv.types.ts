@@ -10,6 +10,9 @@ export type DividerStyle = 'none' | 'thin' | 'thick' | 'colored'
 export type FontCategory = 'serif' | 'sans-serif' | 'monospace'
 export type ColorMode = 'basic' | 'advanced' | 'border'
 export type ColorType = 'accent' | 'multi' | 'image'
+export type SubtitleStyle = 'normal' | 'italic' | 'bold' | 'bold-italic'
+export type SubtitlePlacement = 'below-title' | 'beside-title' | 'right-aligned'
+export type ListStyle = 'none' | 'bullet' | 'dash' | 'check'
 
 export interface AccentColorApplication {
   name: boolean
@@ -229,6 +232,16 @@ export interface DesignSettings {
   colorMode: ColorMode
   colorType: ColorType
   applyAccentTo: AccentColorApplication
+
+  // Content Layout
+  layoutVariation: string
+  titleSize: number
+  subtitleSize: number
+  subtitleStyle: SubtitleStyle
+  subtitlePlacement: SubtitlePlacement
+   descriptionIndentation: number
+  listStyle: ListStyle
+  entryLayoutId: string
 }
 
 export interface ProfessionalSummary {

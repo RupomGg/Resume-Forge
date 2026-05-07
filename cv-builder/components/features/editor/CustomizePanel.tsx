@@ -21,7 +21,9 @@ import {
   Plus,
   Trash2,
   Calendar,
-  FileText
+  FileText,
+  LayoutGrid,
+  AlignCenter
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { LayoutType, PageSize, DateFormat, FontCategory, ColorMode, ColorType } from '@/models/cv.types'
@@ -167,7 +169,7 @@ function SortableSectionItem({ section }: SortableSectionItemProps) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-type CustomizeView = 'main' | 'language' | 'layout' | 'order' | 'spacing' | 'fonts' | 'colors'
+type CustomizeView = 'main' | 'language' | 'layout' | 'order' | 'spacing' | 'fonts' | 'colors' | 'content-layout' | 'content-entry-layout'
 
 export default function CustomizePanel() {
   const { design, updateDesign, sectionOrder, reorderSections } = useCVStore()
@@ -303,6 +305,22 @@ export default function CustomizePanel() {
                 <div className="flex flex-col text-left">
                   <span className="text-sm font-bold font-manrope">Spacing Controls</span>
                   <span className="text-[10px] text-outline">Margins & sizing</span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-outline group-hover:text-primary transition-all" />
+            </button>
+
+            <button
+              onClick={() => setActiveView('content-layout')}
+              className="flex items-center justify-between p-4 rounded-2xl border border-outline-variant/30 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-outline group-hover:text-primary group-hover:bg-primary/10 transition-all">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-sm font-bold font-manrope">Content Layout</span>
+                  <span className="text-[10px] text-outline">Section & entry styles</span>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-outline group-hover:text-primary transition-all" />
@@ -721,6 +739,283 @@ export default function CustomizePanel() {
             </div>
           </div>
         )}
+        {/* ─── CONTENT LAYOUT VIEW ────────────────────────────────────────── */}
+        {activeView === 'content-layout' && (
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            {renderHeader('Content Layout')}
+            
+            <div className="space-y-8">
+              {/* Layout Variation */}
+              <div className="space-y-4">
+                <label className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest">
+                  <LayoutIcon className="w-3.5 h-3.5" />
+                  Layout Variation
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { id: 'classic', name: 'Classic' },
+                    { id: 'modern', name: 'Modern' },
+                    { id: 'minimal', name: 'Minimal' },
+                    { id: 'compact', name: 'Compact' },
+                  ].map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={() => updateDesign({ layoutVariation: v.id })}
+                      className={cn(
+                        "py-3 rounded-xl border-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                        design.layoutVariation === v.id 
+                          ? "border-primary bg-primary/5 text-primary shadow-md" 
+                          : "border-outline-variant/30 text-outline hover:border-outline-variant"
+                      )}
+                    >
+                      {v.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Entry Layout Grid */}
+              <div className="space-y-4 pt-4 border-t border-outline-variant/30">
+                <label className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest">
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  Entry Structure
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { 
+                      id: 'layout-1', 
+                      name: 'Balanced', 
+                      icon: (active: boolean) => (
+                        <div className="flex flex-col gap-1 w-full">
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-1 w-2/3 rounded-full ${active ? 'bg-primary' : 'bg-outline-variant'}`} />
+                            <div className={`h-1 w-1/4 rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                          </div>
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-0.5 w-1/2 rounded-full ${active ? 'bg-primary/60' : 'bg-outline-variant/30'}`} />
+                            <div className={`h-0.5 w-1/5 rounded-full ${active ? 'bg-blue-300' : 'bg-outline-variant/20'}`} />
+                          </div>
+                        </div>
+                      )
+                    },
+                    { 
+                      id: 'layout-2', 
+                      name: 'Metadata', 
+                      icon: (active: boolean) => (
+                        <div className="flex gap-2 w-full">
+                          <div className="w-1/4 flex flex-col gap-1">
+                            <div className={`h-1 w-full rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                            <div className={`h-0.5 w-2/3 rounded-full ${active ? 'bg-blue-300' : 'bg-outline-variant/20'}`} />
+                          </div>
+                          <div className="flex-1 flex flex-col gap-1">
+                            <div className={`h-1 w-full rounded-full ${active ? 'bg-primary' : 'bg-outline-variant'}`} />
+                            <div className={`h-0.5 w-3/4 rounded-full ${active ? 'bg-primary/60' : 'bg-outline-variant/30'}`} />
+                          </div>
+                        </div>
+                      )
+                    },
+                    { 
+                      id: 'layout-3', 
+                      name: 'Modern Split', 
+                      icon: (active: boolean) => (
+                        <div className="flex justify-between items-start w-full gap-1.5">
+                          <div className={`h-1 w-[20%] rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                          <div className="flex-1 flex flex-col gap-1">
+                            <div className={`h-1 w-[60%] rounded-full ${active ? 'bg-primary' : 'bg-outline-variant'}`} />
+                            <div className={`h-0.5 w-[40%] rounded-full ${active ? 'bg-primary/60' : 'bg-outline-variant/30'}`} />
+                          </div>
+                          <div className={`h-1 w-[20%] rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                        </div>
+                      )
+                    },
+                    { 
+                      id: 'layout-4', 
+                      name: 'Standard', 
+                      icon: (active: boolean) => (
+                        <div className="flex flex-col gap-1 w-full">
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-1 w-1/2 rounded-full ${active ? 'bg-primary' : 'bg-outline-variant'}`} />
+                            <div className={`h-1 w-1/4 rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                          </div>
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-0.5 w-1/3 rounded-full ${active ? 'bg-primary/60' : 'bg-outline-variant/30'}`} />
+                            <div className={`h-0.5 w-1/3 rounded-full ${active ? 'bg-blue-300' : 'bg-outline-variant/20'}`} />
+                          </div>
+                          <div className={`h-0.5 w-full rounded-full ${active ? 'bg-primary/20' : 'bg-outline-variant/10'} mt-0.5`} />
+                        </div>
+                      )
+                    },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => updateDesign({ entryLayoutId: opt.id })}
+                      className={cn(
+                        "flex flex-col p-2 rounded-xl border-2 transition-all text-center gap-1.5 group relative",
+                        design.entryLayoutId === opt.id 
+                          ? "border-purple-500 bg-purple-50/50" 
+                          : "border-outline-variant/20 hover:border-outline-variant bg-white"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-full h-12 rounded-lg flex items-center justify-center px-3 border transition-all",
+                        design.entryLayoutId === opt.id ? "bg-white border-purple-200" : "bg-surface-container border-transparent"
+                      )}>
+                        {opt.icon(design.entryLayoutId === opt.id)}
+                      </div>
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-wider",
+                        design.entryLayoutId === opt.id ? "text-purple-700" : "text-outline"
+                      )}>
+                        {opt.name}
+                      </span>
+                      {design.entryLayoutId === opt.id && (
+                        <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 rounded-full bg-purple-500 flex items-center justify-center text-white">
+                          <Check className="w-2 h-2" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Title & Subtitle Sizing */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Title Size</span>
+                    <span className="text-[10px] font-black text-primary">{design.titleSize}pt</span>
+                  </div>
+                  <input
+                    type="range" min="8" max="18" step="0.5"
+                    value={design.titleSize}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      const ratio = design.subtitleSize / design.titleSize;
+                      updateDesign({ 
+                        titleSize: val,
+                        subtitleSize: Math.round(val * ratio * 2) / 2
+                      });
+                    }}
+                    className="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Subtitle Size</span>
+                    <span className="text-[10px] font-black text-primary">{design.subtitleSize}pt</span>
+                  </div>
+                  <input
+                    type="range" min="7" max="14" step="0.5"
+                    value={design.subtitleSize}
+                    onChange={(e) => updateDesign({ subtitleSize: parseFloat(e.target.value) })}
+                    className="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Subtitle Style */}
+              <div className="space-y-4">
+                <label className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest">
+                  <Type className="w-3.5 h-3.5" />
+                  Subtitle Style
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { id: 'normal', name: 'N' },
+                    { id: 'italic', name: 'I', className: 'italic' },
+                    { id: 'bold', name: 'B', className: 'font-bold' },
+                    { id: 'bold-italic', name: 'BI', className: 'font-bold italic' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => updateDesign({ subtitleStyle: s.id as any })}
+                      className={cn(
+                        "h-10 rounded-lg border-2 text-sm transition-all",
+                        design.subtitleStyle === s.id 
+                          ? "border-primary bg-primary/5 text-primary shadow-sm" 
+                          : "border-outline-variant/30 text-outline hover:border-outline-variant",
+                        s.className
+                      )}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Subtitle Placement */}
+              <div className="space-y-4">
+                <label className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest">
+                  Subtitle Placement
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'below-title', name: 'Below' },
+                    { id: 'beside-title', name: 'Beside' },
+                    { id: 'right-aligned', name: 'Right' },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => updateDesign({ subtitlePlacement: p.id as any })}
+                      className={cn(
+                        "py-2 rounded-full border-2 text-[10px] font-bold uppercase tracking-wider transition-all",
+                        design.subtitlePlacement === p.id 
+                          ? "border-primary bg-primary text-white shadow-md" 
+                          : "border-outline-variant/30 text-outline hover:border-outline-variant"
+                      )}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Description Indentation */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-outline uppercase tracking-widest">Description Indentation</span>
+                  <span className="text-xs font-black text-primary bg-primary/5 px-2 py-1 rounded-lg">{design.descriptionIndentation}px</span>
+                </div>
+                <input
+                  type="range" min="0" max="4" step="1"
+                  value={design.descriptionIndentation}
+                  onChange={(e) => updateDesign({ descriptionIndentation: parseInt(e.target.value) })}
+                  className="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+
+              {/* List Style */}
+              <div className="space-y-4">
+                <label className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest">
+                  <ListOrdered className="w-3.5 h-3.5" />
+                  Bullet/List Style
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { id: 'none', name: 'None' },
+                    { id: 'bullet', name: '•' },
+                    { id: 'dash', name: '-' },
+                    { id: 'check', name: '✓' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => updateDesign({ listStyle: s.id as any })}
+                      className={cn(
+                        "h-10 rounded-lg border-2 text-sm font-bold transition-all",
+                        design.listStyle === s.id 
+                          ? "border-primary bg-primary/5 text-primary shadow-sm" 
+                          : "border-outline-variant/30 text-outline hover:border-outline-variant"
+                      )}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
 
       </div>
     </div>

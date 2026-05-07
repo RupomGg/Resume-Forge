@@ -98,6 +98,227 @@ const SectionTitle = ({ children, themeId, dividerStyle, templateId, applyAccent
   )
 }
 
+const ListStyles = ({ style }: { style: string }) => {
+  let listStyleType = 'disc'
+  if (style === 'dash') listStyleType = '"- "'
+  if (style === 'check') listStyleType = '"✓ "'
+  if (style === 'none') listStyleType = 'none'
+
+  return (
+    <style dangerouslySetInnerHTML={{ __html: `
+      #cv-preview-card .description-content ul { 
+        list-style-type: ${listStyleType} !important; 
+        padding-left: 1.2em !important;
+      }
+      #cv-preview-card .description-content li {
+        margin-bottom: 0.25em;
+      }
+    `}} />
+  )
+}
+
+const VariationStyles = ({ variation }: { variation: string }) => {
+  if (variation === 'compact') {
+    return (
+      <style dangerouslySetInnerHTML={{ __html: `
+        #cv-preview-card.compact-mode .entry-item { margin-bottom: 0.75rem !important; }
+        #cv-preview-card.compact-mode .description-content { margin-top: 0.25rem !important; }
+        #cv-preview-card.compact-mode h3 { line-height: 1.1 !important; }
+        #cv-preview-card.compact-mode .mb-6 { margin-bottom: 1rem !important; }
+      `}} />
+    )
+  }
+  if (variation === 'modern') {
+    return (
+      <style dangerouslySetInnerHTML={{ __html: `
+        #cv-preview-card.modern-mode .entry-item { 
+          border-left: 2px solid #e5e7eb; 
+          padding-left: 1rem;
+          margin-bottom: 1.5rem;
+        }
+      `}} />
+    )
+  }
+  return null
+}
+
+const EntryLayout = ({ 
+  title, 
+  subtitle, 
+  date, 
+  location, 
+  description, 
+  design, 
+  theme 
+}: { 
+  title: string, 
+  subtitle?: string, 
+  date?: string, 
+  location?: string, 
+  description?: string, 
+  design: any, 
+  theme: any 
+}) => {
+  const titleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#111827'
+  const subtitleColor = design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937'
+  const dateColor = design.applyAccentTo.dates ? theme.accentColor : '#6b7280'
+  
+  const subtitleStyles = cn(
+    design.subtitleStyle === 'italic' && 'italic',
+    design.subtitleStyle === 'bold' && 'font-bold',
+    design.subtitleStyle === 'bold-italic' && 'font-bold italic'
+  )
+
+  const renderSubtitle = () => subtitle && (
+    <span 
+      className={cn("leading-tight", subtitleStyles)} 
+      style={{ color: subtitleColor, fontSize: `${design.subtitleSize}pt` }}
+    >
+      {subtitle}
+    </span>
+  )
+
+  const renderDate = () => date && (
+    <span 
+      className="font-semibold whitespace-nowrap"
+      style={{ color: dateColor, fontSize: `${design.fontSize * 0.9}pt` }}
+    >
+      {date}
+    </span>
+  )
+
+  const layoutId = design.entryLayoutId || 'layout-4'
+
+  const renderLocation = () => location && (
+    <span className="text-gray-500 italic" style={{ fontSize: `${design.fontSize * 0.9}pt` }}>
+      {location}
+    </span>
+  )
+
+  const renderDescription = () => description && (
+    <div 
+      className="description-content prose prose-sm max-w-none text-inherit mt-2"
+      style={{ paddingLeft: `${design.descriptionIndentation}px` }}
+      dangerouslySetInnerHTML={{ __html: description }} 
+    />
+  )
+
+  const renderTitleBlock = (fullWidth = false) => (
+    <div className={cn(fullWidth ? "w-full" : "flex-1")}>
+      <h3 
+        className="font-bold leading-tight" 
+        style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
+      >
+        {title}
+        {design.subtitlePlacement === 'beside-title' && subtitle && (
+          <>
+            <span className="mx-2 text-gray-300 font-normal">|</span>
+            {renderSubtitle()}
+          </>
+        )}
+      </h3>
+      {design.subtitlePlacement === 'below-title' && (
+        <div className="mt-0.5">{renderSubtitle()}</div>
+      )}
+    </div>
+  )
+
+  // ─── Layout Implementations ──────────────────────────────────────────────────
+
+  if (layoutId === 'layout-1') {
+    return (
+      <div className="entry-item mb-4">
+        <div className="flex justify-between items-start gap-6">
+          <div className="flex-1">
+            {renderTitleBlock(true)}
+            {renderDescription()}
+          </div>
+          <div className="flex flex-col items-end text-right shrink-0 min-w-[120px] pt-1">
+            {renderDate()}
+            {renderLocation()}
+            {design.subtitlePlacement === 'right-aligned' && (
+              <div className="mt-1">{renderSubtitle()}</div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (layoutId === 'layout-2') {
+    return (
+      <div className="entry-item mb-4 flex gap-6">
+        <div className="w-1/4 shrink-0 flex flex-col pt-1">
+          {renderDate()}
+          {renderLocation()}
+        </div>
+        <div className="flex-1">
+          {renderTitleBlock(true)}
+          {design.subtitlePlacement === 'right-aligned' && (
+             <div className="mt-0.5">{renderSubtitle()}</div>
+          )}
+          {renderDescription()}
+        </div>
+      </div>
+    )
+  }
+
+  if (layoutId === 'layout-3') {
+    return (
+      <div className="entry-item mb-6">
+        <div className="flex gap-4">
+          {/* Left: Date */}
+          <div className="w-[110px] shrink-0 pt-0.5">
+            {renderDate()}
+          </div>
+
+          {/* Center: Title, Subtitle, Description */}
+          <div className="flex-1">
+            {renderTitleBlock(true)}
+            {design.subtitlePlacement === 'right-aligned' && (
+              <div className="mt-0.5">{renderSubtitle()}</div>
+            )}
+            {renderDescription()}
+          </div>
+
+          {/* Right: Location */}
+          <div className="w-1/4 text-right pt-0.5 shrink-0">
+            {renderLocation()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Default: layout-4 (Stacked List / 2x2 Grid)
+  return (
+    <div className="entry-item mb-6">
+      <div className="flex justify-between items-baseline gap-4">
+        <h3 
+          className="font-bold leading-tight flex-1" 
+          style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
+        >
+          {title}
+        </h3>
+        <div className="shrink-0">
+          {renderDate()}
+        </div>
+      </div>
+      {(subtitle || location) && (
+        <div className="flex justify-between items-baseline mt-0.5 gap-4">
+          <div className="flex-1">
+            {renderSubtitle()}
+          </div>
+          <div className="shrink-0 text-right">
+            {renderLocation()}
+          </div>
+        </div>
+      )}
+      {renderDescription()}
+    </div>
+  )
+}
+
 // ─── Main Renderer ────────────────────────────────────────────────────────────
 
 export default function TemplateRenderer() {
@@ -324,27 +545,18 @@ export default function TemplateRenderer() {
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
-      <div className="space-y-6">
-        {experience.map((exp) => (
-          <div key={exp.id} className="relative">
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{exp.jobTitle}</h3>
-              <span 
-                className="text-[9pt] font-semibold px-2 py-0.5 rounded"
-                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280', backgroundColor: design.applyAccentTo.dates ? `${theme.accentColor}10` : '#f9fafb' }}
-              >
-                {formatMonthYear(exp.startDate)} — {exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}
-              </span>
-            </div>
-            <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{exp.company}</span>
-              <span className="text-[9pt] text-gray-500 italic">{exp.location}</span>
-            </div>
-            <div 
-              className="prose prose-sm max-w-none text-inherit"
-              dangerouslySetInnerHTML={{ __html: exp.description }} 
-            />
-          </div>
+      <div className="space-y-5">
+        {experience.filter(exp => exp.visible).map((exp) => (
+          <EntryLayout
+            key={exp.id}
+            title={exp.jobTitle}
+            subtitle={exp.company}
+            date={`${formatMonthYear(exp.startDate)} — ${exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}`}
+            location={exp.location}
+            description={exp.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -355,26 +567,18 @@ export default function TemplateRenderer() {
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
-      <div className="space-y-4">
-        {education.map((edu) => (
-          <div key={edu.id}>
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{edu.degree}</h3>
-              <span className="text-[9pt]" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
-                {formatMonthYear(edu.startDate)} — {edu.current ? 'Ongoing' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Ongoing')}
-              </span>
-            </div>
-            <div className="flex justify-between items-baseline">
-              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{edu.institution}</span>
-              {edu.gpa && <span className="text-[9pt] font-bold text-gray-700">GPA: {edu.gpa}</span>}
-            </div>
-            {edu.description && (
-              <div 
-                className="prose prose-sm max-w-none text-inherit mt-2"
-                dangerouslySetInnerHTML={{ __html: edu.description }} 
-              />
-            )}
-          </div>
+      <div className="space-y-5">
+        {education.filter(edu => edu.visible).map((edu) => (
+          <EntryLayout
+            key={edu.id}
+            title={edu.degree}
+            subtitle={edu.institution}
+            date={`${formatMonthYear(edu.startDate)} — ${edu.current ? 'Ongoing' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Ongoing')}`}
+            location={edu.location}
+            description={edu.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -413,27 +617,18 @@ export default function TemplateRenderer() {
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
-      <div className="space-y-6">
-        {research.map((res) => (
-          <div key={res.id} className="relative">
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{res.title}</h3>
-              <span 
-                className="text-[9pt] font-semibold px-2 py-0.5 rounded"
-                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280', backgroundColor: design.applyAccentTo.dates ? `${theme.accentColor}10` : '#f9fafb' }}
-              >
-                {formatMonthYear(res.startDate)} — {res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}
-              </span>
-            </div>
-            <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{res.institution}</span>
-              <span className="text-[9pt] text-gray-500 italic">{res.location}</span>
-            </div>
-            <div 
-              className="prose prose-sm max-w-none text-inherit"
-              dangerouslySetInnerHTML={{ __html: res.description }} 
-            />
-          </div>
+      <div className="space-y-5">
+        {research.filter(res => res.visible).map((res) => (
+          <EntryLayout
+            key={res.id}
+            title={res.title}
+            subtitle={res.institution}
+            date={`${formatMonthYear(res.startDate)} — ${res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}`}
+            location={res.location}
+            description={res.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -444,65 +639,42 @@ export default function TemplateRenderer() {
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
-      <div className="space-y-4">
+      <div className="space-y-5">
         {training.filter(t => t.visible).map((trn) => (
-          <div key={trn.id}>
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{trn.name}</h3>
-              <span 
-                className="text-[9pt] font-semibold"
-                style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}
-              >
-                {formatMonthYear(trn.startDate)} — {trn.current ? 'Present' : (trn.endDate?.year ? formatMonthYear(trn.endDate) : 'Present')}
-              </span>
-            </div>
-            <div className="mb-2">
-              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{trn.provider}</span>
-            </div>
-            {trn.description && (
-              <div 
-                className="prose prose-sm max-w-none text-inherit leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: trn.description }} 
-              />
-            )}
-          </div>
+          <EntryLayout
+            key={trn.id}
+            title={trn.name}
+            subtitle={trn.provider}
+            date={`${formatMonthYear(trn.startDate)} — ${trn.current ? 'Present' : (trn.endDate?.year ? formatMonthYear(trn.endDate) : 'Present')}`}
+            description={trn.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
   )
 
-  const renderCertifications = (label: string) => {
-    return (
-      <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
-          {label}
-        </SectionTitle>
-        <div className="space-y-4">
-          {certifications.filter(c => c.visible).map((cert) => (
-            <div key={cert.id}>
-              <div className="flex justify-between items-baseline mb-1">
-                <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{cert.name}</h3>
-                {cert.startDate && (
-                  <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
-                    {formatMonthYear(cert.startDate)} {cert.endDate && `— ${formatMonthYear(cert.endDate)}`}
-                  </span>
-                )}
-              </div>
-              <div className="mb-2">
-                <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{cert.provider}</span>
-              </div>
-              {cert.description && (
-                <div 
-                  className="prose prose-sm max-w-none text-inherit leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: cert.description }} 
-                />
-              )}
-            </div>
-          ))}
-        </div>
+  const renderCertifications = (label: string) => (
+    <div className="mb-6">
+      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        {label}
+      </SectionTitle>
+      <div className="space-y-5">
+        {certifications.filter(c => c.visible).map((cert) => (
+          <EntryLayout
+            key={cert.id}
+            title={cert.name}
+            subtitle={cert.provider}
+            date={cert.startDate ? `${formatMonthYear(cert.startDate)} ${cert.endDate ? `— ${formatMonthYear(cert.endDate)}` : ''}` : undefined}
+            description={cert.description}
+            design={design}
+            theme={theme}
+          />
+        ))}
       </div>
-    )
-  }
+    </div>
+  )
 
   const renderReferences = (label: string) => {
     return (
@@ -570,36 +742,15 @@ export default function TemplateRenderer() {
       </SectionTitle>
       <div className="space-y-6">
         {projects.filter(p => p.visible).map((project) => (
-          <div key={project.id} className="relative">
-            <div className="flex justify-between items-baseline mb-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{project.name}</h3>
-                {project.url && (
-                  <a 
-                    href={project.url} target="_blank" rel="noopener noreferrer" 
-                    className="text-[8pt] hover:underline flex items-center gap-1"
-                    style={{ color: design.applyAccentTo.linkIcons ? theme.accentColor : theme.bodyTextColor }}
-                  >
-                    <LinkIcon width={10} height={10} /> {project.name.toLowerCase()}
-                  </a>
-                )}
-              </div>
-              {project.startDate && (
-                <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
-                  {formatMonthYear(project.startDate)} — {project.endDate ? formatMonthYear(project.endDate) : 'Present'}
-                </span>
-              )}
-            </div>
-            {project.subtitle && (
-              <div className="text-[10pt] font-semibold mb-2" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>
-                {project.subtitle}
-              </div>
-            )}
-            <div 
-              className="prose prose-sm max-w-none text-inherit leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: project.description }} 
-            />
-          </div>
+          <EntryLayout
+            key={project.id}
+            title={project.name}
+            subtitle={project.subtitle}
+            date={project.startDate ? `${formatMonthYear(project.startDate)} — ${project.endDate ? formatMonthYear(project.endDate) : 'Present'}` : undefined}
+            description={project.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -610,27 +761,17 @@ export default function TemplateRenderer() {
       <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
         {label}
       </SectionTitle>
-      <div className="space-y-4">
+      <div className="space-y-5">
         {awards.filter(a => a.visible).map((award) => (
-          <div key={award.id}>
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{award.title}</h3>
-              {award.date && (
-                <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
-                  {formatMonthYear(award.date)}
-                </span>
-              )}
-            </div>
-            <div className="mb-2">
-              <span className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{award.issuer}</span>
-            </div>
-            {award.description && (
-              <div 
-                className="prose prose-sm max-w-none text-inherit leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: award.description }} 
-              />
-            )}
-          </div>
+          <EntryLayout
+            key={award.id}
+            title={award.title}
+            subtitle={award.issuer}
+            date={award.date ? formatMonthYear(award.date) : undefined}
+            description={award.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -643,24 +784,16 @@ export default function TemplateRenderer() {
       </SectionTitle>
       <div className="space-y-6">
         {volunteer.filter(v => v.visible).map((vol) => (
-          <div key={vol.id}>
-            <div className="flex justify-between items-baseline mb-1">
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{vol.role}</h3>
-              <span className="text-[9pt] font-semibold" style={{ color: design.applyAccentTo.dates ? theme.accentColor : '#6b7280' }}>
-                {formatMonthYear(vol.startDate)} — {vol.current ? 'Present' : (vol.endDate?.year ? formatMonthYear(vol.endDate) : 'Present')}
-              </span>
-            </div>
-            <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[10pt] font-bold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{vol.organization}</span>
-              <span className="text-[9pt] text-gray-500 italic">{vol.location}</span>
-            </div>
-            {vol.description && (
-              <div 
-                className="prose prose-sm max-w-none text-inherit leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: vol.description }} 
-              />
-            )}
-          </div>
+          <EntryLayout
+            key={vol.id}
+            title={vol.role}
+            subtitle={vol.organization}
+            date={`${formatMonthYear(vol.startDate)} — ${vol.current ? 'Present' : (vol.endDate?.year ? formatMonthYear(vol.endDate) : 'Present')}`}
+            location={vol.location}
+            description={vol.description}
+            design={design}
+            theme={theme}
+          />
         ))}
       </div>
     </div>
@@ -730,13 +863,20 @@ export default function TemplateRenderer() {
   return (
     <div 
       id="cv-preview-card"
-      className="w-full h-full shadow-inner overflow-hidden"
+      className={cn(
+        "w-full h-full shadow-inner overflow-hidden",
+        design.layoutVariation === 'compact' && "compact-mode",
+        design.layoutVariation === 'modern' && "modern-mode",
+        design.layoutVariation === 'minimal' && "minimal-mode"
+      )}
       style={{
         ...containerStyle,
         fontFamily: font ? `'${font.googleFamily}', sans-serif` : 'sans-serif',
       }}
     >
       <FontLoader fontId={design.fontId} />
+      <ListStyles style={design.listStyle} />
+      <VariationStyles variation={design.layoutVariation} />
       {renderWithLayout()}
     </div>
   )

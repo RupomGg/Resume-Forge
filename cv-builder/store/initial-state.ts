@@ -150,5 +150,13 @@ export const DEFAULT_DATA: CVData = {
       entrySubtitle: false,
       linkIcons: false,
     },
+    layoutVariation: 'classic',
+    titleSize: 11,
+    subtitleSize: 9,
+    subtitleStyle: 'bold',
+    subtitlePlacement: 'below-title',
+    descriptionIndentation: 0,
+    listStyle: 'bullet',
+    entryLayoutId: 'layout-4',
   },
 }
