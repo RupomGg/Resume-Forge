@@ -7,12 +7,29 @@ export type DateFormat = 'full' | 'short' | 'numeric' | 'year'
 export type PageSize = 'a4' | 'letter'
 export type LayoutType = 'one-column' | 'sidebar-left' | 'sidebar-right'
 export type DividerStyle = 'none' | 'thin' | 'thick' | 'colored'
-export type FontCategory = 'serif' | 'sans-serif' | 'monospace'
+export type FontCategory = 'serif' | 'sans-serif' | 'monospace' | 'recommended'
 export type ColorMode = 'basic' | 'advanced' | 'border'
 export type ColorType = 'accent' | 'multi' | 'image'
 export type SubtitleStyle = 'normal' | 'italic' | 'bold' | 'bold-italic'
 export type SubtitlePlacement = 'below-title' | 'beside-title' | 'right-aligned'
 export type ListStyle = 'none' | 'bullet' | 'dash' | 'check'
+export type HeadingStyle = 'simple' | 'boxed' | 'underlined' | 'side-line' | 'minimal' | 'decorative' | 'zigzag' | 'double-line' | 'pill' | 'modern-split' | 'bracket'
+export type HeadingCase = 'capitalize' | 'uppercase'
+export type HeaderAlignment = 'left' | 'center'
+export type DetailsArrangement = 'stacked' | 'brick' | 'columns' | 'icon' | 'bullet' | 'bar'
+export type NameSize = 'xs' | 's' | 'm' | 'l' | 'xl'
+export type TitleSize = 's' | 'm' | 'l'
+export type TitlePosition = 'inline' | 'below'
+export type TitleStyle = 'normal' | 'italic'
+export type PhotoPosition = 'left' | 'top' | 'right'
+export type PhotoSize = 'xs' | 's' | 'm' | 'l' | 'xl'
+export type PhotoShape = 'circle' | 'square' | 'rounded-square' | 'portrait' | 'rounded-portrait'
+export type SkillsLayout = 'grid' | 'rows' | 'compact' | 'bubble' | 'level'
+export type GridColumns = 1 | 2 | 3 | 4
+export type RowSpacing = 'tight' | 'spacious'
+export type ItemSeparator = 'bullet' | 'pipe' | 'comma'
+export type SubinfoStyle = 'colon' | 'dash' | 'bracket'
+export type LevelVisualizer = 'text' | 'dots' | 'bar'
 
 export interface AccentColorApplication {
   name: boolean
@@ -211,10 +228,21 @@ export interface CVSection {
   underline?: boolean
 }
 
+export interface FooterSettings {
+  showPageNumbers: boolean
+  showEmail: boolean
+  showName: boolean
+  useCustomFooter: boolean
+  leftColumn: string
+  centerColumn: string
+  rightColumn: string
+}
+
 export interface DesignSettings {
   templateId: string
   fontId: string
   colorThemeId: string
+  customAccentColor?: string
   layout: LayoutType
   pageSize: PageSize
   dividerStyle: DividerStyle
@@ -242,6 +270,47 @@ export interface DesignSettings {
    descriptionIndentation: number
   listStyle: ListStyle
   entryLayoutId: string
+  footer: FooterSettings
+  
+  // Section Headings
+  headingStyle: HeadingStyle
+  headingCase: HeadingCase
+  headingSize: number
+  showHeadingIcons: boolean
+
+  // Header Styling
+  headerAlignment: HeaderAlignment
+  detailsArrangement: DetailsArrangement
+  nameSize: NameSize
+  nameBold: boolean
+  nameFontFamily: 'body' | 'creative'
+  titleSizeScale: TitleSize
+  titlePosition: TitlePosition
+  titleStyle: TitleStyle
+  showPhoto: boolean
+  photoGrayscale: boolean
+  photoPosition: PhotoPosition
+  photoSizeScale: PhotoSize
+  photoShape: PhotoShape
+
+  // Skills Customization
+  skillsLayout: SkillsLayout
+  skillsGridColumns: GridColumns
+  skillsRowSpacing: RowSpacing
+  skillsShowRowBullets: boolean
+  skillsRowSubinfoStyle: SubinfoStyle
+  skillsCompactSeparator: ItemSeparator
+  skillsCompactSubinfoStyle: SubinfoStyle
+  skillsBubbleSubinfoStyle: SubinfoStyle
+  skillsLevelVisualizer: LevelVisualizer
+
+  // Resume Settings
+  resumeHideEmptySections: boolean
+  resumeSummaryInHeader: boolean
+  resumeShowSummaryHeading: boolean
+  resumeEducationOrder: 'title-first' | 'subtitle-first'
+  resumeExperienceOrder: 'title-first' | 'subtitle-first'
+  resumeGroupPromotions: boolean
 }
 
 export interface ProfessionalSummary {
@@ -278,6 +347,7 @@ export interface FontDefinition {
   googleFamily: string
   category: FontCategory
   isFree: boolean
+  isRecommended?: boolean
 }
 
 export interface ColorTheme {

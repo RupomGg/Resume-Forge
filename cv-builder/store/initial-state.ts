@@ -124,6 +124,7 @@ export const DEFAULT_DATA: CVData = {
     templateId: 'classic',
     fontId: 'lato',
     colorThemeId: 'charcoal',
+    customAccentColor: undefined,
     layout: 'one-column',
     pageSize: 'a4',
     dividerStyle: 'thin',
@@ -158,5 +159,54 @@ export const DEFAULT_DATA: CVData = {
     descriptionIndentation: 0,
     listStyle: 'bullet',
     entryLayoutId: 'layout-4',
+    footer: {
+      showPageNumbers: true,
+      showEmail: false,
+      showName: false,
+      useCustomFooter: false,
+      leftColumn: '{{name}}',
+      centerColumn: '{{page}} / {{pages}}',
+      rightColumn: '{{email}}',
+    },
+    headingStyle: 'simple',
+    headingCase: 'uppercase',
+    headingSize: 10,
+    showHeadingIcons: false,
+
+    // Header Styling Defaults
+    headerAlignment: 'left',
+    detailsArrangement: 'bullet',
+    nameSize: 'm',
+    nameBold: true,
+    nameFontFamily: 'body',
+    titleSizeScale: 'm',
+    titlePosition: 'inline',
+    titleStyle: 'italic',
+    showPhoto: true,
+    photoGrayscale: false,
+    photoPosition: 'left',
+    photoSizeScale: 's',
+    photoShape: 'circle',
+
+    // Skills Customization Defaults
+    skillsLayout: 'grid',
+    skillsGridColumns: 3,
+    skillsRowSpacing: 'spacious',
+    skillsShowRowBullets: true,
+    skillsRowSubinfoStyle: 'bracket',
+    skillsCompactSeparator: 'bullet',
+    skillsCompactSubinfoStyle: 'bracket',
+    skillsBubbleSubinfoStyle: 'bracket',
+    skillsLevelVisualizer: 'dots',
+
+    // Resume Settings Defaults
+    resumeHideEmptySections: true,
+    resumeSummaryInHeader: false,
+    resumeShowSummaryHeading: true,
+    resumeEducationOrder: 'title-first',
+    resumeExperienceOrder: 'subtitle-first', // Matching the image's active state "Employer - Job Title" usually implies subtitle first if Job Title is title? 
+    // Wait, in the image "Employer - Job Title" is on the right, purple. 
+    // Usually title is Job Title. So right button is subtitle-first.
+    resumeGroupPromotions: false,
   },
 }

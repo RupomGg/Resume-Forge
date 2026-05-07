@@ -1,0 +1,1996 @@
+{
+  "meta": {
+    "version": "1.0",
+    "totalTemplates": 25,
+    "categories": ["simple", "modern", "creative"],
+    "description": "Complete template definitions for the CV Builder. Each template defines its visual identity, layout, typography, color tokens, and per-element styling commands. These are consumed by the template renderer components."
+  },
+
+  "sharedTokenSchema": {
+    "description": "Every template must define ALL of these tokens. The renderer injects them as CSS variables on the CV root element.",
+    "requiredTokens": [
+      "--cv-accent",
+      "--cv-accent-light",
+      "--cv-header-bg",
+      "--cv-header-text",
+      "--cv-header-subtitle",
+      "--cv-section-title",
+      "--cv-body-text",
+      "--cv-muted-text",
+      "--cv-divider",
+      "--cv-sidebar-bg",
+      "--cv-sidebar-text",
+      "--cv-sidebar-accent",
+      "--cv-link",
+      "--cv-tag-bg",
+      "--cv-tag-text",
+      "--cv-skill-bar-bg",
+      "--cv-skill-bar-fill",
+      "--cv-page-bg"
+    ]
+  },
+
+  "templates": [
+
+    {
+      "id": "classic-serif",
+      "name": "Classic Serif",
+      "category": "simple",
+      "description": "Multi-column serif layout, black & white, timeless and formal.",
+      "tags": ["serif", "minimal", "ats-safe", "black-white", "two-column"],
+      "layout": {
+        "type": "two-column",
+        "columnRatio": "65/35",
+        "headerStyle": "centered",
+        "sidebarPosition": "right"
+      },
+      "defaultFont": "merriweather",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1a1a1a",
+        "--cv-accent-light": "#f0f0f0",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#111111",
+        "--cv-header-subtitle": "#555555",
+        "--cv-section-title": "#111111",
+        "--cv-body-text": "#222222",
+        "--cv-muted-text": "#777777",
+        "--cv-divider": "#cccccc",
+        "--cv-sidebar-bg": "#f7f7f7",
+        "--cv-sidebar-text": "#222222",
+        "--cv-sidebar-accent": "#1a1a1a",
+        "--cv-link": "#333333",
+        "--cv-tag-bg": "#eeeeee",
+        "--cv-tag-text": "#333333",
+        "--cv-skill-bar-bg": "#e0e0e0",
+        "--cv-skill-bar-fill": "#1a1a1a",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "700",
+        "nameTransform": "none",
+        "nameFontStyle": "normal",
+        "nameLetterSpacing": "0.02em",
+        "jobTitleSize": "1em",
+        "jobTitleWeight": "400",
+        "jobTitleStyle": "italic",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "itemSubtitleSize": "0.85em",
+        "itemSubtitleStyle": "italic",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "centered",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-centered",
+        "contactSeparator": " · ",
+        "photoStyle": "none",
+        "paddingBottom": "16px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleUnderline": false,
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "16px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["skills", "languages", "certifications", "interests"]
+      },
+      "skills": {
+        "defaultDisplayStyle": "plain",
+        "tagBorderRadius": "2px",
+        "barHeight": "4px",
+        "dotSize": "8px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "sidebarBorder": "1px solid #dddddd",
+        "pageBackground": "none",
+        "borderPattern": "none"
+      }
+    },
+
+    {
+      "id": "editorial-rule",
+      "name": "Editorial Rule",
+      "category": "simple",
+      "description": "Ruled lines, structured, precise — journalism-meets-resume aesthetic.",
+      "tags": ["minimal", "one-column", "ruled", "ats-safe", "clean"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "lato",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#0d0d0d",
+        "--cv-accent-light": "#f5f5f5",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#000000",
+        "--cv-header-subtitle": "#444444",
+        "--cv-section-title": "#000000",
+        "--cv-body-text": "#1a1a1a",
+        "--cv-muted-text": "#888888",
+        "--cv-divider": "#000000",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#1a1a1a",
+        "--cv-sidebar-accent": "#000000",
+        "--cv-link": "#000000",
+        "--cv-tag-bg": "#f0f0f0",
+        "--cv-tag-text": "#111111",
+        "--cv-skill-bar-bg": "#e8e8e8",
+        "--cv-skill-bar-fill": "#0d0d0d",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.2em",
+        "nameWeight": "900",
+        "nameTransform": "none",
+        "nameFontStyle": "normal",
+        "nameLetterSpacing": "-0.02em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "jobTitleStyle": "normal",
+        "sectionTitleSize": "0.7em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.18em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "600",
+        "itemSubtitleSize": "0.85em",
+        "itemSubtitleStyle": "normal",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerThickness": "3px",
+        "dividerColor": "#000000",
+        "contactLayout": "inline-left",
+        "contactSeparator": " | ",
+        "photoStyle": "none",
+        "paddingBottom": "12px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "inline-left",
+        "titleUnderline": true,
+        "titleUnderlineThickness": "2px",
+        "titleBorderLeft": false,
+        "itemSpacing": "8px",
+        "sectionSpacing": "16px"
+      },
+      "skills": {
+        "defaultDisplayStyle": "plain",
+        "tagBorderRadius": "0px"
+      },
+      "decorations": {
+        "headerAccentBar": true,
+        "headerAccentBarHeight": "4px",
+        "headerAccentBarColor": "#000000",
+        "pageBackground": "none",
+        "borderPattern": "none"
+      }
+    },
+
+    {
+      "id": "steady-form",
+      "name": "Steady Form",
+      "category": "simple",
+      "description": "Stable grid structure, no decoration, all substance — built for corporate environments.",
+      "tags": ["minimal", "one-column", "ats-safe", "structured", "plain"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "roboto",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.4,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#2b2b2b",
+        "--cv-accent-light": "#f2f2f2",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#111111",
+        "--cv-header-subtitle": "#555555",
+        "--cv-section-title": "#2b2b2b",
+        "--cv-body-text": "#2b2b2b",
+        "--cv-muted-text": "#888888",
+        "--cv-divider": "#d6d6d6",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2b2b2b",
+        "--cv-sidebar-accent": "#2b2b2b",
+        "--cv-link": "#2b2b2b",
+        "--cv-tag-bg": "#eeeeee",
+        "--cv-tag-text": "#333333",
+        "--cv-skill-bar-bg": "#e4e4e4",
+        "--cv-skill-bar-fill": "#2b2b2b",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "1.8em",
+        "nameWeight": "500",
+        "nameTransform": "none",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "600",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.1em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "600",
+        "itemSubtitleSize": "0.85em",
+        "dateSize": "0.8em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-left",
+        "contactSeparator": "  ·  ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "16px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "precision-line",
+      "name": "Precision Line",
+      "category": "simple",
+      "description": "Tight typographic layout with precise spacing — every millimeter intentional.",
+      "tags": ["minimal", "one-column", "compact", "ats-safe", "dense"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "open-sans",
+      "defaultFontSize": 9.5,
+      "defaultLineHeight": 1.35,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1c1c1c",
+        "--cv-accent-light": "#f0f0f0",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#0d0d0d",
+        "--cv-header-subtitle": "#4a4a4a",
+        "--cv-section-title": "#1c1c1c",
+        "--cv-body-text": "#1c1c1c",
+        "--cv-muted-text": "#7a7a7a",
+        "--cv-divider": "#c8c8c8",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#1c1c1c",
+        "--cv-sidebar-accent": "#1c1c1c",
+        "--cv-link": "#1c1c1c",
+        "--cv-tag-bg": "#ededed",
+        "--cv-tag-text": "#1c1c1c",
+        "--cv-skill-bar-bg": "#e0e0e0",
+        "--cv-skill-bar-fill": "#1c1c1c",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "1.7em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0.01em",
+        "jobTitleSize": "0.88em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.68em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.2em",
+        "itemTitleSize": "0.88em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.76em",
+        "bodySize": "0.82em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": false,
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none",
+        "paddingBottom": "10px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "inline-rule",
+        "titleBorderLeft": false,
+        "itemSpacing": "7px",
+        "sectionSpacing": "12px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "true-blue",
+      "name": "True Blue",
+      "category": "simple",
+      "description": "Subtle blue accent on a clean one-column layout — professional and approachable.",
+      "tags": ["blue", "one-column", "ats-safe", "color-accent", "approachable"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "lato",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1a5f9c",
+        "--cv-accent-light": "#e8f1fa",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#111111",
+        "--cv-header-subtitle": "#1a5f9c",
+        "--cv-section-title": "#1a5f9c",
+        "--cv-body-text": "#2a2a2a",
+        "--cv-muted-text": "#7a7a7a",
+        "--cv-divider": "#c5d9ef",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2a2a2a",
+        "--cv-sidebar-accent": "#1a5f9c",
+        "--cv-link": "#1a5f9c",
+        "--cv-tag-bg": "#e8f1fa",
+        "--cv-tag-text": "#1a5f9c",
+        "--cv-skill-bar-bg": "#dde9f5",
+        "--cv-skill-bar-fill": "#1a5f9c",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "2px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "corporate",
+      "name": "Corporate",
+      "category": "simple",
+      "description": "Formal, enterprise-ready. The safe choice for finance, law, and consulting.",
+      "tags": ["formal", "one-column", "ats-safe", "enterprise", "conservative"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "centered",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "open-sans",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.4,
+      "defaultPageSize": "letter",
+      "colors": {
+        "--cv-accent": "#2c3e50",
+        "--cv-accent-light": "#eaecee",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#2c3e50",
+        "--cv-header-subtitle": "#5d6d7e",
+        "--cv-section-title": "#2c3e50",
+        "--cv-body-text": "#2c3e50",
+        "--cv-muted-text": "#85929e",
+        "--cv-divider": "#aab7b8",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2c3e50",
+        "--cv-sidebar-accent": "#2c3e50",
+        "--cv-link": "#2c3e50",
+        "--cv-tag-bg": "#eaecee",
+        "--cv-tag-text": "#2c3e50",
+        "--cv-skill-bar-bg": "#d5dbdb",
+        "--cv-skill-bar-fill": "#2c3e50",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "1.9em",
+        "nameWeight": "600",
+        "nameTransform": "uppercase",
+        "nameLetterSpacing": "0.08em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.15em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.8em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "centered",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-centered",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "atlantic-blue",
+      "name": "Atlantic Blue",
+      "category": "modern",
+      "description": "Bold blue sidebar with clean multi-column layout — confident and modern.",
+      "tags": ["blue", "sidebar", "two-column", "modern", "bold"],
+      "layout": {
+        "type": "sidebar-left",
+        "columnRatio": "32/68",
+        "headerStyle": "banner",
+        "sidebarPosition": "left"
+      },
+      "defaultFont": "montserrat",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1565c0",
+        "--cv-accent-light": "#e3f0ff",
+        "--cv-header-bg": "#1565c0",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#90caf9",
+        "--cv-section-title": "#1565c0",
+        "--cv-body-text": "#212121",
+        "--cv-muted-text": "#757575",
+        "--cv-divider": "#bbdefb",
+        "--cv-sidebar-bg": "#1565c0",
+        "--cv-sidebar-text": "#ffffff",
+        "--cv-sidebar-accent": "#90caf9",
+        "--cv-link": "#1565c0",
+        "--cv-tag-bg": "#e3f2fd",
+        "--cv-tag-text": "#1565c0",
+        "--cv-skill-bar-bg": "#4d86c9",
+        "--cv-skill-bar-fill": "#ffffff",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-in-banner",
+        "showDividerBelow": false,
+        "contactLayout": "stacked",
+        "photoStyle": "circle-in-sidebar",
+        "photoSize": "90px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "20px 14px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["personal-contact", "skills", "languages", "interests"]
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "mercury-flow",
+      "name": "Mercury Flow",
+      "category": "modern",
+      "description": "Smooth flowing one-column layout — ideal for seasoned professionals.",
+      "tags": ["one-column", "modern", "generous", "ats-safe", "elegant"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "raleway",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.55,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#37474f",
+        "--cv-accent-light": "#eceff1",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#1a2327",
+        "--cv-header-subtitle": "#546e7a",
+        "--cv-section-title": "#37474f",
+        "--cv-body-text": "#37474f",
+        "--cv-muted-text": "#90a4ae",
+        "--cv-divider": "#cfd8dc",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#37474f",
+        "--cv-sidebar-accent": "#37474f",
+        "--cv-link": "#546e7a",
+        "--cv-tag-bg": "#eceff1",
+        "--cv-tag-text": "#37474f",
+        "--cv-skill-bar-bg": "#cfd8dc",
+        "--cv-skill-bar-fill": "#37474f",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.3em",
+        "nameWeight": "300",
+        "nameLetterSpacing": "0.04em",
+        "jobTitleSize": "1em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.8em",
+        "sectionTitleWeight": "600",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.14em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.8em",
+        "bodySize": "0.87em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-right",
+        "photoSize": "80px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "12px",
+        "sectionSpacing": "22px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "saffron-line",
+      "name": "Saffron Line",
+      "category": "modern",
+      "description": "Amber accent lines on a modern grid — warm, confident, and contemporary.",
+      "tags": ["amber", "one-column", "modern", "warm", "accent-line"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "source-sans-pro",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#e07b00",
+        "--cv-accent-light": "#fff3e0",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#1a1a1a",
+        "--cv-header-subtitle": "#e07b00",
+        "--cv-section-title": "#1a1a1a",
+        "--cv-body-text": "#333333",
+        "--cv-muted-text": "#888888",
+        "--cv-divider": "#ffe0a0",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#333333",
+        "--cv-sidebar-accent": "#e07b00",
+        "--cv-link": "#e07b00",
+        "--cv-tag-bg": "#fff3e0",
+        "--cv-tag-text": "#b35c00",
+        "--cv-skill-bar-bg": "#ffdea0",
+        "--cv-skill-bar-fill": "#e07b00",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.1em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "3px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": true,
+        "titleBorderLeftWidth": "3px",
+        "titleBorderLeftColor": "var(--cv-accent)",
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": true,
+        "headerAccentBarHeight": "3px",
+        "headerAccentBarColor": "var(--cv-accent)"
+      }
+    },
+
+    {
+      "id": "hunter-green",
+      "name": "Hunter Green",
+      "category": "modern",
+      "description": "Deep forest green sidebar — business-ready with a sophisticated edge.",
+      "tags": ["green", "sidebar", "two-column", "modern", "sophisticated"],
+      "layout": {
+        "type": "sidebar-left",
+        "columnRatio": "30/70",
+        "headerStyle": "banner",
+        "sidebarPosition": "left"
+      },
+      "defaultFont": "nunito",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#2e5e2e",
+        "--cv-accent-light": "#e8f5e9",
+        "--cv-header-bg": "#2e5e2e",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#a5d6a7",
+        "--cv-section-title": "#2e5e2e",
+        "--cv-body-text": "#1a1a1a",
+        "--cv-muted-text": "#6d6d6d",
+        "--cv-divider": "#c8e6c9",
+        "--cv-sidebar-bg": "#2e5e2e",
+        "--cv-sidebar-text": "#ffffff",
+        "--cv-sidebar-accent": "#a5d6a7",
+        "--cv-link": "#2e5e2e",
+        "--cv-tag-bg": "#e8f5e9",
+        "--cv-tag-text": "#2e5e2e",
+        "--cv-skill-bar-bg": "#4c8c4c",
+        "--cv-skill-bar-fill": "#ffffff",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.1em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-in-banner",
+        "showDividerBelow": false,
+        "contactLayout": "stacked",
+        "photoStyle": "circle-in-sidebar",
+        "photoSize": "88px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "20px 14px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["personal-contact", "skills", "languages", "certifications"]
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "quicksilver",
+      "name": "Quicksilver",
+      "category": "modern",
+      "description": "Cool silver tones with a contemporary edge — sleek and tech-forward.",
+      "tags": ["silver", "gray", "one-column", "modern", "sleek"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "banner",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "ubuntu",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#607d8b",
+        "--cv-accent-light": "#eceff1",
+        "--cv-header-bg": "#455a64",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#b0bec5",
+        "--cv-section-title": "#607d8b",
+        "--cv-body-text": "#37474f",
+        "--cv-muted-text": "#90a4ae",
+        "--cv-divider": "#cfd8dc",
+        "--cv-sidebar-bg": "#eceff1",
+        "--cv-sidebar-text": "#37474f",
+        "--cv-sidebar-accent": "#607d8b",
+        "--cv-link": "#607d8b",
+        "--cv-tag-bg": "#eceff1",
+        "--cv-tag-text": "#546e7a",
+        "--cv-skill-bar-bg": "#cfd8dc",
+        "--cv-skill-bar-fill": "#607d8b",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.1em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0.02em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "600",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.14em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-in-banner",
+        "bannerPadding": "24px 20px",
+        "showDividerBelow": false,
+        "contactLayout": "inline-left-on-banner",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-right-in-banner",
+        "photoSize": "80px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "cobalt-edge",
+      "name": "Cobalt Edge",
+      "category": "modern",
+      "description": "Bold cobalt blue left border accent — strong visual identity, ATS-compatible.",
+      "tags": ["blue", "one-column", "accent-border", "modern", "strong"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "montserrat",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1a3faa",
+        "--cv-accent-light": "#e8edff",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#0d1b3e",
+        "--cv-header-subtitle": "#1a3faa",
+        "--cv-section-title": "#1a3faa",
+        "--cv-body-text": "#1a1a2e",
+        "--cv-muted-text": "#7a7a99",
+        "--cv-divider": "#c5d0f5",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#1a1a2e",
+        "--cv-sidebar-accent": "#1a3faa",
+        "--cv-link": "#1a3faa",
+        "--cv-tag-bg": "#e8edff",
+        "--cv-tag-text": "#1a3faa",
+        "--cv-skill-bar-bg": "#c5d0f5",
+        "--cv-skill-bar-fill": "#1a3faa",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.2em",
+        "nameWeight": "800",
+        "nameLetterSpacing": "-0.01em",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "500",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-with-left-border",
+        "leftBorderWidth": "5px",
+        "leftBorderColor": "var(--cv-accent)",
+        "leftPadding": "16px",
+        "showDividerBelow": false,
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "none",
+        "titleLayout": "inline-rule",
+        "titleBorderLeft": true,
+        "titleBorderLeftWidth": "4px",
+        "titleBorderLeftColor": "var(--cv-accent)",
+        "itemSpacing": "10px",
+        "sectionSpacing": "20px"
+      },
+      "decorations": {
+        "pageLeftBorder": true,
+        "pageLeftBorderWidth": "5px",
+        "pageLeftBorderColor": "var(--cv-accent)"
+      }
+    },
+
+    {
+      "id": "silver-banner",
+      "name": "Silver Banner",
+      "category": "modern",
+      "description": "Full-width silver/charcoal banner header with clean white body.",
+      "tags": ["banner", "silver", "one-column", "modern", "clean"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "banner",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "source-sans-pro",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#5c6370",
+        "--cv-accent-light": "#f0f2f4",
+        "--cv-header-bg": "#3d444f",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#c0c8d0",
+        "--cv-section-title": "#3d444f",
+        "--cv-body-text": "#2a2a2a",
+        "--cv-muted-text": "#888888",
+        "--cv-divider": "#d8dce0",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2a2a2a",
+        "--cv-sidebar-accent": "#3d444f",
+        "--cv-link": "#5c6370",
+        "--cv-tag-bg": "#f0f2f4",
+        "--cv-tag-text": "#3d444f",
+        "--cv-skill-bar-bg": "#d8dce0",
+        "--cv-skill-bar-fill": "#3d444f",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.2em",
+        "nameWeight": "300",
+        "nameLetterSpacing": "0.06em",
+        "nameTransform": "uppercase",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "600",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.14em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "centered-in-banner",
+        "bannerPadding": "28px 24px",
+        "showDividerBelow": false,
+        "contactLayout": "inline-centered-on-banner",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-in-banner",
+        "photoSize": "76px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "refined",
+      "name": "Refined",
+      "category": "modern",
+      "description": "Subtle elegance with generous whitespace — confidence through restraint.",
+      "tags": ["elegant", "one-column", "whitespace", "modern", "understated"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "playfair-display",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.6,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#8a7355",
+        "--cv-accent-light": "#f7f3ed",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#1a1612",
+        "--cv-header-subtitle": "#8a7355",
+        "--cv-section-title": "#1a1612",
+        "--cv-body-text": "#2c2924",
+        "--cv-muted-text": "#9e9088",
+        "--cv-divider": "#e4ddd4",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2c2924",
+        "--cv-sidebar-accent": "#8a7355",
+        "--cv-link": "#8a7355",
+        "--cv-tag-bg": "#f7f3ed",
+        "--cv-tag-text": "#8a7355",
+        "--cv-skill-bar-bg": "#e4ddd4",
+        "--cv-skill-bar-fill": "#8a7355",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.4em",
+        "nameWeight": "400",
+        "nameFontStyle": "italic",
+        "nameLetterSpacing": "0.02em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.72em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.18em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "700",
+        "itemSubtitleSize": "0.86em",
+        "itemSubtitleStyle": "italic",
+        "dateSize": "0.8em",
+        "bodySize": "0.87em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-left",
+        "contactSeparator": "   ",
+        "photoStyle": "circle-right",
+        "photoSize": "80px"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "14px",
+        "sectionSpacing": "26px"
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "condensed-rule",
+      "name": "Condensed Rule",
+      "category": "modern",
+      "description": "Compact and information-dense — fits everything on one page without clutter.",
+      "tags": ["compact", "dense", "one-column", "modern", "ats-safe"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "roboto",
+      "defaultFontSize": 9,
+      "defaultLineHeight": 1.3,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#1a1a1a",
+        "--cv-accent-light": "#f2f2f2",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#0d0d0d",
+        "--cv-header-subtitle": "#555555",
+        "--cv-section-title": "#0d0d0d",
+        "--cv-body-text": "#1a1a1a",
+        "--cv-muted-text": "#808080",
+        "--cv-divider": "#cccccc",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#1a1a1a",
+        "--cv-sidebar-accent": "#1a1a1a",
+        "--cv-link": "#1a1a1a",
+        "--cv-tag-bg": "#f0f0f0",
+        "--cv-tag-text": "#1a1a1a",
+        "--cv-skill-bar-bg": "#e0e0e0",
+        "--cv-skill-bar-fill": "#1a1a1a",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "1.6em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.85em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.65em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.15em",
+        "itemTitleSize": "0.85em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.74em",
+        "bodySize": "0.8em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerThickness": "1px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "thin",
+        "titleLayout": "inline-rule",
+        "titleBorderLeft": false,
+        "itemSpacing": "5px",
+        "sectionSpacing": "10px"
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "simply-blue",
+      "name": "Simply Blue",
+      "category": "modern",
+      "description": "Minimalist with just the right amount of blue — calm, readable, professional.",
+      "tags": ["blue", "minimal", "one-column", "modern", "clean"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "open-sans",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#2563eb",
+        "--cv-accent-light": "#eff6ff",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#111827",
+        "--cv-header-subtitle": "#2563eb",
+        "--cv-section-title": "#2563eb",
+        "--cv-body-text": "#374151",
+        "--cv-muted-text": "#9ca3af",
+        "--cv-divider": "#bfdbfe",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#374151",
+        "--cv-sidebar-accent": "#2563eb",
+        "--cv-link": "#2563eb",
+        "--cv-tag-bg": "#dbeafe",
+        "--cv-tag-text": "#1d4ed8",
+        "--cv-skill-bar-bg": "#bfdbfe",
+        "--cv-skill-bar-fill": "#2563eb",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "600",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.8em",
+        "sectionTitleWeight": "600",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.1em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "2px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "minty",
+      "name": "Minty",
+      "category": "modern",
+      "description": "Fresh mint green tones — energetic, clean, perfect for creative professionals.",
+      "tags": ["green", "mint", "one-column", "modern", "fresh"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "nunito",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#059669",
+        "--cv-accent-light": "#ecfdf5",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#064e3b",
+        "--cv-header-subtitle": "#059669",
+        "--cv-section-title": "#059669",
+        "--cv-body-text": "#1f2937",
+        "--cv-muted-text": "#9ca3af",
+        "--cv-divider": "#a7f3d0",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#1f2937",
+        "--cv-sidebar-accent": "#059669",
+        "--cv-link": "#059669",
+        "--cv-tag-bg": "#d1fae5",
+        "--cv-tag-text": "#065f46",
+        "--cv-skill-bar-bg": "#a7f3d0",
+        "--cv-skill-bar-fill": "#059669",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.1em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.1em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "600",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "2px",
+        "contactLayout": "inline-left",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-right",
+        "photoSize": "72px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": true,
+        "titleBorderLeftWidth": "3px",
+        "titleBorderLeftColor": "var(--cv-accent)",
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "designer",
+      "name": "Designer",
+      "category": "modern",
+      "description": "Portfolio-style two-column layout — built for creative, design, and UX roles.",
+      "tags": ["two-column", "creative", "portfolio", "design", "modern"],
+      "layout": {
+        "type": "sidebar-right",
+        "columnRatio": "62/38",
+        "headerStyle": "left-aligned",
+        "sidebarPosition": "right"
+      },
+      "defaultFont": "raleway",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#7c3aed",
+        "--cv-accent-light": "#f5f3ff",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#1e1b4b",
+        "--cv-header-subtitle": "#7c3aed",
+        "--cv-section-title": "#7c3aed",
+        "--cv-body-text": "#1e1b4b",
+        "--cv-muted-text": "#8b5cf6",
+        "--cv-divider": "#ddd6fe",
+        "--cv-sidebar-bg": "#f5f3ff",
+        "--cv-sidebar-text": "#1e1b4b",
+        "--cv-sidebar-accent": "#7c3aed",
+        "--cv-link": "#7c3aed",
+        "--cv-tag-bg": "#ede9fe",
+        "--cv-tag-text": "#5b21b6",
+        "--cv-skill-bar-bg": "#ddd6fe",
+        "--cv-skill-bar-fill": "#7c3aed",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.3em",
+        "nameWeight": "700",
+        "nameLetterSpacing": "-0.02em",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "500",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-aligned",
+        "showDividerBelow": false,
+        "contactLayout": "stacked",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "none",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "12px",
+        "sectionSpacing": "20px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "0 16px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["skills", "languages", "certifications", "interests", "awards"]
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "opal-silk",
+      "name": "Opal Silk",
+      "category": "modern",
+      "description": "Soft elegant border accents — silky, refined, understated luxury.",
+      "tags": ["elegant", "border", "one-column", "modern", "soft"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "centered",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "pt-serif",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.55,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#b08d57",
+        "--cv-accent-light": "#fdf6e9",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#2a2016",
+        "--cv-header-subtitle": "#b08d57",
+        "--cv-section-title": "#2a2016",
+        "--cv-body-text": "#2a2016",
+        "--cv-muted-text": "#a0906a",
+        "--cv-divider": "#e8d9b8",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2a2016",
+        "--cv-sidebar-accent": "#b08d57",
+        "--cv-link": "#b08d57",
+        "--cv-tag-bg": "#fdf6e9",
+        "--cv-tag-text": "#b08d57",
+        "--cv-skill-bar-bg": "#e8d9b8",
+        "--cv-skill-bar-fill": "#b08d57",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.2em",
+        "nameWeight": "400",
+        "nameFontStyle": "italic",
+        "nameLetterSpacing": "0.04em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.72em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.2em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "itemSubtitleStyle": "italic",
+        "dateSize": "0.78em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "centered",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "1px",
+        "contactLayout": "inline-centered",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-center-above",
+        "photoSize": "80px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "centered",
+        "titleBorderLeft": false,
+        "itemSpacing": "12px",
+        "sectionSpacing": "22px"
+      },
+      "decorations": {
+        "pageBorder": true,
+        "pageBorderWidth": "1px",
+        "pageBorderColor": "var(--cv-accent)",
+        "pageBorderInset": "8px"
+      }
+    },
+
+    {
+      "id": "leaves",
+      "name": "Leaves",
+      "category": "creative",
+      "description": "Dark background with elegant botanical leaf border accents — dramatic and memorable.",
+      "tags": ["dark", "botanical", "creative", "decorative", "unique"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "centered",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "playfair-display",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#6aaa64",
+        "--cv-accent-light": "#1e3b1a",
+        "--cv-header-bg": "#1a2e16",
+        "--cv-header-text": "#f0ebe0",
+        "--cv-header-subtitle": "#6aaa64",
+        "--cv-section-title": "#6aaa64",
+        "--cv-body-text": "#1a2e16",
+        "--cv-muted-text": "#5a7a55",
+        "--cv-divider": "#8fbf88",
+        "--cv-sidebar-bg": "#1a2e16",
+        "--cv-sidebar-text": "#f0ebe0",
+        "--cv-sidebar-accent": "#6aaa64",
+        "--cv-link": "#6aaa64",
+        "--cv-tag-bg": "#1e3b1a",
+        "--cv-tag-text": "#6aaa64",
+        "--cv-skill-bar-bg": "#c8e0c6",
+        "--cv-skill-bar-fill": "#6aaa64",
+        "--cv-page-bg": "#f9f6ee"
+      },
+      "typography": {
+        "nameSize": "2.4em",
+        "nameWeight": "700",
+        "nameFontStyle": "italic",
+        "nameLetterSpacing": "0.02em",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.75em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.14em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "centered-in-banner",
+        "bannerPadding": "32px 20px",
+        "showDividerBelow": false,
+        "contactLayout": "inline-centered-on-banner",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-center-in-banner",
+        "photoSize": "84px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "centered",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "cornerDecorations": true,
+        "cornerDecorationType": "botanical-leaves",
+        "cornerDecorationsColor": "var(--cv-accent)",
+        "pageBackground": "var(--cv-page-bg)"
+      }
+    },
+
+    {
+      "id": "blue-neon",
+      "name": "Blue Neon",
+      "category": "creative",
+      "description": "Electric neon blue accents on dark background — bold, tech, unforgettable.",
+      "tags": ["dark", "neon", "creative", "tech", "bold", "vivid"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "banner",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "ubuntu",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#00d4ff",
+        "--cv-accent-light": "#001a2e",
+        "--cv-header-bg": "#030d1a",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#00d4ff",
+        "--cv-section-title": "#00d4ff",
+        "--cv-body-text": "#d0e8f8",
+        "--cv-muted-text": "#6696b8",
+        "--cv-divider": "#004466",
+        "--cv-sidebar-bg": "#030d1a",
+        "--cv-sidebar-text": "#d0e8f8",
+        "--cv-sidebar-accent": "#00d4ff",
+        "--cv-link": "#00d4ff",
+        "--cv-tag-bg": "#00182a",
+        "--cv-tag-text": "#00d4ff",
+        "--cv-skill-bar-bg": "#002244",
+        "--cv-skill-bar-fill": "#00d4ff",
+        "--cv-page-bg": "#041525"
+      },
+      "typography": {
+        "nameSize": "2.4em",
+        "nameWeight": "800",
+        "nameLetterSpacing": "0.04em",
+        "nameTransform": "uppercase",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.7em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.2em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "centered-in-banner",
+        "bannerPadding": "32px 20px",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "1px",
+        "contactLayout": "inline-centered-on-banner",
+        "contactSeparator": " · ",
+        "photoStyle": "none"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": true,
+        "titleBorderLeftWidth": "3px",
+        "titleBorderLeftColor": "var(--cv-accent)",
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "pageBackground": "var(--cv-page-bg)",
+        "glowEffect": true,
+        "glowColor": "var(--cv-accent)"
+      }
+    },
+
+    {
+      "id": "black-pattern",
+      "name": "Black Pattern",
+      "category": "creative",
+      "description": "Dark background with geometric pattern overlay — striking and editorial.",
+      "tags": ["dark", "pattern", "creative", "geometric", "editorial"],
+      "layout": {
+        "type": "sidebar-left",
+        "columnRatio": "33/67",
+        "headerStyle": "banner",
+        "sidebarPosition": "left"
+      },
+      "defaultFont": "montserrat",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#e8c547",
+        "--cv-accent-light": "#2a2200",
+        "--cv-header-bg": "#111111",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#e8c547",
+        "--cv-section-title": "#e8c547",
+        "--cv-body-text": "#222222",
+        "--cv-muted-text": "#777777",
+        "--cv-divider": "#333333",
+        "--cv-sidebar-bg": "#111111",
+        "--cv-sidebar-text": "#ffffff",
+        "--cv-sidebar-accent": "#e8c547",
+        "--cv-link": "#e8c547",
+        "--cv-tag-bg": "#2a2200",
+        "--cv-tag-text": "#e8c547",
+        "--cv-skill-bar-bg": "#333333",
+        "--cv-skill-bar-fill": "#e8c547",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2em",
+        "nameWeight": "800",
+        "nameTransform": "uppercase",
+        "nameLetterSpacing": "0.06em",
+        "jobTitleSize": "0.85em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.68em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.18em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.76em",
+        "bodySize": "0.84em"
+      },
+      "header": {
+        "layout": "centered-in-banner",
+        "bannerPadding": "28px 20px",
+        "showDividerBelow": false,
+        "contactLayout": "stacked",
+        "photoStyle": "circle-in-sidebar",
+        "photoSize": "88px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "9px",
+        "sectionSpacing": "16px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "20px 14px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["personal-contact", "skills", "languages", "interests"]
+      },
+      "decorations": {
+        "sidebarPattern": true,
+        "sidebarPatternType": "diagonal-lines",
+        "sidebarPatternColor": "rgba(255,255,255,0.04)",
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "flower",
+      "name": "Flower",
+      "category": "creative",
+      "description": "Classic elegant floral border decoration — timeless, feminine, formal.",
+      "tags": ["decorative", "floral", "border", "creative", "elegant", "formal"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "centered",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "crimson-text",
+      "defaultFontSize": 10.5,
+      "defaultLineHeight": 1.55,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#8b3a62",
+        "--cv-accent-light": "#fdf0f5",
+        "--cv-header-bg": "#ffffff",
+        "--cv-header-text": "#2d0a1e",
+        "--cv-header-subtitle": "#8b3a62",
+        "--cv-section-title": "#8b3a62",
+        "--cv-body-text": "#2d0a1e",
+        "--cv-muted-text": "#b07090",
+        "--cv-divider": "#e8c0d0",
+        "--cv-sidebar-bg": "#ffffff",
+        "--cv-sidebar-text": "#2d0a1e",
+        "--cv-sidebar-accent": "#8b3a62",
+        "--cv-link": "#8b3a62",
+        "--cv-tag-bg": "#fdf0f5",
+        "--cv-tag-text": "#8b3a62",
+        "--cv-skill-bar-bg": "#f0c8d8",
+        "--cv-skill-bar-fill": "#8b3a62",
+        "--cv-page-bg": "#fffbfc"
+      },
+      "typography": {
+        "nameSize": "2.4em",
+        "nameWeight": "400",
+        "nameFontStyle": "italic",
+        "nameLetterSpacing": "0.03em",
+        "jobTitleSize": "0.95em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.18em",
+        "itemTitleSize": "0.95em",
+        "itemTitleWeight": "700",
+        "itemSubtitleStyle": "italic",
+        "dateSize": "0.8em",
+        "bodySize": "0.88em"
+      },
+      "header": {
+        "layout": "centered",
+        "showDividerBelow": true,
+        "dividerColor": "var(--cv-accent)",
+        "dividerThickness": "1px",
+        "contactLayout": "inline-centered",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-center-above",
+        "photoSize": "84px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "centered",
+        "titleBorderLeft": false,
+        "itemSpacing": "12px",
+        "sectionSpacing": "20px"
+      },
+      "decorations": {
+        "cornerDecorations": true,
+        "cornerDecorationType": "floral-corners",
+        "cornerDecorationsColor": "var(--cv-accent)",
+        "pageBorder": true,
+        "pageBorderWidth": "1px",
+        "pageBorderColor": "var(--cv-accent)",
+        "pageBorderInset": "6px",
+        "pageBackground": "var(--cv-page-bg)"
+      }
+    },
+
+    {
+      "id": "coral-navy",
+      "name": "Coral Navy",
+      "category": "creative",
+      "description": "Warm coral and deep navy contrast — energetic, bold, contemporary.",
+      "tags": ["coral", "navy", "two-color", "creative", "bold", "warm"],
+      "layout": {
+        "type": "sidebar-left",
+        "columnRatio": "35/65",
+        "headerStyle": "split-color",
+        "sidebarPosition": "left"
+      },
+      "defaultFont": "nunito",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.45,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#e85d26",
+        "--cv-accent-light": "#fff0eb",
+        "--cv-header-bg": "#1b2a4a",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#f4a68a",
+        "--cv-section-title": "#e85d26",
+        "--cv-body-text": "#1b2a4a",
+        "--cv-muted-text": "#7a8aaa",
+        "--cv-divider": "#fbc9b0",
+        "--cv-sidebar-bg": "#1b2a4a",
+        "--cv-sidebar-text": "#ffffff",
+        "--cv-sidebar-accent": "#f4a68a",
+        "--cv-link": "#e85d26",
+        "--cv-tag-bg": "#fff0eb",
+        "--cv-tag-text": "#e85d26",
+        "--cv-skill-bar-bg": "#3d4e6a",
+        "--cv-skill-bar-fill": "#e85d26",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.1em",
+        "nameWeight": "800",
+        "nameLetterSpacing": "0",
+        "jobTitleSize": "0.9em",
+        "jobTitleWeight": "300",
+        "sectionTitleSize": "0.72em",
+        "sectionTitleWeight": "700",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.12em",
+        "itemTitleSize": "0.9em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.78em",
+        "bodySize": "0.85em"
+      },
+      "header": {
+        "layout": "left-in-banner",
+        "bannerPadding": "24px 20px",
+        "showDividerBelow": false,
+        "contactLayout": "stacked",
+        "photoStyle": "circle-in-sidebar",
+        "photoSize": "86px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "sidebar": {
+        "background": "var(--cv-sidebar-bg)",
+        "padding": "20px 14px",
+        "sectionTitleColor": "var(--cv-sidebar-accent)",
+        "textColor": "var(--cv-sidebar-text)",
+        "sections": ["personal-contact", "skills", "languages", "interests"]
+      },
+      "decorations": {
+        "pageBackground": "none"
+      }
+    },
+
+    {
+      "id": "happy",
+      "name": "Happy",
+      "category": "creative",
+      "description": "Bright, playful, full of energy — built for developers, makers, and creatives who want to stand out.",
+      "tags": ["bright", "playful", "creative", "developer", "colorful", "fun"],
+      "layout": {
+        "type": "one-column",
+        "headerStyle": "banner",
+        "sidebarPosition": "none"
+      },
+      "defaultFont": "ubuntu",
+      "defaultFontSize": 10,
+      "defaultLineHeight": 1.5,
+      "defaultPageSize": "a4",
+      "colors": {
+        "--cv-accent": "#f43f5e",
+        "--cv-accent-light": "#fff1f3",
+        "--cv-header-bg": "#f43f5e",
+        "--cv-header-text": "#ffffff",
+        "--cv-header-subtitle": "#fecdd3",
+        "--cv-section-title": "#f43f5e",
+        "--cv-body-text": "#1f1f2e",
+        "--cv-muted-text": "#9ca3af",
+        "--cv-divider": "#fecdd3",
+        "--cv-sidebar-bg": "#fff1f3",
+        "--cv-sidebar-text": "#1f1f2e",
+        "--cv-sidebar-accent": "#f43f5e",
+        "--cv-link": "#f43f5e",
+        "--cv-tag-bg": "#ffe4e8",
+        "--cv-tag-text": "#be123c",
+        "--cv-skill-bar-bg": "#fecdd3",
+        "--cv-skill-bar-fill": "#f43f5e",
+        "--cv-page-bg": "#ffffff"
+      },
+      "typography": {
+        "nameSize": "2.4em",
+        "nameWeight": "900",
+        "nameLetterSpacing": "-0.02em",
+        "jobTitleSize": "1em",
+        "jobTitleWeight": "400",
+        "sectionTitleSize": "0.78em",
+        "sectionTitleWeight": "800",
+        "sectionTitleTransform": "uppercase",
+        "sectionTitleLetterSpacing": "0.08em",
+        "itemTitleSize": "0.92em",
+        "itemTitleWeight": "700",
+        "dateSize": "0.8em",
+        "bodySize": "0.86em"
+      },
+      "header": {
+        "layout": "left-in-banner",
+        "bannerPadding": "28px 24px",
+        "showDividerBelow": false,
+        "contactLayout": "inline-left-on-banner",
+        "contactSeparator": " · ",
+        "photoStyle": "circle-right-in-banner",
+        "photoSize": "80px"
+      },
+      "sections": {
+        "dividerStyle": "colored",
+        "titleLayout": "above",
+        "titleBorderLeft": false,
+        "itemSpacing": "10px",
+        "sectionSpacing": "18px"
+      },
+      "decorations": {
+        "headerAccentBar": false,
+        "pageBackground": "none",
+        "sectionTitleDot": true,
+        "sectionTitleDotColor": "var(--cv-accent)"
+      }
+    }
+  ],
+
+  "commandReference": {
+    "description": "All possible values for every command field across all templates.",
+
+    "layout.type": {
+      "values": ["one-column", "two-column", "sidebar-left", "sidebar-right"],
+      "description": "Determines the overall column structure of the CV."
+    },
+    "layout.headerStyle": {
+      "values": ["left-aligned", "centered", "banner", "left-in-banner", "centered-in-banner", "split-color", "left-with-left-border"],
+      "description": "Controls how the header (name, contact) is displayed."
+    },
+
+    "header.photoStyle": {
+      "values": ["none", "circle-right", "circle-left", "circle-center-above", "circle-in-sidebar", "circle-right-in-banner", "circle-center-in-banner", "circle-in-banner"],
+      "description": "Position and shape of the profile photo."
+    },
+    "header.contactLayout": {
+      "values": ["inline-left", "inline-centered", "inline-centered-on-banner", "inline-left-on-banner", "stacked"],
+      "description": "How contact info items are arranged."
+    },
+
+    "sections.dividerStyle": {
+      "values": ["none", "thin", "thick", "colored"],
+      "description": "The style of the horizontal line below each section title."
+    },
+    "sections.titleLayout": {
+      "values": ["above", "inline-left", "inline-rule", "centered"],
+      "description": "Positioning and rule behavior of section titles."
+    },
+
+    "decorations.cornerDecorationType": {
+      "values": ["botanical-leaves", "floral-corners", "geometric-corners", "none"],
+      "description": "SVG/CSS corner decoration pattern."
+    },
+    "decorations.sidebarPatternType": {
+      "values": ["diagonal-lines", "dots", "crosshatch", "waves", "none"],
+      "description": "Repeating CSS background pattern for the sidebar."
+    },
+
+    "skills.defaultDisplayStyle": {
+      "values": ["tags", "bars", "dots", "plain"],
+      "description": "How skill items are rendered. Can be overridden per-resume by the user."
+    },
+
+    "typography.nameTransform": {
+      "values": ["none", "uppercase", "capitalize"],
+      "description": "CSS text-transform applied to the full name."
+    },
+    "typography.nameFontStyle": {
+      "values": ["normal", "italic"],
+      "description": "Whether the name is shown in italic."
+    },
+
+    "sidebar.sections": {
+      "values": ["personal-contact", "skills", "languages", "certifications", "interests", "awards", "volunteer", "projects"],
+      "description": "Which section IDs are rendered in the sidebar vs. the main column. Only relevant for sidebar layout templates."
+    }
+  }
+}

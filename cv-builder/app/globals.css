@@ -6,16 +6,16 @@
 
 @theme {
   /* Surface & Background */
-  --color-surface: #FCF9F2;
-  --color-surface-bright: #FCF9F2;
-  --color-surface-dim: #DCDAD3;
+  --color-surface: #F7F7F7;
+  --color-surface-bright: #F7F7F7;
+  --color-surface-dim: #E5E5E5;
   --color-surface-container-lowest: #FFFFFF;
-  --color-surface-container-low: #F6F3EC;
-  --color-surface-container: #F1EEE7;
-  --color-surface-container-high: #EBE8E1;
-  --color-surface-container-highest: #E5E2DB;
-  --color-surface-variant: #E5E2DB;
-  --color-background: #FCF9F2;
+  --color-surface-container-low: #F0F0F0;
+  --color-surface-container: #EAEAEA;
+  --color-surface-container-high: #E0E0E0;
+  --color-surface-container-highest: #D5D5D5;
+  --color-surface-variant: #D5D5D5;
+  --color-background: #F7F7F7;
 
   /* Primary (Forest Green) */
   --color-primary: #154212;
@@ -126,7 +126,7 @@
 }
 
 :root {
-  --background: #FCF9F2;
+  --background: #F7F7F7;
   --foreground: #1C1C18;
   
   /* CV-specific design variables (overridden by themes at runtime) */

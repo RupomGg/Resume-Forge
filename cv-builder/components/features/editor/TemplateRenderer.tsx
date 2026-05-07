@@ -11,7 +11,20 @@ import {
   MapPin, 
   Globe, 
   Link as LinkIcon, 
-  GitBranch 
+  GitBranch,
+  User,
+  Briefcase,
+  GraduationCap,
+  Award,
+  BookOpen,
+  Code,
+  Languages,
+  Users,
+  Star,
+  FileText,
+  Search,
+  Wrench,
+  Milestone
 } from 'lucide-react'
 
 import { useShallow } from 'zustand/react/shallow'
@@ -31,66 +44,207 @@ function FontLoader({ fontId }: { fontId: string }) {
 
 // ─── Shared Components ────────────────────────────────────────────────────────
 
-const SectionTitle = ({ children, themeId, dividerStyle, templateId, applyAccentTo }: { 
-  children: React.ReactNode, 
-  themeId: string, 
-  dividerStyle: string, 
-  templateId: string,
-  applyAccentTo: any 
-}) => {
-  const theme = getTheme(themeId)
-  const headingColor = applyAccentTo?.headings ? theme.accentColor : theme.sectionTitleColor
-  
-  if (templateId === 'bold') {
-    return (
-      <div className="mb-5 flex items-center gap-4">
-        <h2 
-          className="text-sm font-black uppercase tracking-[0.3em] whitespace-nowrap"
-          style={{ color: headingColor }}
-        >
-          {children}
-        </h2>
-        <div className="flex-1 h-[4px]" style={{ backgroundColor: `${theme.accentColor}20` }} />
-      </div>
-    )
-  }
+const resolvePlaceholders = (text: string, personal: any) => {
+  if (!text) return ''
+  return text
+    .replace(/{{name}}/g, personal.fullName || '')
+    .replace(/{{email}}/g, personal.email || '')
+    .replace(/{{phone}}/g, personal.phone || '')
+    .replace(/{{page}}/g, '1') // Mock for preview
+    .replace(/{{pages}}/g, '1') // Mock for preview
+}
 
-  if (templateId === 'modern') {
-    return (
-      <div className="mb-4">
-        <h2 
-          className="text-sm font-bold uppercase tracking-[0.2em] mb-2 px-3 py-1 inline-block rounded"
-          style={{ backgroundColor: `${theme.accentColor}15`, color: headingColor }}
-        >
-          {children}
-        </h2>
-        <div className="w-full h-[1px] bg-gray-100" />
-      </div>
-    )
-  }
+const Footer = ({ design, personal }: { design: any, personal: any }) => {
+  const { footer } = design
+  if (!footer) return null
 
-  if (templateId === 'minimal') {
-    return (
-      <div className="mb-4 border-l-4 pl-4" style={{ borderColor: theme.accentColor }}>
-        <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: headingColor }}>
-          {children}
-        </h2>
-      </div>
-    )
-  }
+  const leftContent = footer.useCustomFooter 
+    ? resolvePlaceholders(footer.leftColumn, personal)
+    : (footer.showName ? personal.fullName : '')
+
+  const centerContent = footer.useCustomFooter
+    ? resolvePlaceholders(footer.centerColumn, personal)
+    : (footer.showPageNumbers ? '1 / 1' : '')
+
+  const rightContent = footer.useCustomFooter
+    ? resolvePlaceholders(footer.rightColumn, personal)
+    : (footer.showEmail ? personal.email : '')
+
+  // Don't render if all empty
+  if (!leftContent && !centerContent && !rightContent) return null
 
   return (
-    <div className="mb-3">
+    <div 
+      className="mt-8 pt-4 border-t border-gray-100 flex justify-between items-end text-[8pt] text-gray-400"
+      style={{ 
+        fontFamily: 'inherit',
+        marginTop: `${design.marginBottom}mm` // Use margin bottom as spacing
+      }}
+    >
+      <div className="flex-1 text-left whitespace-pre-line">{leftContent}</div>
+      <div className="flex-1 text-center whitespace-pre-line">{centerContent}</div>
+      <div className="flex-1 text-right whitespace-pre-line">{rightContent}</div>
+    </div>
+  )
+}
+
+const getSectionIcon = (id: string) => {
+  switch (id) {
+    case 'personal': return <User className="w-full h-full" />
+    case 'summary': case 'personal-summary': return <FileText className="w-full h-full" />
+    case 'experience': return <Briefcase className="w-full h-full" />
+    case 'education': return <GraduationCap className="w-full h-full" />
+    case 'skills': return <Code className="w-full h-full" />
+    case 'languages': return <Languages className="w-full h-full" />
+    case 'projects': return <Milestone className="w-full h-full" />
+    case 'certifications': return <Award className="w-full h-full" />
+    case 'awards': return <Star className="w-full h-full" />
+    case 'volunteer': return <Users className="w-full h-full" />
+    case 'research': return <Search className="w-full h-full" />
+    case 'training': return <Wrench className="w-full h-full" />
+    case 'references': return <User className="w-full h-full" />
+    case 'interests': return <Star className="w-full h-full" />
+    default: return <FileText className="w-full h-full" />
+  }
+}
+
+const SectionTitle = ({ children, sectionId, design }: { 
+  children: React.ReactNode, 
+  sectionId: string,
+  design: any
+}) => {
+  const theme = getTheme(design.colorThemeId)
+  const headingColor = design.applyAccentTo?.headings ? theme.accentColor : theme.sectionTitleColor
+  const style = design.headingStyle || 'simple'
+  const textCase = design.headingCase || 'uppercase'
+  const size = design.headingSize || 10
+  
+  const renderText = () => (
+    <div className="flex items-center gap-2">
+      {design.showHeadingIcons && (
+        <div className="w-[1.2em] h-[1.2em] shrink-0" style={{ color: theme.accentColor }}>
+          {getSectionIcon(sectionId)}
+        </div>
+      )}
       <h2 
-        className="text-sm font-bold uppercase tracking-wider mb-1"
-        style={{ color: headingColor }}
+        className={cn(
+          "font-bold tracking-wider",
+          textCase === 'uppercase' ? "uppercase" : "capitalize"
+        )}
+        style={{ color: headingColor, fontSize: `${size}pt` }}
       >
         {children}
       </h2>
+    </div>
+  )
+
+  if (style === 'boxed') {
+    return (
+      <div className="mb-4">
+        <div 
+          className="w-full px-4 py-1.5 flex justify-center items-center" 
+          style={{ backgroundColor: '#f1f1f1' }}
+        >
+          {renderText()}
+        </div>
+      </div>
+    )
+  }
+
+  if (style === 'underlined') {
+    return (
+      <div className="mb-4 border-b-2" style={{ borderColor: theme.accentColor }}>
+        <div className="pb-1">{renderText()}</div>
+      </div>
+    )
+  }
+
+  if (style === 'side-line') {
+    return (
+      <div className="mb-4 flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: theme.accentColor }} />
+        {renderText()}
+      </div>
+    )
+  }
+
+  if (style === 'minimal') {
+    return <div className="mb-4">{renderText()}</div>
+  }
+
+  if (style === 'zigzag') {
+    return (
+      <div className="mb-4">
+        {renderText()}
+        <svg className="w-24 h-1 mt-1 opacity-40" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ color: theme.accentColor }}>
+          <path d="M0 5 L5 0 L10 5 L15 0 L20 5 L25 0 L30 5 L35 0 L40 5 L45 0 L50 5 L55 0 L60 5 L65 0 L70 5 L75 0 L80 5 L85 0 L90 5 L95 0 L100 5" fill="none" stroke="currentColor" strokeWidth="3" />
+        </svg>
+      </div>
+    )
+  }
+
+  if (style === 'double-line') {
+    return (
+      <div className="mb-4">
+        {renderText()}
+        <div className="space-y-[2px] mt-1.5">
+          <div className="w-full h-[2px]" style={{ backgroundColor: theme.accentColor }} />
+          <div className="w-full h-[1px] opacity-30" style={{ backgroundColor: theme.accentColor }} />
+        </div>
+      </div>
+    )
+  }
+
+  if (style === 'pill') {
+    return (
+      <div className="mb-4">
+        <div className="inline-flex items-center px-5 py-1.5 rounded-full" style={{ backgroundColor: `${theme.accentColor}15` }}>
+          {renderText()}
+        </div>
+      </div>
+    )
+  }
+
+  if (style === 'modern-split') {
+    return (
+      <div className="mb-4 flex items-center gap-4">
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="w-1 h-6 rounded-full" style={{ backgroundColor: theme.accentColor }} />
+          {renderText()}
+        </div>
+        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: headingColor }} />
+      </div>
+    )
+  }
+
+  if (style === 'bracket') {
+    return (
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: theme.accentColor }}>[</span>
+        {renderText()}
+        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: theme.accentColor }}>]</span>
+      </div>
+    )
+  }
+
+  if (style === 'decorative') {
+    return (
+      <div className="mb-4 flex items-center gap-4">
+        {renderText()}
+        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: headingColor }} />
+        <div className="w-2 h-2 rounded-full opacity-40" style={{ backgroundColor: theme.accentColor }} />
+      </div>
+    )
+  }
+
+  // Default / Simple Line
+  return (
+    <div className="mb-4">
+      {renderText()}
       <div 
         className={cn(
-          "w-full bg-gray-200",
-          dividerStyle === 'thin' ? "h-[1px]" : "h-[2px]"
+          "w-full mt-1.5",
+          design.dividerStyle === 'thin' ? "h-[1px]" : "h-[2px]"
         )}
         style={{ backgroundColor: theme.dividerColor }}
       />
@@ -149,7 +303,8 @@ const EntryLayout = ({
   location, 
   description, 
   design, 
-  theme 
+  theme,
+  reverseOrder = false
 }: { 
   title: string, 
   subtitle?: string, 
@@ -157,7 +312,8 @@ const EntryLayout = ({
   location?: string, 
   description?: string, 
   design: any, 
-  theme: any 
+  theme: any,
+  reverseOrder?: boolean
 }) => {
   const titleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#111827'
   const subtitleColor = design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937'
@@ -169,12 +325,15 @@ const EntryLayout = ({
     design.subtitleStyle === 'bold-italic' && 'font-bold italic'
   )
 
-  const renderSubtitle = () => subtitle && (
+  const displayTitle = !reverseOrder ? title : (subtitle || title)
+  const displaySubtitle = !reverseOrder ? subtitle : (subtitle ? title : undefined)
+
+  const renderSubtitle = () => displaySubtitle && (
     <span 
       className={cn("leading-tight", subtitleStyles)} 
       style={{ color: subtitleColor, fontSize: `${design.subtitleSize}pt` }}
     >
-      {subtitle}
+      {displaySubtitle}
     </span>
   )
 
@@ -189,7 +348,7 @@ const EntryLayout = ({
 
   const layoutId = design.entryLayoutId || 'layout-4'
 
-  const renderLocation = () => location && (
+  const renderLocation = () => location && design.resumeShowLocation && (
     <span className="text-gray-500 italic" style={{ fontSize: `${design.fontSize * 0.9}pt` }}>
       {location}
     </span>
@@ -209,8 +368,8 @@ const EntryLayout = ({
         className="font-bold leading-tight" 
         style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
       >
-        {title}
-        {design.subtitlePlacement === 'beside-title' && subtitle && (
+        {displayTitle}
+        {design.subtitlePlacement === 'beside-title' && displaySubtitle && (
           <>
             <span className="mx-2 text-gray-300 font-normal">|</span>
             {renderSubtitle()}
@@ -298,7 +457,7 @@ const EntryLayout = ({
           className="font-bold leading-tight flex-1" 
           style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
         >
-          {title}
+          {displayTitle}
         </h3>
         <div className="shrink-0">
           {renderDate()}
@@ -360,7 +519,10 @@ export default function TemplateRenderer() {
     sectionOrder: s.sectionOrder,
   })))
 
-  const theme = getTheme(design.colorThemeId)
+  const baseTheme = getTheme(design.colorThemeId)
+  const theme = design.colorThemeId === 'custom' && design.customAccentColor 
+    ? { ...baseTheme, accentColor: design.customAccentColor, dividerColor: design.customAccentColor }
+    : baseTheme
 
   // ─── Visibility Logic ───────────────────────────────────────────────────────
   
@@ -432,76 +594,129 @@ export default function TemplateRenderer() {
     const nameColor = design.applyAccentTo.name ? theme.accentColor : '#000000'
     const jobTitleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#4b5563'
     const iconColor = design.applyAccentTo.headerIcons ? theme.accentColor : '#9ca3af'
+    
+    const alignment = design.headerAlignment || 'left'
+    const arrangement = design.detailsArrangement || 'bullet'
+    const nameSizeScale = design.nameSize || 'm'
+    const titleSizeScale = design.titleSizeScale || 'm'
+    const photoSizeScale = design.photoSizeScale || 's'
+    const photoPosition = design.photoPosition || 'left'
+    const photoShape = design.photoShape || 'circle'
 
-    if (design.templateId === 'bold') {
+    // Size Maps (Approximate Tailwind classes for preview, but will be pixel-perfect in PDF)
+    const nameSizeMap = { xs: 'text-2xl', s: 'text-3xl', m: 'text-4xl', l: 'text-5xl', xl: 'text-6xl' }
+    const titleSizeMap = { s: 'text-sm', m: 'text-base', l: 'text-lg' }
+    const photoSizeMap = { xs: 'w-16 h-16', s: 'w-24 h-24', m: 'w-32 h-32', l: 'w-40 h-40', xl: 'w-48 h-48' }
+
+    const photoClasses = cn(
+      photoSizeMap[photoSizeScale as keyof typeof photoSizeMap],
+      photoShape === 'circle' && 'rounded-full',
+      photoShape === 'square' && 'rounded-none',
+      photoShape === 'rounded-square' && 'rounded-xl',
+      photoShape === 'portrait' && 'rounded-none aspect-[3/4] h-auto',
+      photoShape === 'rounded-portrait' && 'rounded-xl aspect-[3/4] h-auto',
+      design.photoGrayscale && 'grayscale',
+      "overflow-hidden shrink-0 shadow-sm border border-gray-100"
+    )
+
+    const renderPhoto = () => personal.photoUrl && design.showPhoto && (
+      <div className={photoClasses} style={{ backgroundColor: `${theme.accentColor}10` }}>
+        <img src={personal.photoUrl} alt="" className="w-full h-full object-cover" />
+      </div>
+    )
+
+    const details = [
+      { id: 'email', value: personal.email, icon: Mail },
+      { id: 'phone', value: personal.phone, icon: Phone },
+      { id: 'location', value: personal.location, icon: MapPin },
+      { id: 'website', value: personal.website, icon: Globe },
+    ].filter(d => d.value)
+
+    const renderDetails = () => {
+      const isIconArrangement = arrangement === 'icon'
+      
       return (
-        <header className="mb-10 flex gap-8 items-center">
-          {personal.photoUrl && (
-            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl flex-shrink-0" style={{ backgroundColor: theme.accentColor }}>
-              <img src={personal.photoUrl} alt="" className="w-full h-full object-cover" />
-            </div>
-          )}
-          <div className="flex-1">
-            <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-2" style={{ color: nameColor }}>
-              {personal.fullName}
-            </h1>
-            <p className="text-xl font-bold uppercase tracking-widest" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
-            <div className="mt-4 flex flex-wrap gap-4 text-[9pt] font-bold text-gray-500">
-              {personal.email && <span className="flex items-center gap-1"><Mail width={14} height={14} className="w-3.5 h-3.5" style={{ color: iconColor }} /> {personal.email}</span>}
-              {personal.location && <span className="flex items-center gap-1"><MapPin width={14} height={14} className="w-3.5 h-3.5" style={{ color: iconColor }} /> {personal.location}</span>}
-            </div>
-          </div>
-        </header>
+        <div className={cn(
+          "flex flex-wrap text-[9pt] font-medium text-gray-500",
+          alignment === 'center' ? "justify-center" : "justify-start",
+          arrangement === 'stacked' ? "flex-col gap-1" : "gap-x-4 gap-y-1",
+          arrangement === 'columns' && "grid grid-cols-2 gap-x-8"
+        )}>
+          {details.map((d, i) => (
+            <span key={d.id} className="flex items-center gap-1.5 whitespace-nowrap">
+              {(isIconArrangement || arrangement === 'brick') && (
+                <d.icon width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} />
+              )}
+              {d.value}
+              {arrangement === 'bullet' && i < details.length - 1 && (
+                <span className="ml-3 text-gray-300 select-none">•</span>
+              )}
+              {arrangement === 'bar' && i < details.length - 1 && (
+                <span className="ml-3 text-gray-300 select-none">|</span>
+              )}
+            </span>
+          ))}
+        </div>
       )
     }
 
-    if (design.templateId === 'modern') {
-      return (
-        <header className="mb-8 flex justify-between items-end border-b-2 pb-6" style={{ borderColor: theme.accentColor }}>
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-1" style={{ color: nameColor }}>
-              {personal.fullName}
-            </h1>
-            <p className="text-lg font-medium uppercase tracking-widest" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
-          </div>
-          <div className="text-right text-[9pt] space-y-1 text-gray-600 font-medium">
-            {personal.email && <p>{personal.email}</p>}
-            {personal.phone && <p>{personal.phone}</p>}
-            {personal.location && <p>{personal.location}</p>}
-          </div>
-        </header>
-      )
-    }
+    const nameClasses = cn(
+      "font-black tracking-tight leading-none",
+      nameSizeMap[nameSizeScale as keyof typeof nameSizeMap],
+      !design.nameBold && "font-normal",
+      design.nameFontFamily === 'creative' && "font-serif" 
+    )
 
-    if (design.templateId === 'minimal') {
-      return (
-        <header className="mb-10">
-          <h1 className="text-3xl font-light tracking-[0.15em] uppercase mb-1" style={{ color: nameColor }}>
+    const titleClasses = cn(
+      "font-bold uppercase tracking-widest",
+      titleSizeMap[titleSizeScale as keyof typeof titleSizeMap],
+      design.titleStyle === 'italic' && "italic"
+    )
+
+    const textContent = (
+      <div className={cn(
+        "flex-1 flex flex-col gap-2",
+        alignment === 'center' ? "text-center items-center" : "text-left items-start"
+      )}>
+        <div className={cn(
+          "flex flex-wrap items-baseline gap-x-4",
+          alignment === 'center' ? "justify-center" : "justify-start",
+          design.titlePosition === 'below' && "flex-col"
+        )}>
+          <h1 className={nameClasses} style={{ color: nameColor }}>
             {personal.fullName}
           </h1>
-          <p className="text-sm font-medium tracking-[0.2em] uppercase mb-4" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[9pt] text-gray-500 border-t border-b py-3 font-medium">
-            {personal.email && <span className="uppercase tracking-widest">{personal.email}</span>}
-            {personal.phone && <span className="uppercase tracking-widest">{personal.phone}</span>}
-            {personal.location && <span className="uppercase tracking-widest">{personal.location}</span>}
-            {personal.website && <span className="uppercase tracking-widest">{personal.website}</span>}
+          {personal.jobTitle && (
+            <p className={titleClasses} style={{ color: jobTitleColor }}>
+              {personal.jobTitle}
+            </p>
+          )}
+        </div>
+        <div className="mt-1">
+          {renderDetails()}
+        </div>
+        
+        {/* Summary in Header integration */}
+        {design.resumeSummaryInHeader && (
+          <div className="mt-4 pt-4 border-t border-gray-100/50 opacity-80 text-[9pt] leading-relaxed italic max-w-2xl">
+            {(() => {
+              const summary = professionalSummaries.find(ps => ps.visible) || personalSummaries.find(ps => ps.visible)
+              return summary ? <div dangerouslySetInnerHTML={{ __html: summary.content }} /> : null
+            })()}
           </div>
-        </header>
-      )
-    }
+        )}
+      </div>
+    )
 
     return (
-      <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: nameColor }}>
-          {personal.fullName}
-        </h1>
-        <p className="text-sm font-medium mb-3" style={{ color: jobTitleColor }}>{personal.jobTitle}</p>
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[9pt] text-gray-600 font-medium">
-          {personal.email && <span className="flex items-center gap-1"><Mail width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.email}</span>}
-          {personal.phone && <span className="flex items-center gap-1"><Phone width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.phone}</span>}
-          {personal.location && <span className="flex items-center gap-1"><MapPin width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.location}</span>}
-          {personal.website && <span className="flex items-center gap-1"><Globe width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} /> {personal.website}</span>}
-        </div>
+      <header className={cn(
+        "mb-10 flex gap-8",
+        photoPosition === 'top' ? "flex-col items-center" : "items-center",
+        photoPosition === 'right' && "flex-row-reverse",
+        alignment === 'center' && photoPosition === 'top' && "text-center"
+      )}>
+        {renderPhoto()}
+        {textContent}
       </header>
     )
   }
@@ -512,7 +727,7 @@ export default function TemplateRenderer() {
 
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        <SectionTitle sectionId={id} design={design}>
           {label}
         </SectionTitle>
         <div 
@@ -525,13 +740,15 @@ export default function TemplateRenderer() {
 
   const renderProfessionalSummary = (id: string, label: string) => {
     const summary = professionalSummaries.find(ps => ps.id === id)
-    if (!summary || !summary.visible) return null
+    if (!summary || !summary.visible || design.resumeSummaryInHeader) return null
     
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
-          {label}
-        </SectionTitle>
+        {design.resumeShowSummaryHeading && (
+          <SectionTitle sectionId={id} design={design}>
+            {label}
+          </SectionTitle>
+        )}
         <div 
           className="prose prose-sm max-w-none text-inherit leading-relaxed"
           dangerouslySetInnerHTML={{ __html: summary.content }} 
@@ -540,31 +757,89 @@ export default function TemplateRenderer() {
     )
   }
 
-  const renderExperience = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {experience.filter(exp => exp.visible).map((exp) => (
-          <EntryLayout
-            key={exp.id}
-            title={exp.jobTitle}
-            subtitle={exp.company}
-            date={`${formatMonthYear(exp.startDate)} — ${exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}`}
-            location={exp.location}
-            description={exp.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
+  const renderExperience = (label: string) => {
+    const visibleExp = experience.filter(exp => exp.visible)
+
+    if (design.resumeGroupPromotions) {
+      // Group by company while preserving original order
+      const grouped: { company: string, roles: typeof experience }[] = []
+      visibleExp.forEach(exp => {
+        const existing = grouped.find(g => g.company === exp.company)
+        if (existing) {
+          existing.roles.push(exp)
+        } else {
+          grouped.push({ company: exp.company, roles: [exp] })
+        }
+      })
+
+      return (
+        <div className="mb-6">
+          <SectionTitle sectionId="experience" design={design}>
+            {label}
+          </SectionTitle>
+          <div className="space-y-6">
+            {grouped.map((group, idx) => (
+              <div key={`${group.company}-${idx}`} className="group-item">
+                <div className="flex justify-between items-baseline mb-2 border-b border-gray-50 pb-1">
+                  <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#111827' }}>
+                    {group.company}
+                  </h3>
+                  {group.roles[0].location && (
+                    <span className="text-[9pt] text-gray-500 italic">{group.roles[0].location}</span>
+                  )}
+                </div>
+                <div className="space-y-5 ml-4 border-l-2 border-gray-50 pl-4">
+                  {group.roles.map((role) => (
+                    <div key={role.id} className="role-item">
+                      <div className="flex justify-between items-baseline">
+                        <span className="font-bold text-[10pt] text-gray-800" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : undefined }}>
+                          {role.jobTitle}
+                        </span>
+                        <span className="text-[9pt] text-gray-500 font-medium">
+                          {formatMonthYear(role.startDate)} — {role.currentlyWorking ? 'Present' : (role.endDate?.year ? formatMonthYear(role.endDate) : 'Present')}
+                        </span>
+                      </div>
+                      <div 
+                        className="description-content prose prose-sm max-w-none text-inherit mt-1.5 opacity-90"
+                        dangerouslySetInnerHTML={{ __html: role.description }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="experience" design={design}>
+          {label}
+        </SectionTitle>
+        <div className="space-y-5">
+          {visibleExp.map((exp) => (
+            <EntryLayout
+              key={exp.id}
+              title={exp.jobTitle}
+              subtitle={exp.company}
+              date={`${formatMonthYear(exp.startDate)} — ${exp.currentlyWorking ? 'Present' : (exp.endDate?.year ? formatMonthYear(exp.endDate) : 'Present')}`}
+              location={exp.location}
+              description={exp.description}
+              design={design}
+              theme={theme}
+              reverseOrder={design.resumeExperienceOrder === 'subtitle-first'}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   const renderEducation = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="education" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-5">
@@ -578,43 +853,179 @@ export default function TemplateRenderer() {
             description={edu.description}
             design={design}
             theme={theme}
+            reverseOrder={design.resumeEducationOrder === 'subtitle-first'}
           />
         ))}
       </div>
     </div>
   )
 
-  const renderSkills = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
-        {label}
-      </SectionTitle>
-      <div className="grid grid-cols-1 gap-4">
-        {skills.categories.filter(c => c.visible).map((cat) => (
-          <div key={cat.id} className="flex flex-col gap-1">
-            <div className="flex justify-between items-baseline">
-              <span className="font-bold text-[10pt] uppercase tracking-wider" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
-                {cat.categoryName}
-              </span>
-              {cat.level && cat.level !== 'none' && (
-                <span className="text-[8pt] font-semibold text-gray-400 italic capitalize">
-                  {cat.level}
+  const renderSkillLevel = (level: string) => {
+    if (!level || level === 'none') return null
+    const visualizer = design.skillsLevelVisualizer || 'dots'
+    const color = design.applyAccentTo.dotsBarsBubbles ? theme.accentColor : '#cbd5e1'
+
+    if (visualizer === 'text') {
+      return <span className="text-[8pt] font-semibold text-gray-400 italic capitalize">{level}</span>
+    }
+
+    if (visualizer === 'dots') {
+      const levelsMap = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 }
+      const count = levelsMap[level as keyof typeof levelsMap] || 0
+      return (
+        <div className="flex gap-1 items-center">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: i <= count ? color : '#e2e8f0' }} />
+          ))}
+        </div>
+      )
+    }
+
+    if (visualizer === 'bar') {
+      const levelsMap = { beginner: '25%', intermediate: '50%', advanced: '75%', expert: '100%' }
+      const width = levelsMap[level as keyof typeof levelsMap] || '0%'
+      return (
+        <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-500" style={{ width, backgroundColor: color }} />
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  const getSubinfoSeparator = (style: string) => {
+    switch (style) {
+      case 'colon': return ': '
+      case 'dash': return ' - '
+      case 'bracket': return ' ('
+      default: return ': '
+    }
+  }
+
+  const getSubinfoEnd = (style: string) => {
+    return style === 'bracket' ? ')' : ''
+  }
+
+  const renderSkills = (label: string) => {
+    const layout = design.skillsLayout || 'grid'
+    
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="skills" design={design}>
+          {label}
+        </SectionTitle>
+        
+        {layout === 'grid' && (
+          <div className={cn(
+            "grid gap-4",
+            design.skillsGridColumns === 1 && "grid-cols-1",
+            design.skillsGridColumns === 2 && "grid-cols-2",
+            design.skillsGridColumns === 3 && "grid-cols-3",
+            design.skillsGridColumns === 4 && "grid-cols-4"
+          )}>
+            {skills.categories.filter(c => c.visible).map((cat) => (
+              <div key={cat.id} className="flex flex-col gap-1">
+                <span className="font-bold text-[9pt] uppercase tracking-wider" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
+                  {cat.categoryName}
                 </span>
-              )}
-            </div>
-            <div 
-              className="prose prose-sm max-w-none text-[9pt] text-inherit leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: cat.description }} 
-            />
+                <div className="text-[9pt] text-gray-600 leading-relaxed">
+                  {cat.items.filter(i => i.visible).map((item, i, arr) => (
+                    <span key={item.id}>
+                      {item.skill}{i < arr.length - 1 ? ', ' : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        {layout === 'rows' && (
+          <div className={cn(
+            "flex flex-col",
+            design.skillsRowSpacing === 'tight' ? "gap-1.5" : "gap-3"
+          )}>
+            {skills.categories.filter(c => c.visible).map((cat) => (
+              <div key={cat.id} className="flex items-start gap-2">
+                {design.skillsShowRowBullets && <span className="mt-1.5 w-1 h-1 rounded-full bg-gray-300 shrink-0" />}
+                <div className="flex flex-wrap gap-x-1 items-baseline">
+                  <span className="font-bold text-[9pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
+                    {cat.categoryName}
+                    {cat.items.length > 0 && getSubinfoSeparator(design.skillsRowSubinfoStyle)}
+                  </span>
+                  <span className="text-[9pt] text-gray-600">
+                    {cat.items.filter(i => i.visible).map(i => i.skill).join(', ')}
+                    {cat.items.length > 0 && getSubinfoEnd(design.skillsRowSubinfoStyle)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {layout === 'compact' && (
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {skills.categories.filter(c => c.visible).map((cat, i, arr) => (
+              <div key={cat.id} className="flex items-baseline gap-1">
+                <span className="font-bold text-[9pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
+                  {cat.categoryName}
+                  {cat.items.length > 0 && getSubinfoSeparator(design.skillsCompactSubinfoStyle)}
+                </span>
+                <span className="text-[9pt] text-gray-600">
+                  {cat.items.filter(item => item.visible).map(item => item.skill).join(', ')}
+                  {cat.items.length > 0 && getSubinfoEnd(design.skillsCompactSubinfoStyle)}
+                </span>
+                {i < arr.length - 1 && (
+                  <span className="text-gray-300 ml-2">
+                    {design.skillsCompactSeparator === 'bullet' && '•'}
+                    {design.skillsCompactSeparator === 'pipe' && '|'}
+                    {design.skillsCompactSeparator === 'comma' && ','}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {layout === 'bubble' && (
+          <div className="flex flex-wrap gap-2">
+            {skills.categories.filter(c => c.visible).map((cat) => (
+              <div 
+                key={cat.id} 
+                className="px-3 py-1 rounded-full border border-gray-100 flex items-baseline gap-1"
+                style={{ backgroundColor: `${theme.accentColor}08` }}
+              >
+                <span className="font-bold text-[8pt] uppercase tracking-wider" style={{ color: theme.accentColor }}>
+                  {cat.categoryName}
+                  {cat.items.length > 0 && getSubinfoSeparator(design.skillsBubbleSubinfoStyle)}
+                </span>
+                <span className="text-[8pt] text-gray-600">
+                  {cat.items.filter(i => i.visible).map(i => i.skill).join(', ')}
+                  {cat.items.length > 0 && getSubinfoEnd(design.skillsBubbleSubinfoStyle)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {layout === 'level' && (
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            {skills.categories.filter(c => c.visible).flatMap(cat => cat.items.filter(i => i.visible)).map((item) => (
+              <div key={item.id} className="flex justify-between items-center border-b border-gray-50 pb-2">
+                <span className="font-bold text-[9pt] text-gray-800">{item.skill}</span>
+                {renderSkillLevel(item.level)}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  )
+    )
+  }
 
   const renderResearch = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="research" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-5">
@@ -636,7 +1047,7 @@ export default function TemplateRenderer() {
 
   const renderTraining = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="training" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-5">
@@ -657,7 +1068,7 @@ export default function TemplateRenderer() {
 
   const renderCertifications = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="certifications" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-5">
@@ -679,7 +1090,7 @@ export default function TemplateRenderer() {
   const renderReferences = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        <SectionTitle sectionId="references" design={design}>
           {label}
         </SectionTitle>
         <div className="grid grid-cols-2 gap-6">
@@ -702,7 +1113,7 @@ export default function TemplateRenderer() {
   const renderLanguages = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        <SectionTitle sectionId="languages" design={design}>
           {label}
         </SectionTitle>
         <div className="grid grid-cols-2 gap-y-2 gap-x-4">
@@ -720,7 +1131,7 @@ export default function TemplateRenderer() {
   const renderInterests = (label: string) => {
     return (
       <div className="mb-6">
-        <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+        <SectionTitle sectionId="interests" design={design}>
           {label}
         </SectionTitle>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -737,7 +1148,7 @@ export default function TemplateRenderer() {
 
   const renderProjects = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="projects" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-6">
@@ -758,7 +1169,7 @@ export default function TemplateRenderer() {
 
   const renderAwards = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="awards" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-5">
@@ -779,7 +1190,7 @@ export default function TemplateRenderer() {
 
   const renderVolunteer = (label: string) => (
     <div className="mb-6">
-      <SectionTitle themeId={design.colorThemeId} dividerStyle={design.dividerStyle} templateId={design.templateId} applyAccentTo={design.applyAccentTo}>
+      <SectionTitle sectionId="volunteer" design={design}>
         {label}
       </SectionTitle>
       <div className="space-y-6">
@@ -829,7 +1240,11 @@ export default function TemplateRenderer() {
   const renderWithLayout = () => {
     const isSidebarLayout = design.layout === 'sidebar-left' || design.layout === 'sidebar-right'
     const isLeft = design.layout === 'sidebar-left'
-    const visibleSections = sectionOrder.filter(s => s.visible && hasSectionContent(s.id))
+    const visibleSections = sectionOrder.filter(s => {
+      if (!s.visible) return false
+      if (design.resumeHideEmptySections && !hasSectionContent(s.id)) return false
+      return true
+    })
 
     if (isSidebarLayout) {
       const sidebarSectionIds = ['skills', 'education']
@@ -878,6 +1293,7 @@ export default function TemplateRenderer() {
       <ListStyles style={design.listStyle} />
       <VariationStyles variation={design.layoutVariation} />
       {renderWithLayout()}
+      <Footer design={design} personal={personal} />
     </div>
   )
 }
