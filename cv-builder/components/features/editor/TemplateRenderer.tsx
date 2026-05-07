@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useCVStore } from '@/store/cv-store'
 import { getTheme } from '@/lib/themes'
-import { getFont } from '@/lib/fonts'
+import { getFont, FONTS } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { 
   Mail, 
@@ -28,21 +28,62 @@ import {
 } from 'lucide-react'
 
 import { useShallow } from 'zustand/react/shallow'
+import cvTemplatesData from '@/cv-templates.json'
 
 // ─── Helper: Font Loader ──────────────────────────────────────────────────────
 
-function FontLoader({ fontId }: { fontId: string }) {
-  const font = getFont(fontId)
-  if (!font) return null
+function FontLoader({ fontId, googleFamily }: { fontId?: string, googleFamily?: string }) {
+  const family = googleFamily || (fontId ? getFont(fontId)?.googleFamily : null)
+  if (!family) return null
   
   return (
     <style dangerouslySetInnerHTML={{ __html: `
-      @import url('https://fonts.googleapis.com/css2?family=${font.googleFamily.replace(/ /g, '+')}:wght@300;400;500;600;700;800&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@100;200;300;400;500;600;700;800;900&display=swap');
     `}} />
   )
 }
 
-// ─── Shared Components ────────────────────────────────────────────────────────
+// ─── Helper: Style Injector ───────────────────────────────────────────────────
+
+function StyleInjector({ tokens, templateId }: { tokens: Record<string, string>, templateId: string }) {
+  if (!tokens) return null
+  
+  const cssVariables = Object.entries(tokens)
+    .map(([key, value]) => `${key}: ${value} !important;`)
+    .join('\n      ')
+
+  return (
+    <style dangerouslySetInnerHTML={{ __html: `
+      #cv-preview-card {
+        ${cssVariables}
+      }
+      
+      #cv-preview-card .section-title {
+        color: var(--cv-section-title) !important;
+      }
+      
+      #cv-preview-card .item-title {
+        color: var(--cv-accent) !important;
+      }
+      
+      #cv-preview-card .body-text {
+        color: var(--cv-body-text) !important;
+      }
+      
+      #cv-preview-card .muted-text {
+        color: var(--cv-muted-text) !important;
+      }
+      
+      #cv-preview-card .name-text {
+        color: var(--cv-header-text) !important;
+      }
+      
+      #cv-preview-card .job-title-text {
+        color: var(--cv-header-subtitle) !important;
+      }
+    `}} />
+  )
+}
 
 const resolvePlaceholders = (text: string, personal: any) => {
   if (!text) return ''
@@ -50,11 +91,11 @@ const resolvePlaceholders = (text: string, personal: any) => {
     .replace(/{{name}}/g, personal.fullName || '')
     .replace(/{{email}}/g, personal.email || '')
     .replace(/{{phone}}/g, personal.phone || '')
-    .replace(/{{page}}/g, '1') // Mock for preview
-    .replace(/{{pages}}/g, '1') // Mock for preview
+    .replace(/{{page}}/g, '1') 
+    .replace(/{{pages}}/g, '1')
 }
 
-const Footer = ({ design, personal }: { design: any, personal: any }) => {
+const Footer = ({ design, personal, template }: { design: any, personal: any, template?: any }) => {
   const { footer } = design
   if (!footer) return null
 
@@ -70,7 +111,6 @@ const Footer = ({ design, personal }: { design: any, personal: any }) => {
     ? resolvePlaceholders(footer.rightColumn, personal)
     : (footer.showEmail ? personal.email : '')
 
-  // Don't render if all empty
   if (!leftContent && !centerContent && !rightContent) return null
 
   return (
@@ -78,7 +118,8 @@ const Footer = ({ design, personal }: { design: any, personal: any }) => {
       className="mt-8 pt-4 border-t border-gray-100 flex justify-between items-end text-[8pt] text-gray-400"
       style={{ 
         fontFamily: 'inherit',
-        marginTop: `${design.marginBottom}mm` // Use margin bottom as spacing
+        marginTop: `${design.marginBottom}mm`,
+        borderColor: 'var(--cv-divider, #f1f1f1)'
       }}
     >
       <div className="flex-1 text-left whitespace-pre-line">{leftContent}</div>
@@ -108,30 +149,38 @@ const getSectionIcon = (id: string) => {
   }
 }
 
-const SectionTitle = ({ children, sectionId, design }: { 
+const SectionTitle = ({ children, sectionId, design, template }: { 
   children: React.ReactNode, 
   sectionId: string,
-  design: any
+  design: any,
+  template?: any
 }) => {
-  const theme = getTheme(design.colorThemeId)
-  const headingColor = design.applyAccentTo?.headings ? theme.accentColor : theme.sectionTitleColor
   const style = design.headingStyle || 'simple'
-  const textCase = design.headingCase || 'uppercase'
-  const size = design.headingSize || 10
+  const textCase = design.headingCase === 'uppercase' ? 'uppercase' : 'none'
+  const size = `${design.headingSize || template?.typography?.sectionTitleSize || 10}pt`
+  const weight = template?.typography?.sectionTitleWeight || '700'
+  const letterSpacing = template?.typography?.sectionTitleLetterSpacing || '0.05em'
+  
+  const headingColor = 'var(--cv-section-title)'
   
   const renderText = () => (
     <div className="flex items-center gap-2">
       {design.showHeadingIcons && (
-        <div className="w-[1.2em] h-[1.2em] shrink-0" style={{ color: theme.accentColor }}>
+        <div className="w-[1.2em] h-[1.2em] shrink-0" style={{ color: 'var(--cv-accent)' }}>
           {getSectionIcon(sectionId)}
         </div>
       )}
       <h2 
         className={cn(
-          "font-bold tracking-wider",
+          "section-title tracking-wider",
           textCase === 'uppercase' ? "uppercase" : "capitalize"
         )}
-        style={{ color: headingColor, fontSize: `${size}pt` }}
+        style={{ 
+          color: headingColor, 
+          fontSize: size,
+          fontWeight: weight,
+          letterSpacing: letterSpacing
+        }}
       >
         {children}
       </h2>
@@ -143,7 +192,7 @@ const SectionTitle = ({ children, sectionId, design }: {
       <div className="mb-4">
         <div 
           className="w-full px-4 py-1.5 flex justify-center items-center" 
-          style={{ backgroundColor: '#f1f1f1' }}
+          style={{ backgroundColor: 'var(--cv-accent-light, rgba(0,0,0,0.05))' }}
         >
           {renderText()}
         </div>
@@ -151,32 +200,34 @@ const SectionTitle = ({ children, sectionId, design }: {
     )
   }
 
-  if (style === 'underlined') {
+  if (style === 'underlined' || template?.sections?.titleUnderline) {
     return (
-      <div className="mb-4 border-b-2" style={{ borderColor: theme.accentColor }}>
+      <div className="mb-4 border-b-2" style={{ borderColor: 'var(--cv-accent)' }}>
         <div className="pb-1">{renderText()}</div>
       </div>
     )
   }
 
-  if (style === 'side-line') {
+  if (style === 'side-line' || template?.sections?.titleBorderLeft) {
     return (
       <div className="mb-4 flex items-center gap-3">
-        <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: theme.accentColor }} />
+        <div 
+          className="w-1.5 h-6 rounded-full" 
+          style={{ 
+            backgroundColor: 'var(--cv-accent)',
+            width: template?.sections?.titleBorderLeftWidth || '4px'
+          }} 
+        />
         {renderText()}
       </div>
     )
-  }
-
-  if (style === 'minimal') {
-    return <div className="mb-4">{renderText()}</div>
   }
 
   if (style === 'zigzag') {
     return (
       <div className="mb-4">
         {renderText()}
-        <svg className="w-24 h-1 mt-1 opacity-40" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ color: theme.accentColor }}>
+        <svg className="w-24 h-1 mt-1 opacity-40" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ color: 'var(--cv-accent)' }}>
           <path d="M0 5 L5 0 L10 5 L15 0 L20 5 L25 0 L30 5 L35 0 L40 5 L45 0 L50 5 L55 0 L60 5 L65 0 L70 5 L75 0 L80 5 L85 0 L90 5 L95 0 L100 5" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
       </div>
@@ -188,8 +239,8 @@ const SectionTitle = ({ children, sectionId, design }: {
       <div className="mb-4">
         {renderText()}
         <div className="space-y-[2px] mt-1.5">
-          <div className="w-full h-[2px]" style={{ backgroundColor: theme.accentColor }} />
-          <div className="w-full h-[1px] opacity-30" style={{ backgroundColor: theme.accentColor }} />
+          <div className="w-full h-[2px]" style={{ backgroundColor: 'var(--cv-accent)' }} />
+          <div className="w-full h-[1px] opacity-30" style={{ backgroundColor: 'var(--cv-accent)' }} />
         </div>
       </div>
     )
@@ -198,7 +249,7 @@ const SectionTitle = ({ children, sectionId, design }: {
   if (style === 'pill') {
     return (
       <div className="mb-4">
-        <div className="inline-flex items-center px-5 py-1.5 rounded-full" style={{ backgroundColor: `${theme.accentColor}15` }}>
+        <div className="inline-flex items-center px-5 py-1.5 rounded-full" style={{ backgroundColor: 'var(--cv-accent-light)' }}>
           {renderText()}
         </div>
       </div>
@@ -209,10 +260,10 @@ const SectionTitle = ({ children, sectionId, design }: {
     return (
       <div className="mb-4 flex items-center gap-4">
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-1 h-6 rounded-full" style={{ backgroundColor: theme.accentColor }} />
+          <div className="w-1 h-6 rounded-full" style={{ backgroundColor: 'var(--cv-accent)' }} />
           {renderText()}
         </div>
-        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: headingColor }} />
+        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: 'var(--cv-divider)' }} />
       </div>
     )
   }
@@ -220,9 +271,9 @@ const SectionTitle = ({ children, sectionId, design }: {
   if (style === 'bracket') {
     return (
       <div className="mb-4 flex items-center gap-2">
-        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: theme.accentColor }}>[</span>
+        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: 'var(--cv-accent)' }}>[</span>
         {renderText()}
-        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: theme.accentColor }}>]</span>
+        <span className="text-2xl font-extralight opacity-30 select-none" style={{ color: 'var(--cv-accent)' }}>]</span>
       </div>
     )
   }
@@ -231,13 +282,12 @@ const SectionTitle = ({ children, sectionId, design }: {
     return (
       <div className="mb-4 flex items-center gap-4">
         {renderText()}
-        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: headingColor }} />
-        <div className="w-2 h-2 rounded-full opacity-40" style={{ backgroundColor: theme.accentColor }} />
+        <div className="flex-1 h-[1px] opacity-20" style={{ backgroundColor: 'var(--cv-divider)' }} />
+        <div className="w-2 h-2 rounded-full opacity-40" style={{ backgroundColor: 'var(--cv-accent)' }} />
       </div>
     )
   }
 
-  // Default / Simple Line
   return (
     <div className="mb-4">
       {renderText()}
@@ -246,7 +296,7 @@ const SectionTitle = ({ children, sectionId, design }: {
           "w-full mt-1.5",
           design.dividerStyle === 'thin' ? "h-[1px]" : "h-[2px]"
         )}
-        style={{ backgroundColor: theme.dividerColor }}
+        style={{ backgroundColor: 'var(--cv-divider)' }}
       />
     </div>
   )
@@ -271,31 +321,6 @@ const ListStyles = ({ style }: { style: string }) => {
   )
 }
 
-const VariationStyles = ({ variation }: { variation: string }) => {
-  if (variation === 'compact') {
-    return (
-      <style dangerouslySetInnerHTML={{ __html: `
-        #cv-preview-card.compact-mode .entry-item { margin-bottom: 0.75rem !important; }
-        #cv-preview-card.compact-mode .description-content { margin-top: 0.25rem !important; }
-        #cv-preview-card.compact-mode h3 { line-height: 1.1 !important; }
-        #cv-preview-card.compact-mode .mb-6 { margin-bottom: 1rem !important; }
-      `}} />
-    )
-  }
-  if (variation === 'modern') {
-    return (
-      <style dangerouslySetInnerHTML={{ __html: `
-        #cv-preview-card.modern-mode .entry-item { 
-          border-left: 2px solid #e5e7eb; 
-          padding-left: 1rem;
-          margin-bottom: 1.5rem;
-        }
-      `}} />
-    )
-  }
-  return null
-}
-
 const EntryLayout = ({ 
   title, 
   subtitle, 
@@ -303,7 +328,7 @@ const EntryLayout = ({
   location, 
   description, 
   design, 
-  theme,
+  template,
   reverseOrder = false
 }: { 
   title: string, 
@@ -312,26 +337,29 @@ const EntryLayout = ({
   location?: string, 
   description?: string, 
   design: any, 
-  theme: any,
+  template?: any,
   reverseOrder?: boolean
 }) => {
-  const titleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#111827'
-  const subtitleColor = design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937'
-  const dateColor = design.applyAccentTo.dates ? theme.accentColor : '#6b7280'
-  
-  const subtitleStyles = cn(
-    design.subtitleStyle === 'italic' && 'italic',
-    design.subtitleStyle === 'bold' && 'font-bold',
-    design.subtitleStyle === 'bold-italic' && 'font-bold italic'
-  )
+  const titleColor = design.applyAccentTo.jobTitle ? 'var(--cv-accent)' : 'var(--cv-body-text)'
+  const subtitleColor = design.applyAccentTo.entrySubtitle ? 'var(--cv-accent)' : 'var(--cv-body-text)'
+  const dateColor = design.applyAccentTo.dates ? 'var(--cv-accent)' : 'var(--cv-muted-text)'
+
+  const titleSize = `${design.titleSize || template?.typography?.itemTitleSize || 10}pt`
+  const subtitleSize = `${design.subtitleSize || template?.typography?.itemSubtitleSize || 9}pt`
+  const subtitleStyle = design.subtitleStyle || template?.typography?.itemSubtitleStyle || 'italic'
+  const isSubtitleBold = design.subtitleStyle === 'bold' || design.subtitleStyle === 'bold-italic'
+  const isSubtitleItalic = design.subtitleStyle === 'italic' || design.subtitleStyle === 'bold-italic'
 
   const displayTitle = !reverseOrder ? title : (subtitle || title)
   const displaySubtitle = !reverseOrder ? subtitle : (subtitle ? title : undefined)
 
   const renderSubtitle = () => displaySubtitle && (
     <span 
-      className={cn("leading-tight", subtitleStyles)} 
-      style={{ color: subtitleColor, fontSize: `${design.subtitleSize}pt` }}
+      className={cn("leading-tight", isSubtitleBold && "font-bold", isSubtitleItalic && "italic")} 
+      style={{ 
+        color: subtitleColor, 
+        fontSize: subtitleSize
+      }}
     >
       {displaySubtitle}
     </span>
@@ -340,7 +368,10 @@ const EntryLayout = ({
   const renderDate = () => date && (
     <span 
       className="font-semibold whitespace-nowrap"
-      style={{ color: dateColor, fontSize: `${design.fontSize * 0.9}pt` }}
+      style={{ 
+        color: dateColor, 
+        fontSize: template?.typography?.dateSize || `${design.fontSize * 0.9}pt` 
+      }}
     >
       {date}
     </span>
@@ -348,7 +379,7 @@ const EntryLayout = ({
 
   const layoutId = design.entryLayoutId || 'layout-4'
 
-  const renderLocation = () => location && design.resumeShowLocation && (
+  const renderLocation = () => location && (
     <span className="text-gray-500 italic" style={{ fontSize: `${design.fontSize * 0.9}pt` }}>
       {location}
     </span>
@@ -357,7 +388,10 @@ const EntryLayout = ({
   const renderDescription = () => description && (
     <div 
       className="description-content prose prose-sm max-w-none text-inherit mt-2"
-      style={{ paddingLeft: `${design.descriptionIndentation}px` }}
+      style={{ 
+        paddingLeft: `${design.descriptionIndentation}px`,
+        fontSize: template?.typography?.bodySize || 'inherit'
+      }}
       dangerouslySetInnerHTML={{ __html: description }} 
     />
   )
@@ -365,8 +399,12 @@ const EntryLayout = ({
   const renderTitleBlock = (fullWidth = false) => (
     <div className={cn(fullWidth ? "w-full" : "flex-1")}>
       <h3 
-        className="font-bold leading-tight" 
-        style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
+        className="item-title font-bold leading-tight" 
+        style={{ 
+          color: titleColor, 
+          fontSize: titleSize,
+          fontWeight: template?.typography?.itemTitleWeight || '700'
+        }}
       >
         {displayTitle}
         {design.subtitlePlacement === 'beside-title' && displaySubtitle && (
@@ -382,56 +420,13 @@ const EntryLayout = ({
     </div>
   )
 
-  // ─── Layout Implementations ──────────────────────────────────────────────────
-
-  if (layoutId === 'layout-1') {
-    return (
-      <div className="entry-item mb-4">
-        <div className="flex justify-between items-start gap-6">
-          <div className="flex-1">
-            {renderTitleBlock(true)}
-            {renderDescription()}
-          </div>
-          <div className="flex flex-col items-end text-right shrink-0 min-w-[120px] pt-1">
-            {renderDate()}
-            {renderLocation()}
-            {design.subtitlePlacement === 'right-aligned' && (
-              <div className="mt-1">{renderSubtitle()}</div>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (layoutId === 'layout-2') {
-    return (
-      <div className="entry-item mb-4 flex gap-6">
-        <div className="w-1/4 shrink-0 flex flex-col pt-1">
-          {renderDate()}
-          {renderLocation()}
-        </div>
-        <div className="flex-1">
-          {renderTitleBlock(true)}
-          {design.subtitlePlacement === 'right-aligned' && (
-             <div className="mt-0.5">{renderSubtitle()}</div>
-          )}
-          {renderDescription()}
-        </div>
-      </div>
-    )
-  }
-
   if (layoutId === 'layout-3') {
     return (
       <div className="entry-item mb-6">
         <div className="flex gap-4">
-          {/* Left: Date */}
           <div className="w-[110px] shrink-0 pt-0.5">
             {renderDate()}
           </div>
-
-          {/* Center: Title, Subtitle, Description */}
           <div className="flex-1">
             {renderTitleBlock(true)}
             {design.subtitlePlacement === 'right-aligned' && (
@@ -439,8 +434,6 @@ const EntryLayout = ({
             )}
             {renderDescription()}
           </div>
-
-          {/* Right: Location */}
           <div className="w-1/4 text-right pt-0.5 shrink-0">
             {renderLocation()}
           </div>
@@ -449,13 +442,16 @@ const EntryLayout = ({
     )
   }
 
-  // Default: layout-4 (Stacked List / 2x2 Grid)
   return (
     <div className="entry-item mb-6">
       <div className="flex justify-between items-baseline gap-4">
         <h3 
-          className="font-bold leading-tight flex-1" 
-          style={{ color: titleColor, fontSize: `${design.titleSize}pt` }}
+          className="item-title font-bold leading-tight flex-1" 
+          style={{ 
+            color: titleColor, 
+            fontSize: titleSize,
+            fontWeight: template?.typography?.itemTitleWeight || '700'
+          }}
         >
           {displayTitle}
         </h3>
@@ -463,10 +459,10 @@ const EntryLayout = ({
           {renderDate()}
         </div>
       </div>
-      {(subtitle || location) && (
+      {(displaySubtitle || location) && (
         <div className="flex justify-between items-baseline mt-0.5 gap-4">
           <div className="flex-1">
-            {renderSubtitle()}
+            {design.subtitlePlacement !== 'below-title' && design.subtitlePlacement !== 'beside-title' && renderSubtitle()}
           </div>
           <div className="shrink-0 text-right">
             {renderLocation()}
@@ -519,13 +515,44 @@ export default function TemplateRenderer() {
     sectionOrder: s.sectionOrder,
   })))
 
-  const baseTheme = getTheme(design.colorThemeId)
-  const theme = design.colorThemeId === 'custom' && design.customAccentColor 
-    ? { ...baseTheme, accentColor: design.customAccentColor, dividerColor: design.customAccentColor }
-    : baseTheme
+  const activeTemplate = useMemo(() => {
+    return cvTemplatesData.templates.find(t => t.id === design.templateId)
+  }, [design.templateId])
 
-  // ─── Visibility Logic ───────────────────────────────────────────────────────
-  
+  const themeColors = useMemo(() => {
+    const baseTheme = getTheme(design.colorThemeId)
+    const customAccent = design.colorThemeId === 'custom' ? design.customAccentColor : null
+
+    // Use template colors ONLY if we are in the default 'modern' theme 
+    // AND a template is active. This allows user to override template colors 
+    // by picking a different theme in the Customize panel.
+    if (activeTemplate && design.colorThemeId === 'modern') {
+      return activeTemplate.colors
+    }
+
+    const tokens: Record<string, string> = {
+      '--cv-accent': customAccent || baseTheme.accentColor,
+      '--cv-accent-light': `${customAccent || baseTheme.accentColor}1a`,
+      '--cv-header-bg': baseTheme.headerBg,
+      '--cv-header-text': baseTheme.headerText,
+      '--cv-header-subtitle': design.applyAccentTo.headings ? (customAccent || baseTheme.accentColor) : baseTheme.sectionTitleColor,
+      '--cv-section-title': design.applyAccentTo.headings ? (customAccent || baseTheme.accentColor) : baseTheme.sectionTitleColor,
+      '--cv-body-text': baseTheme.bodyTextColor,
+      '--cv-muted-text': '#6b7280',
+      '--cv-divider': customAccent || baseTheme.dividerColor,
+      '--cv-page-bg': '#ffffff',
+    }
+    return tokens
+  }, [activeTemplate, design.colorThemeId, design.customAccentColor, design.applyAccentTo.headings])
+
+  const activeFontFamily = useMemo(() => {
+    if (activeTemplate && !design.fontId) {
+      const font = FONTS.find(f => f.id === activeTemplate.defaultFont)
+      return font?.googleFamily || 'Inter'
+    }
+    return getFont(design.fontId)?.googleFamily || 'Inter'
+  }, [activeTemplate, design.fontId])
+
   const isEmptyHTML = (html: string) => {
     if (!html) return true
     const stripped = html.replace(/<[^>]*>/g, '').trim()
@@ -578,52 +605,31 @@ export default function TemplateRenderer() {
     paddingBottom: `${design.marginBottom}mm`,
     paddingLeft: `${design.marginLeft}mm`,
     paddingRight: `${design.marginRight}mm`,
-    fontSize: `${design.fontSize || 10}pt`,
-    lineHeight: design.lineHeight || 1.4,
-    color: theme.bodyTextColor || '#000000',
-    minHeight: '100%',
-    backgroundColor: '#ffffff',
+    fontSize: `${design.fontSize || activeTemplate?.defaultFontSize || 10}pt`,
+    lineHeight: design.lineHeight || activeTemplate?.defaultLineHeight || 1.4,
+    fontFamily: `"${activeFontFamily}", sans-serif`,
+    ...themeColors as any
   }
 
   const formatMonthYear = (date: { month: number, year: number }) => 
     `${new Date(0, date.month - 1).toLocaleString('en', { month: 'short' })} ${date.year}`
 
-  // ── Render Helpers ──────────────────────────────────────────────────────────
-
   const renderPersonal = () => {
-    const nameColor = design.applyAccentTo.name ? theme.accentColor : '#000000'
-    const jobTitleColor = design.applyAccentTo.jobTitle ? theme.accentColor : '#4b5563'
-    const iconColor = design.applyAccentTo.headerIcons ? theme.accentColor : '#9ca3af'
+    const header = (activeTemplate?.header || {}) as any
+    const alignment = header.layout === 'centered' ? 'center' : (header.layout === 'left-aligned' ? 'left' : design.headerAlignment)
+    const isSplit = header.layout === 'split'
     
-    const alignment = design.headerAlignment || 'left'
-    const arrangement = design.detailsArrangement || 'bullet'
-    const nameSizeScale = design.nameSize || 'm'
-    const titleSizeScale = design.titleSizeScale || 'm'
-    const photoSizeScale = design.photoSizeScale || 's'
-    const photoPosition = design.photoPosition || 'left'
-    const photoShape = design.photoShape || 'circle'
-
-    // Size Maps (Approximate Tailwind classes for preview, but will be pixel-perfect in PDF)
-    const nameSizeMap = { xs: 'text-2xl', s: 'text-3xl', m: 'text-4xl', l: 'text-5xl', xl: 'text-6xl' }
-    const titleSizeMap = { s: 'text-sm', m: 'text-base', l: 'text-lg' }
-    const photoSizeMap = { xs: 'w-16 h-16', s: 'w-24 h-24', m: 'w-32 h-32', l: 'w-40 h-40', xl: 'w-48 h-48' }
-
-    const photoClasses = cn(
-      photoSizeMap[photoSizeScale as keyof typeof photoSizeMap],
-      photoShape === 'circle' && 'rounded-full',
-      photoShape === 'square' && 'rounded-none',
-      photoShape === 'rounded-square' && 'rounded-xl',
-      photoShape === 'portrait' && 'rounded-none aspect-[3/4] h-auto',
-      photoShape === 'rounded-portrait' && 'rounded-xl aspect-[3/4] h-auto',
-      design.photoGrayscale && 'grayscale',
-      "overflow-hidden shrink-0 shadow-sm border border-gray-100"
-    )
-
-    const renderPhoto = () => personal.photoUrl && design.showPhoto && (
-      <div className={photoClasses} style={{ backgroundColor: `${theme.accentColor}10` }}>
-        <img src={personal.photoUrl} alt="" className="w-full h-full object-cover" />
-      </div>
-    )
+    const nameColor = 'var(--cv-header-text, var(--cv-accent))'
+    const jobTitleColor = 'var(--cv-header-subtitle, var(--cv-muted-text))'
+    
+    const nameStyles = {
+      fontSize: activeTemplate?.typography?.nameSize || '2.5rem',
+      fontWeight: activeTemplate?.typography?.nameWeight || '800',
+      textTransform: activeTemplate?.typography?.nameTransform || 'none' as any,
+      letterSpacing: activeTemplate?.typography?.nameLetterSpacing || 'tight',
+      color: nameColor,
+      lineHeight: '1.1'
+    }
 
     const details = [
       { id: 'email', value: personal.email, icon: Mail },
@@ -632,195 +638,118 @@ export default function TemplateRenderer() {
       { id: 'website', value: personal.website, icon: Globe },
     ].filter(d => d.value)
 
-    const renderDetails = () => {
-      const isIconArrangement = arrangement === 'icon'
-      
-      return (
-        <div className={cn(
-          "flex flex-wrap text-[9pt] font-medium text-gray-500",
-          alignment === 'center' ? "justify-center" : "justify-start",
-          arrangement === 'stacked' ? "flex-col gap-1" : "gap-x-4 gap-y-1",
-          arrangement === 'columns' && "grid grid-cols-2 gap-x-8"
-        )}>
-          {details.map((d, i) => (
-            <span key={d.id} className="flex items-center gap-1.5 whitespace-nowrap">
-              {(isIconArrangement || arrangement === 'brick') && (
-                <d.icon width={12} height={12} className="w-3 h-3" style={{ color: iconColor }} />
-              )}
-              {d.value}
-              {arrangement === 'bullet' && i < details.length - 1 && (
-                <span className="ml-3 text-gray-300 select-none">•</span>
-              )}
-              {arrangement === 'bar' && i < details.length - 1 && (
-                <span className="ml-3 text-gray-300 select-none">|</span>
-              )}
-            </span>
-          ))}
-        </div>
-      )
-    }
+    const separator = header.contactSeparator || ' • '
 
-    const nameClasses = cn(
-      "font-black tracking-tight leading-none",
-      nameSizeMap[nameSizeScale as keyof typeof nameSizeMap],
-      !design.nameBold && "font-normal",
-      design.nameFontFamily === 'creative' && "font-serif" 
-    )
-
-    const titleClasses = cn(
-      "font-bold uppercase tracking-widest",
-      titleSizeMap[titleSizeScale as keyof typeof titleSizeMap],
-      design.titleStyle === 'italic' && "italic"
-    )
-
-    const textContent = (
+    const renderContactInfo = () => (
       <div className={cn(
-        "flex-1 flex flex-col gap-2",
-        alignment === 'center' ? "text-center items-center" : "text-left items-start"
+        "flex flex-wrap gap-x-3 gap-y-1 text-[9pt] font-medium opacity-80",
+        alignment === 'center' ? "justify-center" : "justify-start"
       )}>
-        <div className={cn(
-          "flex flex-wrap items-baseline gap-x-4",
-          alignment === 'center' ? "justify-center" : "justify-start",
-          design.titlePosition === 'below' && "flex-col"
-        )}>
-          <h1 className={nameClasses} style={{ color: nameColor }}>
-            {personal.fullName}
-          </h1>
-          {personal.jobTitle && (
-            <p className={titleClasses} style={{ color: jobTitleColor }}>
-              {personal.jobTitle}
-            </p>
-          )}
-        </div>
-        <div className="mt-1">
-          {renderDetails()}
-        </div>
-        
-        {/* Summary in Header integration */}
-        {design.resumeSummaryInHeader && (
-          <div className="mt-4 pt-4 border-t border-gray-100/50 opacity-80 text-[9pt] leading-relaxed italic max-w-2xl">
-            {(() => {
-              const summary = professionalSummaries.find(ps => ps.visible) || personalSummaries.find(ps => ps.visible)
-              return summary ? <div dangerouslySetInnerHTML={{ __html: summary.content }} /> : null
-            })()}
-          </div>
-        )}
+        {details.map((d, i) => (
+          <span key={d.id} className="flex items-center gap-1.5 whitespace-nowrap">
+            <d.icon width={12} height={12} className="opacity-60" style={{ color: 'var(--cv-accent)' }} />
+            {d.value}
+            {i < details.length - 1 && <span className="opacity-40 ml-1">{separator}</span>}
+          </span>
+        ))}
       </div>
     )
 
     return (
       <header className={cn(
-        "mb-10 flex gap-8",
-        photoPosition === 'top' ? "flex-col items-center" : "items-center",
-        photoPosition === 'right' && "flex-row-reverse",
-        alignment === 'center' && photoPosition === 'top' && "text-center"
+        "mb-8 flex flex-col transition-all duration-300",
+        alignment === 'center' ? "text-center items-center" : "text-left items-start",
+        header.paddingBottom ? `pb-[${header.paddingBottom}]` : "pb-4"
       )}>
-        {renderPhoto()}
-        {textContent}
+        {isSplit ? (
+          <div className="w-full flex justify-between items-end gap-6 pb-4">
+            <div className="flex-1 text-left">
+              <h1 className="name-text" style={nameStyles}>{personal.fullName}</h1>
+              {personal.jobTitle && (
+                <p 
+                  className="job-title-text mt-1"
+                  style={{ 
+                    color: jobTitleColor, 
+                    fontSize: activeTemplate?.typography?.jobTitleSize || '1rem',
+                    fontWeight: activeTemplate?.typography?.jobTitleWeight || '500',
+                    fontStyle: activeTemplate?.typography?.jobTitleStyle || 'normal'
+                  }}
+                >
+                  {personal.jobTitle}
+                </p>
+              )}
+            </div>
+            <div className="flex-1 text-right max-w-[40%]">
+              {renderContactInfo()}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1 className="name-text" style={nameStyles}>{personal.fullName}</h1>
+            {personal.jobTitle && (
+              <p 
+                className="job-title-text mt-1"
+                style={{ 
+                  color: jobTitleColor, 
+                  fontSize: activeTemplate?.typography?.jobTitleSize || '1rem',
+                  fontWeight: activeTemplate?.typography?.jobTitleWeight || '500',
+                  fontStyle: activeTemplate?.typography?.jobTitleStyle || 'normal'
+                }}
+              >
+                {personal.jobTitle}
+              </p>
+            )}
+            <div className="mt-3 w-full">
+              {renderContactInfo()}
+            </div>
+          </>
+        )}
+
+        {header.showDividerBelow && (
+          <div 
+            className="w-full mt-4" 
+            style={{ 
+              height: header.dividerThickness || '1px', 
+              backgroundColor: header.dividerColor || 'var(--cv-divider)',
+              opacity: 0.6
+            }} 
+          />
+        )}
       </header>
     )
   }
 
-  const renderPersonalSummary = (id: string, label: string) => {
-    const summary = personalSummaries.find(ps => ps.id === id)
-    if (!summary || !summary.visible) return null
+  // ── Section Renderers ──────────────────────────────────────────────────────
 
+  function renderProfessionalSummary(id: string, label: string) {
+    const s = professionalSummaries.find(ps => ps.id === id)
+    if (!s) return null
     return (
       <div className="mb-6">
-        <SectionTitle sectionId={id} design={design}>
-          {label}
-        </SectionTitle>
-        <div 
-          className="prose prose-sm max-w-none text-inherit leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: summary.content }} 
-        />
+        <SectionTitle sectionId={id} design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="prose prose-sm max-w-none text-inherit leading-relaxed" dangerouslySetInnerHTML={{ __html: s.content }} />
       </div>
     )
   }
 
-  const renderProfessionalSummary = (id: string, label: string) => {
-    const summary = professionalSummaries.find(ps => ps.id === id)
-    if (!summary || !summary.visible || design.resumeSummaryInHeader) return null
-    
+  function renderPersonalSummary(id: string, label: string) {
+    const s = personalSummaries.find(ps => ps.id === id)
+    if (!s) return null
     return (
       <div className="mb-6">
-        {design.resumeShowSummaryHeading && (
-          <SectionTitle sectionId={id} design={design}>
-            {label}
-          </SectionTitle>
-        )}
-        <div 
-          className="prose prose-sm max-w-none text-inherit leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: summary.content }} 
-        />
+        <SectionTitle sectionId={id} design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="prose prose-sm max-w-none text-inherit leading-relaxed" dangerouslySetInnerHTML={{ __html: s.content }} />
       </div>
     )
   }
 
-  const renderExperience = (label: string) => {
-    const visibleExp = experience.filter(exp => exp.visible)
-
-    if (design.resumeGroupPromotions) {
-      // Group by company while preserving original order
-      const grouped: { company: string, roles: typeof experience }[] = []
-      visibleExp.forEach(exp => {
-        const existing = grouped.find(g => g.company === exp.company)
-        if (existing) {
-          existing.roles.push(exp)
-        } else {
-          grouped.push({ company: exp.company, roles: [exp] })
-        }
-      })
-
-      return (
-        <div className="mb-6">
-          <SectionTitle sectionId="experience" design={design}>
-            {label}
-          </SectionTitle>
-          <div className="space-y-6">
-            {grouped.map((group, idx) => (
-              <div key={`${group.company}-${idx}`} className="group-item">
-                <div className="flex justify-between items-baseline mb-2 border-b border-gray-50 pb-1">
-                  <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#111827' }}>
-                    {group.company}
-                  </h3>
-                  {group.roles[0].location && (
-                    <span className="text-[9pt] text-gray-500 italic">{group.roles[0].location}</span>
-                  )}
-                </div>
-                <div className="space-y-5 ml-4 border-l-2 border-gray-50 pl-4">
-                  {group.roles.map((role) => (
-                    <div key={role.id} className="role-item">
-                      <div className="flex justify-between items-baseline">
-                        <span className="font-bold text-[10pt] text-gray-800" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : undefined }}>
-                          {role.jobTitle}
-                        </span>
-                        <span className="text-[9pt] text-gray-500 font-medium">
-                          {formatMonthYear(role.startDate)} — {role.currentlyWorking ? 'Present' : (role.endDate?.year ? formatMonthYear(role.endDate) : 'Present')}
-                        </span>
-                      </div>
-                      <div 
-                        className="description-content prose prose-sm max-w-none text-inherit mt-1.5 opacity-90"
-                        dangerouslySetInnerHTML={{ __html: role.description }} 
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )
-    }
-
+  function renderExperience(label: string) {
     return (
       <div className="mb-6">
-        <SectionTitle sectionId="experience" design={design}>
-          {label}
-        </SectionTitle>
-        <div className="space-y-5">
-          {visibleExp.map((exp) => (
-            <EntryLayout
+        <SectionTitle sectionId="experience" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {experience.filter(e => e.visible).map(exp => (
+            <EntryLayout 
               key={exp.id}
               title={exp.jobTitle}
               subtitle={exp.company}
@@ -828,8 +757,7 @@ export default function TemplateRenderer() {
               location={exp.location}
               description={exp.description}
               design={design}
-              theme={theme}
-              reverseOrder={design.resumeExperienceOrder === 'subtitle-first'}
+              template={activeTemplate}
             />
           ))}
         </div>
@@ -837,271 +765,297 @@ export default function TemplateRenderer() {
     )
   }
 
-  const renderEducation = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="education" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {education.filter(edu => edu.visible).map((edu) => (
-          <EntryLayout
-            key={edu.id}
-            title={edu.degree}
-            subtitle={edu.institution}
-            date={`${formatMonthYear(edu.startDate)} — ${edu.current ? 'Ongoing' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Ongoing')}`}
-            location={edu.location}
-            description={edu.description}
-            design={design}
-            theme={theme}
-            reverseOrder={design.resumeEducationOrder === 'subtitle-first'}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderSkillLevel = (level: string) => {
-    if (!level || level === 'none') return null
-    const visualizer = design.skillsLevelVisualizer || 'dots'
-    const color = design.applyAccentTo.dotsBarsBubbles ? theme.accentColor : '#cbd5e1'
-
-    if (visualizer === 'text') {
-      return <span className="text-[8pt] font-semibold text-gray-400 italic capitalize">{level}</span>
-    }
-
-    if (visualizer === 'dots') {
-      const levelsMap = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 }
-      const count = levelsMap[level as keyof typeof levelsMap] || 0
-      return (
-        <div className="flex gap-1 items-center">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: i <= count ? color : '#e2e8f0' }} />
+  function renderEducation(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="education" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {education.filter(e => e.visible).map(edu => (
+            <EntryLayout 
+              key={edu.id}
+              title={edu.degree}
+              subtitle={edu.institution}
+              date={`${formatMonthYear(edu.startDate)} — ${edu.current ? 'Present' : (edu.endDate?.year ? formatMonthYear(edu.endDate) : 'Present')}`}
+              location={edu.location}
+              description={edu.description}
+              design={design}
+              template={activeTemplate}
+            />
           ))}
         </div>
-      )
-    }
-
-    if (visualizer === 'bar') {
-      const levelsMap = { beginner: '25%', intermediate: '50%', advanced: '75%', expert: '100%' }
-      const width = levelsMap[level as keyof typeof levelsMap] || '0%'
-      return (
-        <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-500" style={{ width, backgroundColor: color }} />
-        </div>
-      )
-    }
-
-    return null
+      </div>
+    )
   }
 
-  const getSubinfoSeparator = (style: string) => {
-    switch (style) {
-      case 'colon': return ': '
-      case 'dash': return ' - '
-      case 'bracket': return ' ('
-      default: return ': '
-    }
-  }
-
-  const getSubinfoEnd = (style: string) => {
-    return style === 'bracket' ? ')' : ''
-  }
-
-  const renderSkills = (label: string) => {
-    const layout = design.skillsLayout || 'grid'
+  function renderSkills(label: string) {
+    const skillStyle = activeTemplate?.skills?.defaultDisplayStyle || design.skillsLayout || 'tag'
     
     return (
-      <div className="mb-6">
-        <SectionTitle sectionId="skills" design={design}>
-          {label}
-        </SectionTitle>
-        
-        {layout === 'grid' && (
-          <div className={cn(
-            "grid gap-4",
-            design.skillsGridColumns === 1 && "grid-cols-1",
-            design.skillsGridColumns === 2 && "grid-cols-2",
-            design.skillsGridColumns === 3 && "grid-cols-3",
-            design.skillsGridColumns === 4 && "grid-cols-4"
-          )}>
-            {skills.categories.filter(c => c.visible).map((cat) => (
-              <div key={cat.id} className="flex flex-col gap-1">
-                <span className="font-bold text-[9pt] uppercase tracking-wider" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
-                  {cat.categoryName}
-                </span>
-                <div className="text-[9pt] text-gray-600 leading-relaxed">
-                  {cat.items.filter(i => i.visible).map((item, i, arr) => (
-                    <span key={item.id}>
-                      {item.skill}{i < arr.length - 1 ? ', ' : ''}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {layout === 'rows' && (
-          <div className={cn(
-            "flex flex-col",
-            design.skillsRowSpacing === 'tight' ? "gap-1.5" : "gap-3"
-          )}>
-            {skills.categories.filter(c => c.visible).map((cat) => (
-              <div key={cat.id} className="flex items-start gap-2">
-                {design.skillsShowRowBullets && <span className="mt-1.5 w-1 h-1 rounded-full bg-gray-300 shrink-0" />}
-                <div className="flex flex-wrap gap-x-1 items-baseline">
-                  <span className="font-bold text-[9pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
-                    {cat.categoryName}
-                    {cat.items.length > 0 && getSubinfoSeparator(design.skillsRowSubinfoStyle)}
-                  </span>
-                  <span className="text-[9pt] text-gray-600">
-                    {cat.items.filter(i => i.visible).map(i => i.skill).join(', ')}
-                    {cat.items.length > 0 && getSubinfoEnd(design.skillsRowSubinfoStyle)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {layout === 'compact' && (
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {skills.categories.filter(c => c.visible).map((cat, i, arr) => (
-              <div key={cat.id} className="flex items-baseline gap-1">
-                <span className="font-bold text-[9pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>
-                  {cat.categoryName}
-                  {cat.items.length > 0 && getSubinfoSeparator(design.skillsCompactSubinfoStyle)}
-                </span>
-                <span className="text-[9pt] text-gray-600">
-                  {cat.items.filter(item => item.visible).map(item => item.skill).join(', ')}
-                  {cat.items.length > 0 && getSubinfoEnd(design.skillsCompactSubinfoStyle)}
-                </span>
-                {i < arr.length - 1 && (
-                  <span className="text-gray-300 ml-2">
-                    {design.skillsCompactSeparator === 'bullet' && '•'}
-                    {design.skillsCompactSeparator === 'pipe' && '|'}
-                    {design.skillsCompactSeparator === 'comma' && ','}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {layout === 'bubble' && (
-          <div className="flex flex-wrap gap-2">
-            {skills.categories.filter(c => c.visible).map((cat) => (
-              <div 
-                key={cat.id} 
-                className="px-3 py-1 rounded-full border border-gray-100 flex items-baseline gap-1"
-                style={{ backgroundColor: `${theme.accentColor}08` }}
+      <div className="mb-6 w-full">
+        <SectionTitle sectionId="skills" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="flex flex-col gap-5 w-full">
+          {skills.categories.filter(c => c.visible).map(cat => (
+            <div key={cat.id} className="flex flex-col gap-2 w-full">
+              <h4 
+                className="font-bold text-[9pt] uppercase tracking-wider" 
+                style={{ color: 'var(--cv-accent)', opacity: 0.8 }}
               >
-                <span className="font-bold text-[8pt] uppercase tracking-wider" style={{ color: theme.accentColor }}>
-                  {cat.categoryName}
-                  {cat.items.length > 0 && getSubinfoSeparator(design.skillsBubbleSubinfoStyle)}
-                </span>
-                <span className="text-[8pt] text-gray-600">
-                  {cat.items.filter(i => i.visible).map(i => i.skill).join(', ')}
-                  {cat.items.length > 0 && getSubinfoEnd(design.skillsBubbleSubinfoStyle)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+                {cat.categoryName}
+              </h4>
+              <div className={cn(
+                "flex flex-wrap gap-2 w-full",
+                skillStyle === 'bar' && "flex-col gap-3"
+              )}>
+                {cat.items.filter(i => i.visible).map(item => {
+                  if (skillStyle === 'tag') {
+                    return (
+                      <span 
+                        key={item.id} 
+                        className="px-3 py-1 rounded-md text-[9pt] font-medium transition-all"
+                        style={{ 
+                          backgroundColor: 'var(--cv-tag-bg, #f3f4f6)', 
+                          color: 'var(--cv-tag-text, #374151)',
+                          borderRadius: activeTemplate?.skills?.tagBorderRadius || '6px'
+                        }}
+                      >
+                        {item.skill}
+                      </span>
+                    )
+                  }
+                  
+                  if (skillStyle === 'dot') {
+                    const levelsMap = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 }
+                    const count = levelsMap[item.level as keyof typeof levelsMap] || 0
+                    return (
+                      <div key={item.id} className="flex justify-between items-center w-full max-w-[250px]">
+                        <span className="text-[9.5pt] font-medium">{item.skill}</span>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map(i => (
+                            <div 
+                              key={i} 
+                              className="rounded-full" 
+                              style={{ 
+                                width: activeTemplate?.skills?.dotSize || '6px', 
+                                height: activeTemplate?.skills?.dotSize || '6px',
+                                backgroundColor: i <= count ? 'var(--cv-accent)' : 'var(--cv-divider)' 
+                              }} 
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  }
 
-        {layout === 'level' && (
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-            {skills.categories.filter(c => c.visible).flatMap(cat => cat.items.filter(i => i.visible)).map((item) => (
-              <div key={item.id} className="flex justify-between items-center border-b border-gray-50 pb-2">
-                <span className="font-bold text-[9pt] text-gray-800">{item.skill}</span>
-                {renderSkillLevel(item.level)}
+                  if (skillStyle === 'bar') {
+                    const levelsMap = { beginner: '25%', intermediate: '50%', advanced: '75%', expert: '100%' }
+                    const width = levelsMap[item.level as keyof typeof levelsMap] || '50%'
+                    return (
+                      <div key={item.id} className="flex flex-col gap-1 w-full max-w-[300px]">
+                        <div className="flex justify-between text-[9pt] font-medium">
+                          <span>{item.skill}</span>
+                          <span className="opacity-50 italic">{item.level}</span>
+                        </div>
+                        <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-500" 
+                            style={{ 
+                              width, 
+                              backgroundColor: 'var(--cv-accent)',
+                              height: activeTemplate?.skills?.barHeight || '4px'
+                            }} 
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  // Default: Plain
+                  return (
+                    <span key={item.id} className="text-[10pt] after:content-[','] last:after:content-[''] mr-1">
+                      {item.skill}
+                    </span>
+                  )
+                })}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
-  const renderResearch = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="research" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {research.filter(res => res.visible).map((res) => (
-          <EntryLayout
-            key={res.id}
-            title={res.title}
-            subtitle={res.institution}
-            date={`${formatMonthYear(res.startDate)} — ${res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}`}
-            location={res.location}
-            description={res.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderTraining = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="training" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {training.filter(t => t.visible).map((trn) => (
-          <EntryLayout
-            key={trn.id}
-            title={trn.name}
-            subtitle={trn.provider}
-            date={`${formatMonthYear(trn.startDate)} — ${trn.current ? 'Present' : (trn.endDate?.year ? formatMonthYear(trn.endDate) : 'Present')}`}
-            description={trn.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderCertifications = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="certifications" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {certifications.filter(c => c.visible).map((cert) => (
-          <EntryLayout
-            key={cert.id}
-            title={cert.name}
-            subtitle={cert.provider}
-            date={cert.startDate ? `${formatMonthYear(cert.startDate)} ${cert.endDate ? `— ${formatMonthYear(cert.endDate)}` : ''}` : undefined}
-            description={cert.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderReferences = (label: string) => {
+  function renderLanguages(label: string) {
     return (
       <div className="mb-6">
-        <SectionTitle sectionId="references" design={design}>
-          {label}
-        </SectionTitle>
-        <div className="grid grid-cols-2 gap-6">
-          {references.filter(r => r.visible).map((ref) => (
-            <div key={ref.id}>
-              <h3 className="font-bold text-[11pt]" style={{ color: design.applyAccentTo.jobTitle ? theme.accentColor : '#111827' }}>{ref.name}</h3>
-              <p className="text-[10pt] font-semibold" style={{ color: design.applyAccentTo.entrySubtitle ? theme.accentColor : '#1f2937' }}>{ref.position}</p>
-              <div className="text-[9pt] text-gray-600 mt-1 space-y-0.5">
+        <SectionTitle sectionId="languages" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="flex flex-wrap gap-4">
+          {languages.filter(l => l.visible).map(lang => (
+            <div key={lang.id} className="flex flex-col">
+              <span className="font-bold text-[10pt]">{lang.name}</span>
+              <span className="text-[9pt] opacity-60">{lang.description}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderProjects(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="projects" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {projects.filter(p => p.visible).map(proj => (
+            <EntryLayout 
+              key={proj.id}
+              title={proj.name}
+              subtitle={proj.subtitle}
+              date={proj.startDate ? `${formatMonthYear(proj.startDate)} — ${proj.endDate ? formatMonthYear(proj.endDate) : 'Present'}` : undefined}
+              description={proj.description}
+              design={design}
+              template={activeTemplate}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderCertifications(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="certifications" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-4">
+          {certifications.filter(c => c.visible).map(cert => (
+            <EntryLayout 
+              key={cert.id}
+              title={cert.name}
+              subtitle={cert.provider}
+              date={cert.startDate ? `${formatMonthYear(cert.startDate)} — ${cert.endDate ? formatMonthYear(cert.endDate) : 'Present'}` : undefined}
+              description={cert.description}
+              design={design}
+              template={activeTemplate}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderAwards(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="awards" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-4">
+          {awards.filter(a => a.visible).map(award => (
+            <div key={award.id} className="flex justify-between items-baseline gap-4">
+              <div className="flex-1">
+                <h4 className="font-bold text-[10pt] text-gray-800">{award.title}</h4>
+                <p className="text-[9pt] text-gray-600">{award.issuer}</p>
+                {award.description && <p className="text-[8.5pt] text-gray-500 mt-1">{award.description}</p>}
+              </div>
+              {award.date && <span className="text-[9pt] text-gray-400 shrink-0">{formatMonthYear(award.date)}</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderVolunteer(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="volunteer" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {volunteer.filter(v => v.visible).map(vol => (
+            <EntryLayout 
+              key={vol.id}
+              title={vol.role}
+              subtitle={vol.organization}
+              date={`${formatMonthYear(vol.startDate)} — ${vol.current ? 'Present' : (vol.endDate?.year ? formatMonthYear(vol.endDate) : 'Present')}`}
+              location={vol.location}
+              description={vol.description}
+              design={design}
+              template={activeTemplate}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderResearch(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="research" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {research.filter(r => r.visible).map(res => (
+            <EntryLayout 
+              key={res.id}
+              title={res.title}
+              subtitle={res.institution}
+              date={`${formatMonthYear(res.startDate)} — ${res.current ? 'Present' : (res.endDate?.year ? formatMonthYear(res.endDate) : 'Present')}`}
+              location={res.location}
+              description={res.description}
+              design={design}
+              template={activeTemplate}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderTraining(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="training" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="space-y-6">
+          {training.filter(t => t.visible).map(tr => (
+            <EntryLayout 
+              key={tr.id}
+              title={tr.name}
+              subtitle={tr.provider}
+              date={`${formatMonthYear(tr.startDate)} — ${tr.current ? 'Present' : (tr.endDate?.year ? formatMonthYear(tr.endDate) : 'Present')}`}
+              description={tr.description}
+              design={design}
+              template={activeTemplate}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderInterests(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="interests" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
+          {interests.filter(i => i.visible).map(interest => (
+            <div key={interest.id} className="flex flex-col">
+              <span className="font-bold text-[10pt] text-gray-800">{interest.name}</span>
+              <span className="text-[8.5pt] text-gray-500">{interest.description}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  function renderReferences(label: string) {
+    return (
+      <div className="mb-6">
+        <SectionTitle sectionId="references" design={design} template={activeTemplate}>{label}</SectionTitle>
+        <div className="grid grid-cols-2 gap-8">
+          {references.filter(r => r.visible).map(ref => (
+            <div key={ref.id} className="space-y-1">
+              <h4 className="font-bold text-[10pt] text-gray-800">{ref.name}</h4>
+              <p className="text-[9pt] text-gray-600 font-medium">{ref.position}</p>
+              <div className="text-[8.5pt] text-gray-500 space-y-0.5 pt-1">
                 {ref.address && <p>{ref.address}</p>}
-                {ref.email && <p>{ref.email}</p>}
-                {ref.phone && <p>{ref.phone}</p>}
+                {ref.email && <p className="flex items-center gap-1.5"><Mail width={10} height={10} /> {ref.email}</p>}
+                {ref.phone && <p className="flex items-center gap-1.5"><Phone width={10} height={10} /> {ref.phone}</p>}
               </div>
             </div>
           ))}
@@ -1110,190 +1064,108 @@ export default function TemplateRenderer() {
     )
   }
 
-  const renderLanguages = (label: string) => {
-    return (
-      <div className="mb-6">
-        <SectionTitle sectionId="languages" design={design}>
-          {label}
-        </SectionTitle>
-        <div className="grid grid-cols-2 gap-y-2 gap-x-4">
-          {languages.filter(l => l.visible).map((lang) => (
-            <div key={lang.id} className="flex justify-between items-baseline border-b border-gray-100 pb-1">
-              <span className="font-bold text-[10pt] text-gray-800">{lang.name}</span>
-              <span className="text-[9pt] text-gray-500 italic">{lang.description}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  const renderInterests = (label: string) => {
-    return (
-      <div className="mb-6">
-        <SectionTitle sectionId="interests" design={design}>
-          {label}
-        </SectionTitle>
-        <div className="flex flex-wrap gap-x-4 gap-y-2">
-          {interests.filter(i => i.visible).map((int) => (
-            <div key={int.id} className="flex flex-col">
-              <span className="font-bold text-[10pt] text-gray-800">{int.name}</span>
-              {int.description && <span className="text-[8pt] text-gray-500">{int.description}</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  const renderProjects = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="projects" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-6">
-        {projects.filter(p => p.visible).map((project) => (
-          <EntryLayout
-            key={project.id}
-            title={project.name}
-            subtitle={project.subtitle}
-            date={project.startDate ? `${formatMonthYear(project.startDate)} — ${project.endDate ? formatMonthYear(project.endDate) : 'Present'}` : undefined}
-            description={project.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderAwards = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="awards" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-5">
-        {awards.filter(a => a.visible).map((award) => (
-          <EntryLayout
-            key={award.id}
-            title={award.title}
-            subtitle={award.issuer}
-            date={award.date ? formatMonthYear(award.date) : undefined}
-            description={award.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderVolunteer = (label: string) => (
-    <div className="mb-6">
-      <SectionTitle sectionId="volunteer" design={design}>
-        {label}
-      </SectionTitle>
-      <div className="space-y-6">
-        {volunteer.filter(v => v.visible).map((vol) => (
-          <EntryLayout
-            key={vol.id}
-            title={vol.role}
-            subtitle={vol.organization}
-            date={`${formatMonthYear(vol.startDate)} — ${vol.current ? 'Present' : (vol.endDate?.year ? formatMonthYear(vol.endDate) : 'Present')}`}
-            location={vol.location}
-            description={vol.description}
-            design={design}
-            theme={theme}
-          />
-        ))}
-      </div>
-    </div>
-  )
-
-  // ── Template Dispatcher ──────────────────────────────────────────────────────
-
-  const renderSection = (id: string, label: string) => {
-    if (id.startsWith('prof-summary-')) return renderProfessionalSummary(id, label)
-    if (id.startsWith('pers-summary-')) return renderPersonalSummary(id, label)
+  function renderSection(id: string, label: string) {
+    if (id.startsWith('prof-summary-')) return <div key={id}>{renderProfessionalSummary(id, label)}</div>
+    if (id.startsWith('pers-summary-') || id === 'personal-summary') return <div key={id}>{renderPersonalSummary(id, label)}</div>
 
     switch (id) {
-      case 'personal': return renderPersonal()
-      case 'personal-summary': return renderPersonalSummary(id, label)
-      case 'experience': return renderExperience(label)
-      case 'education': return renderEducation(label)
-      case 'research': return renderResearch(label)
-      case 'training': return renderTraining(label)
-      case 'projects': return renderProjects(label)
-      case 'skills': return renderSkills(label)
-      case 'certifications': return renderCertifications(label)
-      case 'awards': return renderAwards(label)
-      case 'volunteer': return renderVolunteer(label)
-      case 'references': return renderReferences(label)
-      case 'languages': return renderLanguages(label)
-      case 'interests': return renderInterests(label)
+      case 'experience': return <div key={id}>{renderExperience(label)}</div>
+      case 'education': return <div key={id}>{renderEducation(label)}</div>
+      case 'skills': return <div key={id}>{renderSkills(label)}</div>
+      case 'languages': return <div key={id}>{renderLanguages(label)}</div>
+      case 'projects': return <div key={id}>{renderProjects(label)}</div>
+      case 'certifications': return <div key={id}>{renderCertifications(label)}</div>
+      case 'awards': return <div key={id}>{renderAwards(label)}</div>
+      case 'volunteer': return <div key={id}>{renderVolunteer(label)}</div>
+      case 'interests': return <div key={id}>{renderInterests(label)}</div>
+      case 'references': return <div key={id}>{renderReferences(label)}</div>
+      case 'research': return <div key={id}>{renderResearch(label)}</div>
+      case 'training': return <div key={id}>{renderTraining(label)}</div>
       default: return null
     }
   }
 
-  // ── Layout Wrapper ──────────────────────────────────────────────────────────
+  // ── Render Main ────────────────────────────────────────────────────────────
 
-  const renderWithLayout = () => {
-    const isSidebarLayout = design.layout === 'sidebar-left' || design.layout === 'sidebar-right'
-    const isLeft = design.layout === 'sidebar-left'
-    const visibleSections = sectionOrder.filter(s => {
-      if (!s.visible) return false
-      if (design.resumeHideEmptySections && !hasSectionContent(s.id)) return false
-      return true
-    })
+  // ── Render Main ────────────────────────────────────────────────────────────
 
-    if (isSidebarLayout) {
-      const sidebarSectionIds = ['skills', 'education']
-      const mainSections = visibleSections.filter(s => !sidebarSectionIds.includes(s.id) && s.id !== 'personal')
-      const sidebarSections = visibleSections.filter(s => sidebarSectionIds.includes(s.id))
+  const layoutType = design.layout || activeTemplate?.layout?.type || 'one-column'
+  const isTemplateLayout = activeTemplate?.layout?.type === layoutType
+  
+  const sidebarPosition = isTemplateLayout 
+    ? (activeTemplate?.layout?.sidebarPosition || (layoutType === 'sidebar-left' ? 'left' : layoutType === 'sidebar-right' ? 'right' : 'none'))
+    : (layoutType === 'sidebar-left' ? 'left' : layoutType === 'sidebar-right' ? 'right' : 'none')
 
-      return (
-        <div className="flex flex-col h-full">
-          {renderPersonal()}
-          <div className={cn("flex flex-1 gap-12", isLeft ? "flex-row" : "flex-row-reverse")}>
-            <div className="flex-1 space-y-6">
-              {mainSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
-            </div>
-            <div className="w-[30%] space-y-6">
-              {sidebarSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
-            </div>
-          </div>
-        </div>
-      )
-    }
+  const sidebarSections = isTemplateLayout 
+    ? (activeTemplate?.sidebar?.sections || [])
+    : (sidebarPosition !== 'none' ? ['skills', 'languages', 'interests', 'references'] : [])
 
-    return (
-      <div className="space-y-6">
-        {visibleSections.map(s => <div key={s.id}>{renderSection(s.id, s.label)}</div>)}
-      </div>
-    )
+  const sidebarStyle: React.CSSProperties = {
+    backgroundColor: activeTemplate?.colors['--cv-sidebar-bg'] || 'transparent',
+    padding: activeTemplate?.sidebar?.padding || '0',
+    borderRight: sidebarPosition === 'left' ? (activeTemplate?.decorations?.sidebarBorder || 'none') : 'none',
+    borderLeft: sidebarPosition === 'right' ? (activeTemplate?.decorations?.sidebarBorder || 'none') : 'none',
   }
-
-  const font = getFont(design.fontId)
 
   return (
     <div 
       id="cv-preview-card"
       className={cn(
-        "w-full h-full shadow-inner overflow-hidden",
-        design.layoutVariation === 'compact' && "compact-mode",
-        design.layoutVariation === 'modern' && "modern-mode",
-        design.layoutVariation === 'minimal' && "minimal-mode"
+        "bg-white shadow-2xl mx-auto origin-top transition-all duration-500 overflow-hidden",
+        design.pageSize === 'a4' ? "aspect-[210/297]" : "aspect-[8.5/11]"
       )}
-      style={{
+      style={{ 
         ...containerStyle,
-        fontFamily: font ? `'${font.googleFamily}', sans-serif` : 'sans-serif',
+        width: '100%',
+        backgroundColor: activeTemplate?.colors['--cv-page-bg'] || '#ffffff'
       }}
     >
-      <FontLoader fontId={design.fontId} />
+      <FontLoader googleFamily={activeFontFamily} />
+      <StyleInjector tokens={themeColors as any} templateId={design.templateId} />
       <ListStyles style={design.listStyle} />
-      <VariationStyles variation={design.layoutVariation} />
-      {renderWithLayout()}
-      <Footer design={design} personal={personal} />
+      
+      {renderPersonal()}
+
+      <div className={cn(
+        "grid h-full",
+        (layoutType === 'two-column' || sidebarPosition !== 'none') 
+          ? (sidebarPosition === 'left' ? "grid-cols-[1fr_2fr]" : "grid-cols-[2fr_1fr]") 
+          : "grid-cols-1"
+      )}
+      style={{ gap: activeTemplate?.sections?.sectionSpacing || '2rem' }}
+      >
+        {/* Sidebar (if on left) */}
+        {sidebarPosition === 'left' && (
+          <div className="space-y-6 h-full" style={sidebarStyle}>
+            {sectionOrder
+              .filter(s => s.visible && hasSectionContent(s.id) && sidebarSections.includes(s.id))
+              .map((section) => renderSection(section.id, section.label))}
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div 
+          className="space-y-8"
+          style={{ 
+            padding: sidebarPosition !== 'none' ? '0' : ((activeTemplate?.sections as any)?.mainPadding || '0')
+          }}
+        >
+          {sectionOrder
+            .filter(s => s.visible && hasSectionContent(s.id) && !sidebarSections.includes(s.id))
+            .map((section) => renderSection(section.id, section.label))}
+        </div>
+
+        {/* Sidebar (if on right) */}
+        {sidebarPosition === 'right' && (
+          <div className="space-y-6 h-full" style={sidebarStyle}>
+            {sectionOrder
+              .filter(s => s.visible && hasSectionContent(s.id) && sidebarSections.includes(s.id))
+              .map((section) => renderSection(section.id, section.label))}
+          </div>
+        )}
+      </div>
+
+      <Footer design={design} personal={personal} template={activeTemplate} />
     </div>
   )
 }
