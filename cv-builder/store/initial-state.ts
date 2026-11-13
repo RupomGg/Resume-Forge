@@ -2,6 +2,7 @@
 
 import { CVData } from '@/models/cv.types'
 import { generateId } from '@/lib/utils'
+import { TEMPLATES } from '@/lib/templates'
 
 export const DEFAULT_DATA: CVData = {
   personal: {
@@ -170,6 +171,7 @@ export const DEFAULT_DATA: CVData = {
     },
     headingStyle: 'simple',
     headingCase: 'uppercase',
+    headingAlign: 'left',
     headingSize: 10,
     showHeadingIcons: false,
 
@@ -230,8 +232,10 @@ export function normalizeResume(data: Partial<CVData>): CVData {
 
 /** Starting point for a new resume: default structure and design, no sample content. */
 export function blankResume(fullName: string, email: string): CVData {
+  const base = structuredClone(DEFAULT_DATA)
   return {
-    ...structuredClone(DEFAULT_DATA),
+    ...base,
+    design: { ...base.design, ...TEMPLATES[0].design }, // new resumes start on the Classic ATS template
     personal: {
       fullName, email, jobTitle: '', phone: '', location: '', website: '', linkedin: '', github: '',
       photoUrl: null, showPhoto: true,

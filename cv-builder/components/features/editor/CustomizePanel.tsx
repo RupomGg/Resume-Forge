@@ -964,6 +964,23 @@ export default function CustomizePanel() {
                         </div>
                       )
                     },
+                    {
+                      // Title + location on the first row, subtitle + dates on the second
+                      id: 'layout-5',
+                      name: 'Academic',
+                      icon: (active: boolean) => (
+                        <div className="flex flex-col gap-1 w-full">
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-1 w-1/2 rounded-full ${active ? 'bg-primary' : 'bg-outline-variant'}`} />
+                            <div className={`h-0.5 w-1/5 rounded-full ${active ? 'bg-blue-300' : 'bg-outline-variant/20'}`} />
+                          </div>
+                          <div className="flex justify-between items-center gap-1.5">
+                            <div className={`h-0.5 w-1/3 rounded-full ${active ? 'bg-primary/60' : 'bg-outline-variant/30'}`} />
+                            <div className={`h-1 w-1/4 rounded-full ${active ? 'bg-blue-400' : 'bg-outline-variant/50'}`} />
+                          </div>
+                        </div>
+                      )
+                    },
                   ].map((opt) => (
                     <button
                       key={opt.id}
@@ -1423,6 +1440,7 @@ export default function CustomizePanel() {
                   {[
                     { id: 'capitalize', name: 'Capitalize', icon: CaseSensitive },
                     { id: 'uppercase', name: 'Uppercase', icon: CaseUpper },
+                    { id: 'small-caps', name: 'Small Caps', icon: CaseUpper },
                   ].map((c) => (
                     <button
                       key={c.id}
@@ -1436,6 +1454,22 @@ export default function CustomizePanel() {
                     >
                       <c.icon className="w-4 h-4" />
                       {c.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {(['left', 'center'] as const).map((a) => (
+                    <button
+                      key={a}
+                      onClick={() => updateDesign({ headingAlign: a })}
+                      className={cn(
+                        "py-3 rounded-xl border-2 transition-all font-bold text-xs capitalize",
+                        (design.headingAlign ?? 'left') === a
+                          ? "border-primary bg-primary/5 text-primary shadow-sm"
+                          : "border-outline-variant/30 text-outline hover:border-outline-variant"
+                      )}
+                    >
+                      {a === 'left' ? 'Left aligned' : 'Centered'}
                     </button>
                   ))}
                 </div>

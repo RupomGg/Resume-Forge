@@ -61,7 +61,7 @@
 .rf-head--band .rf-name, .rf-head--band .rf-job, .rf-head--band .rf-ico { color: #fff; }
 .rf-head-text { flex: 1; min-width: 0; }
 .rf-head--center .rf-head-text, .rf-head--photo-top .rf-head-text { flex: none; width: 100%; }
-.rf-name { font-size: var(--rf-name-fs); line-height: 1.15; font-weight: var(--rf-name-fw); color: var(--rf-name-color); font-family: var(--rf-name-font); }
+.rf-name { display: inline; font-size: var(--rf-name-fs); line-height: 1.15; font-weight: var(--rf-name-fw); color: var(--rf-name-color); font-family: var(--rf-name-font); }
 .rf-job { font-size: var(--rf-job-fs); color: var(--rf-job-color); font-style: var(--rf-job-style); font-weight: 500; }
 .rf-job--inline { display: inline; margin-left: 8pt; }
 .rf-photo { flex-shrink: 0; object-fit: cover; width: var(--rf-photo); height: var(--rf-photo); }
@@ -82,7 +82,9 @@
 
 /* ── Section headings ── */
 .rf-h { display: flex; align-items: center; gap: 6pt; font-size: var(--rf-h-fs); font-weight: 700; letter-spacing: 0.04em; color: var(--rf-h-color); line-height: 1.3; }
-.rf-h--upper { text-transform: uppercase; }
+.rf-h--uppercase { text-transform: uppercase; }
+.rf-h--small-caps { font-variant-caps: small-caps; letter-spacing: 0.06em; font-size: calc(var(--rf-h-fs) * 1.15); }
+.rf-h--center { justify-content: center; text-align: center; }
 .rf-h-ico { width: 1.15em; height: 1.15em; flex-shrink: 0; }
 .rf-hw { padding-bottom: 6pt; }
 .rf-hw--simple .rf-h { padding-bottom: 2pt; border-bottom: var(--rf-divider-w) solid var(--rf-divider-c); }
