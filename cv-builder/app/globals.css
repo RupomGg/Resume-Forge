@@ -189,3 +189,8 @@ body {
 .cv-rich-text em {
   font-style: italic;
 }
+
+/* Editor preview: pages float on the canvas (never applied in /print) */
+.rf-preview .rf-page {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+}

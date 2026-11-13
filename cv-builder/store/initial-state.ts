@@ -210,3 +210,36 @@ export const DEFAULT_DATA: CVData = {
     resumeGroupPromotions: false,
   },
 }
+
+export const DATA_KEYS = Object.keys(DEFAULT_DATA) as (keyof CVData)[]
+
+/** Keeps only CVData keys and fills fields added after a resume was stored. */
+export function normalizeResume(data: Partial<CVData>): CVData {
+  const out = {} as Record<string, unknown>
+  for (const k of DATA_KEYS) out[k] = data[k] ?? DEFAULT_DATA[k]
+  const d = out as unknown as CVData
+  d.personal = { ...DEFAULT_DATA.personal, ...d.personal }
+  d.design = {
+    ...DEFAULT_DATA.design,
+    ...d.design,
+    applyAccentTo: { ...DEFAULT_DATA.design.applyAccentTo, ...d.design?.applyAccentTo },
+    footer: { ...DEFAULT_DATA.design.footer, ...d.design?.footer },
+  }
+  return d
+}
+
+/** Starting point for a new resume: default structure and design, no sample content. */
+export function blankResume(fullName: string, email: string): CVData {
+  return {
+    ...structuredClone(DEFAULT_DATA),
+    personal: {
+      fullName, email, jobTitle: '', phone: '', location: '', website: '', linkedin: '', github: '',
+      photoUrl: null, showPhoto: true,
+    },
+    personalSummaries: [{ id: 'personal-summary', title: 'Professional Summary', content: '', visible: true }],
+    experience: [],
+    education: [],
+    skills: { displayStyle: 'tags', categories: [] },
+    languages: [],
+  }
+}

@@ -27,11 +27,21 @@ export default function PersonalInfoForm() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      updatePersonal({ photoUrl: reader.result as string })
+    // Downscale before storing: the photo is embedded in the resume JSON.
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const scale = Math.min(1, 480 / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height)
+      updatePersonal({ photoUrl: canvas.toDataURL('image/jpeg', 0.88) })
+      URL.revokeObjectURL(url)
     }
-    reader.readAsDataURL(file)
+    img.onerror = () => URL.revokeObjectURL(url)
+    img.src = url
+    e.target.value = ''
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {

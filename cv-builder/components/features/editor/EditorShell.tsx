@@ -1,184 +1,156 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
-import { Sparkles, Download, Wand2, Check, FileText, PenLine, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { ArrowLeft, Download, FileText, PenLine, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
 import SectionManager from './SectionManager'
 import { useCVStore } from '@/store/cv-store'
-import { downloadPdf } from '@/services/api/pdf.service'
+import { normalizeResume } from '@/store/initial-state'
+import { useAutosave, waitForSave } from '@/store/autosave'
+import { renameResume } from '@/lib/actions/resumes'
+import type { CVData } from '@/models/cv.types'
 
-export default function EditorShell() {
-  const store = useCVStore()
+interface Props {
+  resumeId: string
+  title: string
+  data: CVData
+}
+
+export default function EditorShell({ resumeId, title: initialTitle, data }: Props) {
+  // Load this resume into the (global) editor store before any panel renders.
+  const hydrated = useRef(false)
+  if (!hydrated.current) {
+    useCVStore.setState({ ...normalizeResume(data), activeSectionId: null, activeEntryId: null, activeTab: 'content' })
+    hydrated.current = true
+  }
+  useAutosave(resumeId)
+
+  const [title, setTitle] = useState(initialTitle)
+  const savedTitle = useRef(initialTitle)
   const [isManagerOpen, setIsManagerOpen] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  
-  // Mobile tab: 'edit' | 'preview'
   const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit')
+
+  const commitTitle = async () => {
+    const next = title.trim()
+    if (!next) return setTitle(savedTitle.current)
+    if (next === savedTitle.current) return
+    const res = await renameResume(resumeId, next)
+    if (res.ok) savedTitle.current = next
+    else setTitle(savedTitle.current)
+  }
 
   const handleDownload = async () => {
     setIsDownloading(true)
+    setDownloadError(null)
     try {
-      await downloadPdf(store)
+      // The PDF is rendered from saved data, so pending edits go first.
+      if (!(await waitForSave())) throw new Error('Your latest changes could not be saved yet.')
+      const res = await fetch(`/api/resumes/${resumeId}/pdf`)
+      if (!res.ok) throw new Error(await res.text())
+      const url = URL.createObjectURL(await res.blob())
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${(savedTitle.current || 'resume').replace(/\s+/g, '_')}.pdf`
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (err) {
+      setDownloadError(err instanceof Error && err.message ? err.message : 'Could not generate the PDF.')
     } finally {
       setIsDownloading(false)
     }
   }
 
   return (
-    <div
-      id="editor-shell"
-      className="flex flex-col h-screen overflow-hidden bg-surface"
-    >
+    <div id="editor-shell" className="flex flex-col h-screen overflow-hidden bg-surface">
       {/* ── Top Navigation Bar ─────────────────────────────────────── */}
       <nav
         id="editor-nav"
-        className="flex items-center justify-between px-8 border-b border-outline-variant/30 bg-surface-container-lowest/90 backdrop-blur-xl flex-shrink-0 z-50 shadow-sm"
-        style={{ height: '68px' }}
+        className="flex items-center justify-between gap-4 px-4 md:px-6 border-b border-outline-variant/30 bg-surface-container-lowest flex-shrink-0 z-50 shadow-sm h-[60px]"
       >
-        {/* Left: Logo & Sidebar Toggle */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 min-w-0">
+          <Link
+            href="/app/resumes"
+            className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary flex-shrink-0"
+            title="Back to my resumes"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="hidden md:flex items-center justify-center w-10 h-10 rounded-xl hover:bg-surface-container transition-all duration-300 text-on-surface-variant hover:text-primary active:scale-95"
-            title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+            className="hidden md:flex items-center justify-center w-10 h-10 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-primary flex-shrink-0"
+            title={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
           </button>
-
-          <Link
-            href="/"
-            className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 group"
-          >
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-500">
-              <Sparkles className="w-4.5 h-4.5 text-surface" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-[15px] font-black text-on-surface tracking-tight font-manrope">
-                ResumeForge
-              </span>
-              <span className="text-[10px] font-bold text-outline uppercase tracking-[0.15em] font-work-sans mt-0.5 opacity-60">
-                PRO EDITION
-              </span>
-            </div>
-          </Link>
+          <input
+            aria-label="Resume title"
+            value={title}
+            maxLength={120}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={commitTitle}
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+            className="min-w-0 w-64 max-w-full px-2 py-1.5 rounded-lg bg-transparent font-manrope text-[15px] font-bold text-on-surface border border-transparent hover:border-outline-variant focus:border-primary outline-none truncate"
+          />
         </div>
 
-        {/* Right: Action buttons */}
-        <div className="flex items-center gap-4">
-          {/* Auto-save indicator */}
-          <div className="hidden lg:flex items-center gap-2.5 px-4 py-2 rounded-full bg-secondary-container/20 border border-secondary-container/30 text-[11px] font-bold text-secondary uppercase tracking-wider">
-            <div className="relative">
-              <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute opacity-75" />
-              <div className="w-2 h-2 rounded-full bg-primary relative" />
-            </div>
-            Synced
-          </div>
-
-          <div className="h-8 w-px bg-outline-variant/40 mx-2 hidden md:block" />
-
-
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {downloadError && <span role="alert" className="hidden sm:block text-[12px] text-error max-w-[280px] truncate">{downloadError}</span>}
           <button
             id="download-pdf-btn"
             onClick={handleDownload}
             disabled={isDownloading}
-            className={cn(
-              "inline-flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-xs font-bold font-manrope text-surface transition-all duration-300 shadow-md hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100",
-              isDownloading ? "bg-outline" : "bg-primary shadow-primary/20 hover:bg-primary-container"
-            )}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold font-manrope text-white bg-primary hover:bg-primary-container shadow-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-wait"
           >
-            {isDownloading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-surface/30 border-t-surface rounded-full animate-spin" />
-                <span>Generating...</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4" />
-                <span>Download PDF</span>
-              </>
-            )}
+            {isDownloading
+              ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Generating…</>
+              : <><Download className="w-4 h-4" />Download PDF</>}
           </button>
         </div>
       </nav>
 
       {/* ── Mobile Tab Bar ──────────────────────────────────────────── */}
       <div className="md:hidden flex border-b border-outline-variant bg-surface-container-low flex-shrink-0">
-        <button
-          onClick={() => setMobileTab('edit')}
-          className={cn(
-            'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold transition-all border-b-2 font-work-sans',
-            mobileTab === 'edit'
-              ? 'text-primary border-primary bg-secondary-container/20'
-              : 'text-outline border-transparent'
-          )}
-        >
-          <PenLine className="w-4 h-4" />
-          Edit Content
-        </button>
-        <button
-          onClick={() => setMobileTab('preview')}
-          className={cn(
-            'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold transition-all border-b-2 font-work-sans',
-            mobileTab === 'preview'
-              ? 'text-primary border-primary bg-secondary-container/20'
-              : 'text-outline border-transparent'
-          )}
-        >
-          <FileText className="w-4 h-4" />
-          Preview
-        </button>
+        {([['edit', 'Edit', PenLine], ['preview', 'Preview', FileText]] as const).map(([id, label, Icon]) => (
+          <button
+            key={id}
+            onClick={() => setMobileTab(id)}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold border-b-2 font-work-sans',
+              mobileTab === id ? 'text-primary border-primary bg-secondary-container/20' : 'text-outline border-transparent',
+            )}
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* ── Main Content Area ───────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Left Sidebar */}
         <div
           className={cn(
-            'h-full overflow-hidden transition-all duration-300 ease-in-out border-r border-outline-variant',
-            // Desktop width: 30% when open, 0 when closed
-            isSidebarOpen ? 'md:w-[30%]' : 'md:w-0 md:border-none',
-            // Mobile: full width, hidden when on preview tab
-            mobileTab === 'preview' ? 'hidden md:block' : 'block w-full'
+            'h-full overflow-hidden transition-all duration-300 ease-in-out border-r border-outline-variant flex-shrink-0',
+            isSidebarOpen ? 'md:w-[440px]' : 'md:w-0 md:border-none',
+            mobileTab === 'preview' ? 'hidden md:block' : 'block w-full',
           )}
         >
-          <div className="w-full h-full min-w-[400px]">
+          <div className="w-full h-full md:w-[440px]">
             <LeftPanel onManageClick={() => setIsManagerOpen(true)} />
           </div>
         </div>
 
-        {/* Right Panel — Preview */}
-        <div
-          className={cn(
-            'flex-1 h-full overflow-hidden bg-surface-container',
-            // Mobile: hidden when on edit tab
-            mobileTab === 'edit' ? 'hidden md:flex' : 'flex'
-          )}
-        >
+        <div className={cn('flex-1 h-full overflow-hidden min-w-0', mobileTab === 'edit' ? 'hidden md:flex' : 'flex')}>
           <RightPanel />
         </div>
-
-        {/* Floating Toggle (when sidebar is hidden) */}
-        {!isSidebarOpen && (
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="hidden md:flex absolute left-4 top-4 z-40 w-10 h-10 rounded-full bg-primary-container text-surface shadow-level-3 items-center justify-center hover:scale-110 transition-all active:scale-100"
-            title="Show Sidebar"
-          >
-            <PanelLeftOpen className="w-5 h-5" />
-          </button>
-        )}
       </div>
 
-      {/* ── Bottom Drawers ─────────────────────────── */}
-      <SectionManager 
-        isOpen={isManagerOpen} 
-        onClose={() => setIsManagerOpen(false)} 
-      />
+      <SectionManager isOpen={isManagerOpen} onClose={() => setIsManagerOpen(false)} />
     </div>
   )
 }
-

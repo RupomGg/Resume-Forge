@@ -33,7 +33,7 @@ export default function HomePage() {
           {/* Actions */}
           <div className="flex items-center gap-md">
             <Link className="hidden md:inline-flex font-label-sm text-label-sm text-primary hover:text-secondary transition-colors active:scale-95" href="/login">Login</Link>
-            <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-6 py-2 rounded-full hover:bg-inverse-primary transition-colors active:scale-95" href="/editor">Sign Up</Link>
+            <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-6 py-2 rounded-full hover:bg-inverse-primary transition-colors active:scale-95" href="/signup">Sign Up</Link>
           </div>
         </div>
       </header>
@@ -57,7 +57,7 @@ export default function HomePage() {
                 Create professional, ATS-friendly resumes in minutes. Our AI-driven templates ensure your skills stand out, helping you land your dream job faster.
               </p>
               <div className="flex flex-col sm:flex-row gap-md mt-sm w-full sm:w-auto">
-                <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-8 py-4 rounded-full hover:bg-inverse-primary transition-colors active:scale-95 shadow-[0_0_40px_rgba(45,90,39,0.3)]" href="/editor">Start Building Free</Link>
+                <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-8 py-4 rounded-full hover:bg-inverse-primary transition-colors active:scale-95 shadow-[0_0_40px_rgba(45,90,39,0.3)]" href="/signup">Start Building Free</Link>
                 <a className="inline-flex items-center justify-center border border-outline-variant text-on-surface font-label-sm text-label-sm px-8 py-4 rounded-full hover:bg-surface-container transition-colors active:scale-95" href="#templates">View Templates</a>
               </div>
               <div className="flex items-center gap-4 mt-md text-on-surface-variant font-caption text-caption">
@@ -185,7 +185,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <h2 className="font-h1 text-h1 text-on-surface mb-md">Your next job starts with a great resume.</h2>
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-2xl mx-auto">Join thousands of professionals who have advanced their careers using ResumeForge. Build, download, and apply today.</p>
-            <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-10 py-5 rounded-full hover:bg-inverse-primary transition-colors active:scale-95 shadow-[0_0_40px_rgba(45,90,39,0.2)]" href="/editor">Build Your Resume</Link>
+            <Link className="inline-flex items-center justify-center bg-primary-container text-on-primary-container font-label-sm text-label-sm px-10 py-5 rounded-full hover:bg-inverse-primary transition-colors active:scale-95 shadow-[0_0_40px_rgba(45,90,39,0.2)]" href="/signup">Build Your Resume</Link>
           </div>
         </section>
       </main>

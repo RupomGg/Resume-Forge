@@ -51,13 +51,13 @@ export default function Hero() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/editor"
+            href="/signup"
             className="hidden md:inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors duration-200"
           >
             Open Editor
           </Link>
           <Link
-            href="/editor"
+            href="/signup"
             id="hero-nav-cta"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white text-gray-900 text-sm font-semibold hover:bg-gray-100 transition-all duration-200 shadow-sm"
           >
@@ -104,7 +104,7 @@ export default function Hero() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
           <Link
-            href="/editor"
+            href="/signup"
             id="hero-primary-cta"
             className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-base text-white transition-all duration-300 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02]"
             style={{

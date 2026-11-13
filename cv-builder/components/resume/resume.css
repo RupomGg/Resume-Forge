@@ -1,0 +1,149 @@
+/* Resume document styles. Shared verbatim by the editor preview and the PDF print route,
+   so what you see is what Chromium prints. Everything is scoped under .rf. */
+.rf {
+  color: var(--rf-text);
+  font-family: var(--rf-font);
+  font-size: var(--rf-fs);
+  line-height: var(--rf-lh);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  text-align: left;
+}
+.rf *, .rf *::before, .rf *::after { box-sizing: border-box; }
+.rf a { color: inherit; text-decoration: none; }
+
+.rf-page {
+  position: relative;
+  width: var(--rf-pw);
+  height: var(--rf-ph);
+  background: #fff;
+  overflow: hidden;
+  break-after: page;
+  padding: var(--rf-mt) var(--rf-mr) var(--rf-mb) var(--rf-ml);
+  display: flex;
+  flex-direction: column;
+}
+.rf-page:last-child { break-after: auto; }
+.rf--border .rf-page::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border: 3mm solid var(--rf-accent);
+}
+.rf-sidebg { position: absolute; top: 0; bottom: 0; width: var(--rf-sidebg-w); background: var(--rf-side-bg); }
+.rf-cols { position: relative; flex: 1; min-height: 0; display: flex; gap: var(--rf-gap); }
+.rf-col { min-width: 0; }
+.rf-col--main { width: var(--rf-main-w); }
+.rf-col--side { width: var(--rf-side-w); color: var(--rf-side-text); }
+.rf-col--side .rf-h, .rf-col--side .rf-title { color: var(--rf-side-heading); }
+.rf-b { display: flow-root; }
+
+.rf-measure { position: absolute; left: -99999px; top: 0; visibility: hidden; pointer-events: none; display: flex; gap: var(--rf-gap); }
+
+/* ── Footer ── */
+.rf-foot {
+  height: var(--rf-foot-h); flex-shrink: 0; display: flex; align-items: flex-end; gap: 8px;
+  font-size: 8pt; color: var(--rf-muted); position: relative;
+}
+.rf-foot > div { flex: 1; white-space: pre-line; }
+.rf-foot > div:nth-child(2) { text-align: center; }
+.rf-foot > div:nth-child(3) { text-align: right; }
+
+/* ── Header ── */
+.rf-head { display: flex; gap: 14pt; align-items: center; }
+.rf-head--center { flex-direction: column; text-align: center; }
+.rf-head--photo-right { flex-direction: row-reverse; }
+.rf-head--photo-top { flex-direction: column; align-items: flex-start; }
+.rf-head--center.rf-head--photo-top { align-items: center; }
+.rf-head--band {
+  background: var(--rf-accent); color: #fff;
+  margin: calc(var(--rf-mt) * -1) calc(var(--rf-mr) * -1) 0 calc(var(--rf-ml) * -1);
+  padding: var(--rf-mt) var(--rf-mr) 14pt var(--rf-ml);
+}
+.rf-head--band .rf-name, .rf-head--band .rf-job, .rf-head--band .rf-ico { color: #fff; }
+.rf-head-text { flex: 1; min-width: 0; }
+.rf-head--center .rf-head-text, .rf-head--photo-top .rf-head-text { flex: none; width: 100%; }
+.rf-name { font-size: var(--rf-name-fs); line-height: 1.15; font-weight: var(--rf-name-fw); color: var(--rf-name-color); font-family: var(--rf-name-font); }
+.rf-job { font-size: var(--rf-job-fs); color: var(--rf-job-color); font-style: var(--rf-job-style); font-weight: 500; }
+.rf-job--inline { display: inline; margin-left: 8pt; }
+.rf-photo { flex-shrink: 0; object-fit: cover; width: var(--rf-photo); height: var(--rf-photo); }
+.rf-photo--circle { border-radius: 50%; }
+.rf-photo--rounded-square, .rf-photo--rounded-portrait { border-radius: 10%; }
+.rf-photo--portrait, .rf-photo--rounded-portrait { height: calc(var(--rf-photo) * 1.3); }
+.rf-photo--gray { filter: grayscale(1); }
+.rf-details { margin-top: 5pt; display: flex; flex-wrap: wrap; gap: 2pt 10pt; font-size: 0.92em; }
+.rf-head--center .rf-details { justify-content: center; }
+.rf-details--stacked { flex-direction: column; }
+.rf-head--center .rf-details--stacked { align-items: center; }
+.rf-details--columns { display: grid; grid-template-columns: 1fr 1fr; }
+.rf-detail { display: inline-flex; align-items: center; gap: 4pt; overflow-wrap: anywhere; }
+.rf-details--bullet .rf-detail:not(:last-child)::after { content: "•"; margin-left: 6pt; color: var(--rf-muted); }
+.rf-details--bar .rf-detail:not(:last-child)::after { content: "|"; margin-left: 6pt; color: var(--rf-muted); }
+.rf-ico { width: 1em; height: 1em; flex-shrink: 0; color: var(--rf-ico-color); }
+.rf-head-summary { margin-top: 6pt; }
+
+/* ── Section headings ── */
+.rf-h { display: flex; align-items: center; gap: 6pt; font-size: var(--rf-h-fs); font-weight: 700; letter-spacing: 0.04em; color: var(--rf-h-color); line-height: 1.3; }
+.rf-h--upper { text-transform: uppercase; }
+.rf-h-ico { width: 1.15em; height: 1.15em; flex-shrink: 0; }
+.rf-hw { padding-bottom: 6pt; }
+.rf-hw--simple .rf-h { padding-bottom: 2pt; border-bottom: var(--rf-divider-w) solid var(--rf-divider-c); }
+.rf-hw--underlined .rf-h { padding-bottom: 2pt; border-bottom: 1.5pt solid var(--rf-accent); }
+.rf-hw--boxed .rf-h { background: var(--rf-accent-soft); padding: 3pt 8pt; justify-content: center; }
+.rf-hw--side-line .rf-h { border-left: 3pt solid var(--rf-accent); padding-left: 6pt; }
+.rf-hw--pill .rf-h { display: inline-flex; background: var(--rf-accent-soft); padding: 2pt 10pt; border-radius: 99px; }
+.rf-hw--double-line .rf-h { padding-bottom: 2pt; border-bottom: 3pt double var(--rf-accent); }
+.rf-hw--zigzag .rf-h { padding-bottom: 5pt; background: repeating-linear-gradient(135deg, var(--rf-accent) 0 2pt, transparent 2pt 4pt) left bottom / 60pt 2pt no-repeat; }
+.rf-hw--decorative .rf-h::after, .rf-hw--modern-split .rf-h::after { content: ""; flex: 1; height: 0.75pt; background: var(--rf-divider); }
+.rf-hw--modern-split .rf-h::before { content: ""; width: 3pt; height: 1.2em; border-radius: 2pt; background: var(--rf-accent); }
+.rf-hw--bracket .rf-h::before { content: "["; font-weight: 300; color: var(--rf-accent); }
+.rf-hw--bracket .rf-h::after { content: "]"; font-weight: 300; color: var(--rf-accent); }
+
+/* ── Entries ── */
+.rf-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10pt; }
+.rf-title { font-size: var(--rf-title-fs); font-weight: 700; color: var(--rf-title-color); line-height: 1.3; }
+.rf-sub { font-size: var(--rf-sub-fs); color: var(--rf-sub-color); font-weight: var(--rf-sub-fw); font-style: var(--rf-sub-style); }
+.rf-title .rf-sub::before { content: "|"; margin: 0 6pt; font-weight: 400; font-style: normal; color: var(--rf-divider); }
+.rf-date { font-size: 0.9em; color: var(--rf-date-color); white-space: nowrap; font-weight: 600; flex-shrink: 0; }
+.rf-loc { font-size: 0.9em; color: var(--rf-muted); font-style: italic; flex-shrink: 0; text-align: right; }
+.rf-meta { width: 22%; flex-shrink: 0; display: flex; flex-direction: column; }
+.rf-meta .rf-loc { text-align: left; }
+.rf-split { display: flex; gap: 10pt; }
+.rf-split > .rf-grow { flex: 1; min-width: 0; }
+.rf-link { font-size: 0.9em; color: var(--rf-link-color); overflow-wrap: anywhere; }
+.rf-rich { margin-top: 2pt; padding-left: var(--rf-indent); overflow-wrap: anywhere; }
+.rf-rich p { margin: 0; min-height: 1em; }
+.rf-rich ul, .rf-rich ol { margin: 0; padding-left: 1.3em; list-style: var(--rf-list); }
+.rf-rich ol { list-style: decimal; }
+.rf-rich li { margin: 1pt 0; }
+.rf-rich a { text-decoration: underline; }
+.rf-rich--plain { margin-top: 0; padding-left: 0; }
+.rf-muted { color: var(--rf-muted); }
+
+/* ── Skills / simple lists ── */
+.rf-grid { display: grid; grid-template-columns: repeat(var(--rf-cols, 2), minmax(0, 1fr)); gap: 4pt 12pt; }
+.rf-col--side .rf-grid { grid-template-columns: 1fr; }
+.rf-skill-name { font-weight: 600; }
+.rf-skill-info { font-size: 0.9em; color: var(--rf-muted); }
+.rf-col--side .rf-skill-info, .rf-col--side .rf-muted, .rf-col--side .rf-loc, .rf-col--side .rf-date { color: inherit; opacity: 0.75; }
+.rf-rows { display: flex; flex-direction: column; gap: var(--rf-row-gap, 4pt); }
+.rf-rows--bullets > div { padding-left: 1em; text-indent: -1em; }
+.rf-rows--bullets > div::before { content: "• "; }
+.rf-bubbles { display: flex; flex-wrap: wrap; gap: 4pt; }
+.rf-bubble { background: var(--rf-accent-soft); padding: 1.5pt 8pt; border-radius: 99px; font-size: 0.92em; }
+.rf-col--side .rf-bubble { background: var(--rf-side-chip); }
+.rf-level { display: flex; align-items: center; justify-content: space-between; gap: 8pt; }
+.rf-dots { display: inline-flex; gap: 2.5pt; flex-shrink: 0; }
+.rf-dot { width: 6pt; height: 6pt; border-radius: 50%; background: var(--rf-divider); }
+.rf-dot--on { background: var(--rf-viz); }
+.rf-bar { width: 45%; height: 4pt; border-radius: 2pt; background: var(--rf-divider); flex-shrink: 0; overflow: hidden; }
+.rf-bar > i { display: block; height: 100%; background: var(--rf-viz); }
+.rf-col--side .rf-dot--on, .rf-col--side .rf-bar > i { background: var(--rf-side-heading); }
+
+/* ── Side column adjustments (narrow, possibly on a solid accent fill) ── */
+.rf-col--side .rf-sub { color: inherit; }
+.rf-col--side .rf-h { border-color: currentColor; }
+.rf-col--side .rf-hw--pill .rf-h, .rf-col--side .rf-hw--boxed .rf-h { background: var(--rf-side-chip); }
+.rf-col--side .rf-h::before, .rf-col--side .rf-h::after { color: inherit; }
+.rf-col--side .rf-row { flex-direction: column; gap: 0; }
+.rf-col--side .rf-loc { text-align: left; }
+.rf-col--side .rf-split { flex-direction: column; gap: 0; }
+.rf-col--side .rf-meta { width: auto; }

@@ -132,7 +132,7 @@ interface CVStore extends CVData {
   reorderSections: (from: number, to: number) => void
   removeSection: (id: string) => void
   updateSectionLabel: (id: SectionId, label: string) => void
-  updateSectionStyle: (id: SectionId, style: { alignment?: TextAlignment; underline?: boolean }) => void
+  updateSectionStyle: (id: SectionId, style: { alignment?: TextAlignment; underline?: boolean; column?: 'main' | 'side' }) => void
   toggleEntryVisibility: (sectionId: SectionId, entryId: string) => void
 
   // Focus Mode
@@ -712,6 +712,7 @@ export const useCVStore = create<CVStore>()(
         if (section) {
           if (style.alignment !== undefined) section.alignment = style.alignment
           if (style.underline !== undefined) section.underline = style.underline
+          if (style.column !== undefined) section.column = style.column
         }
       }),
     
