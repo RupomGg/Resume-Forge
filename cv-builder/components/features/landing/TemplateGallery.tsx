@@ -213,7 +213,7 @@ export default function TemplateGallery() {
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center">
                 <Link
-                  href={`/editor?template=${template.id}`}
+                  href="/signup"
                   id={`template-use-${template.id}`}
                   className="opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-2 group-hover:translate-y-0 bg-white text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1"
                 >
@@ -237,7 +237,7 @@ export default function TemplateGallery() {
       {/* CTA */}
       <div className="text-center mt-12">
         <Link
-          href="/editor"
+          href="/signup"
           id="templates-section-cta"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
         >

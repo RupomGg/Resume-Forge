@@ -226,6 +226,7 @@ export interface CVSection {
   label: string       // user-editable display name
   alignment?: TextAlignment
   underline?: boolean
+  column?: 'main' | 'side'   // two-column layouts only; defaults by section type
 }
 
 export interface FooterSettings {

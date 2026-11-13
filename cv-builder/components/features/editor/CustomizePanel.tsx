@@ -63,15 +63,18 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { SIDE_SECTIONS } from '@/components/resume/blocks'
 
 // ─── Sub-components for DnD ──────────────────────────────────────────────────
 
 interface SortableSectionItemProps {
-  section: { id: string; visible: boolean; label: string }
+  section: { id: string; visible: boolean; label: string; column?: "main" | "side" }
 }
 
 function SortableSectionItem({ section }: SortableSectionItemProps) {
-  const { toggleSection, updateSectionLabel, removeSection } = useCVStore()
+  const { toggleSection, updateSectionLabel, updateSectionStyle } = useCVStore()
+  const hasColumns = useCVStore((s) => s.design.layout !== "one-column")
+  const column = section.column ?? (SIDE_SECTIONS.includes(section.id) ? "side" : "main")
   const [isEditing, setIsEditing] = useState(false)
   const [tempLabel, setTempLabel] = useState(section.label)
 
