@@ -129,10 +129,10 @@ function Heading({ id, label, d }: { id: string; label: string; d: DesignSetting
   const Icon = SECTION_ICONS[id] ?? FileText
   return (
     <div className={`rf-hw rf-hw--${d.headingStyle || 'simple'}`}>
-      <div className={`rf-h ${d.headingCase === 'uppercase' ? 'rf-h--upper' : ''}`}>
+      <h2 className={`rf-h rf-h--${d.headingCase} ${d.headingAlign === 'center' ? 'rf-h--center' : ''}`}>
         {d.showHeadingIcons && <Icon className="rf-h-ico" />}
         <span>{label}</span>
-      </div>
+      </h2>
     </div>
   )
 }
@@ -148,11 +148,11 @@ function EntryView({ e, d }: { e: Entry; d: DesignSettings }) {
   const sub = e.subtitle ? <span className="rf-sub">{e.subtitle}</span> : null
   const date = e.date ? <span className="rf-date">{e.date}</span> : null
   const loc = e.location ? <span className="rf-loc">{e.location}</span> : null
-  const title = <div className="rf-title">{e.title}{beside && sub}</div>
+  const title = <h3 className="rf-title">{e.title}{beside && sub}</h3>
   const body = (
     <>
       {e.extra && <div className="rf-muted">{e.extra}</div>}
-      {e.link && <div className="rf-link">{e.link}</div>}
+      {e.link && <div className="rf-link"><a href={`https://${e.link}`}>{e.link}</a></div>}
       <Rich html={e.description} />
     </>
   )
@@ -173,6 +173,16 @@ function EntryView({ e, d }: { e: Entry; d: DesignSettings }) {
       <>
         <div className="rf-row">{title}{sub}</div>
         {(date || loc) && <div className="rf-row">{date ?? <span />}{loc}</div>}
+        {body}
+      </>
+    )
+  }
+  if (layout === 'layout-5') {
+    // Academic (Harvard-style): organisation + place, then role + dates
+    return (
+      <>
+        <div className="rf-row">{title}{loc}</div>
+        {((!beside && sub) || date) && <div className="rf-row">{beside ? <span /> : sub ?? <span />}{date}</div>}
         {body}
       </>
     )
@@ -261,9 +271,12 @@ function ItemList({ items, d }: { items: SimpleItem[]; d: DesignSettings }) {
 
 function Header({ data }: { data: CVData }) {
   const { personal: p, design: d } = data
+  // Real links survive into the PDF, where ATS parsers and recruiters can follow them.
+  const web = (v: string) => (/^https?:\/\//.test(v) ? v : `https://${v}`)
   const details = [
-    { v: p.email, I: Mail }, { v: p.phone, I: Phone }, { v: p.location, I: MapPin },
-    { v: p.website, I: Globe }, { v: p.linkedin, I: LinkIcon }, { v: p.github, I: LinkIcon },
+    { v: p.email, I: Mail, href: `mailto:${p.email}` }, { v: p.phone, I: Phone, href: `tel:${p.phone.replace(/[^\d+]/g, '')}` },
+    { v: p.location, I: MapPin, href: '' }, { v: p.website, I: Globe, href: web(p.website) },
+    { v: p.linkedin, I: LinkIcon, href: web(p.linkedin) }, { v: p.github, I: LinkIcon, href: web(p.github) },
   ].filter((x) => x.v)
   const arrangement = d.detailsArrangement || 'bullet'
   const icons = ['icon', 'stacked', 'columns'].includes(arrangement)
@@ -284,14 +297,20 @@ function Header({ data }: { data: CVData }) {
       )}
       <div className="rf-head-text">
         <div>
-          <span className="rf-name">{p.fullName}</span>
+          <h1 className="rf-name">{p.fullName}</h1>
           {p.jobTitle && <div className={`rf-job ${d.titlePosition === 'inline' ? 'rf-job--inline' : ''}`}>{p.jobTitle}</div>}
         </div>
         {details.length > 0 && (
           <div className={`rf-details rf-details--${arrangement}`}>
-            {details.map(({ v, I }, i) => (
-              <span key={i} className="rf-detail">{icons && <I className="rf-ico" />}{v.replace(/^https?:\/\/(www\.)?/, '')}</span>
-            ))}
+            {details.map(({ v, I, href }, i) => {
+              const text = v.replace(/^https?:\/\/(www\.)?/, '')
+              return (
+                <span key={i} className="rf-detail">
+                  {icons && <I className="rf-ico" />}
+                  {href ? <a href={href}>{text}</a> : text}
+                </span>
+              )
+            })}
           </div>
         )}
         {summary && <div className="rf-head-summary"><Rich html={summary.content} plain /></div>}

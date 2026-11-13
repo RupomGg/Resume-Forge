@@ -14,7 +14,7 @@ export type SubtitleStyle = 'normal' | 'italic' | 'bold' | 'bold-italic'
 export type SubtitlePlacement = 'below-title' | 'beside-title' | 'right-aligned'
 export type ListStyle = 'none' | 'bullet' | 'dash' | 'check'
 export type HeadingStyle = 'simple' | 'boxed' | 'underlined' | 'side-line' | 'minimal' | 'decorative' | 'zigzag' | 'double-line' | 'pill' | 'modern-split' | 'bracket'
-export type HeadingCase = 'capitalize' | 'uppercase'
+export type HeadingCase = 'capitalize' | 'uppercase' | 'small-caps'
 export type HeaderAlignment = 'left' | 'center'
 export type DetailsArrangement = 'stacked' | 'brick' | 'columns' | 'icon' | 'bullet' | 'bar'
 export type NameSize = 'xs' | 's' | 'm' | 'l' | 'xl'
@@ -276,6 +276,7 @@ export interface DesignSettings {
   // Section Headings
   headingStyle: HeadingStyle
   headingCase: HeadingCase
+  headingAlign?: 'left' | 'center'
   headingSize: number
   showHeadingIcons: boolean
 

@@ -3,6 +3,13 @@
 import type { FontDefinition } from '@/models/cv.types'
 
 export const FONTS: FontDefinition[] = [
+  // ── ATS-standard faces: open, metric-compatible stand-ins for the fonts recruiters
+  //    recommend. They are embedded in the PDF, so they render the same everywhere. ──
+  { id: 'arimo', name: 'Arimo (Arial)', googleFamily: 'Arimo', category: 'sans-serif', isFree: true, isRecommended: true },
+  { id: 'carlito', name: 'Carlito (Calibri)', googleFamily: 'Carlito', category: 'sans-serif', isFree: true, isRecommended: true },
+  { id: 'tinos', name: 'Tinos (Times New Roman)', googleFamily: 'Tinos', category: 'serif', isFree: true, isRecommended: true },
+  { id: 'gelasio', name: 'Gelasio (Georgia)', googleFamily: 'Gelasio', category: 'serif', isFree: true, isRecommended: true },
+  { id: 'caladea', name: 'Caladea (Cambria)', googleFamily: 'Caladea', category: 'serif', isFree: true, isRecommended: true },
   // ── Free fonts (isFree: true) ──────────────────────────────────────────────
   {
     id: 'lato',
@@ -277,5 +284,5 @@ export const FONTS: FontDefinition[] = [
 
 /** Look up a font by ID, falling back to Lato if not found */
 export function getFont(fontId: string): FontDefinition {
-  return FONTS.find((f) => f.id === fontId) ?? FONTS[0]
+  return FONTS.find((f) => f.id === fontId) ?? FONTS.find((f) => f.id === 'lato')!
 }

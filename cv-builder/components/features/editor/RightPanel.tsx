@@ -7,6 +7,7 @@ import PagedResume from '@/components/resume/PagedResume'
 import { geometry } from '@/components/resume/blocks'
 import { useCVStore } from '@/store/cv-store'
 import { DATA_KEYS } from '@/store/initial-state'
+import AtsBadge from './AtsBadge'
 import type { CVData } from '@/models/cv.types'
 
 const PAGE_GAP = 24
@@ -37,6 +38,7 @@ export default function RightPanel() {
     <div id="right-panel" className="flex-1 flex flex-col overflow-hidden bg-[#E9EDF0]">
       <div className="flex items-center justify-between px-6 py-2.5 text-[11px] font-bold uppercase tracking-wider text-outline flex-shrink-0">
         <span>{data.design.pageSize === 'letter' ? 'Letter' : 'A4'} · {pages} {pages === 1 ? 'page' : 'pages'}</span>
+        <AtsBadge data={data} />
         <div className="flex items-center gap-1 bg-white/80 rounded-lg border border-white shadow-sm p-0.5">
           <button aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))} className="p-1.5 rounded hover:bg-surface-container"><Minus className="w-3.5 h-3.5" /></button>
           <button onClick={() => setZoom(1)} className="px-2 tabular-nums hover:text-primary" title="Fit width">{Math.round(scale * 100)}%</button>
